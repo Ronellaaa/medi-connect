@@ -53,7 +53,7 @@ Built using **Microservices Architecture** with the following services:
 
 ### Run with Docker Compose
 ```bash
-git clone https://github.com/ronellaaa/medi-connect.git
+git clone https://github.com/Ronellaaa/medi-connect.git
 cd care-sync
 docker-compose up --build
 ```
