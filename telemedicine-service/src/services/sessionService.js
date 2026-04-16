@@ -2,15 +2,15 @@ const { pool } = require('../config/database');
 const { v4: uuidv4 } = require('uuid');
 
 class SessionService {
-    async createSession(appointmentId, doctorId, patientId) {
+    async createSession(appointmentId, paymentId) {
         const sessionId = uuidv4();
         const roomName = `call_${appointmentId}_${Date.now()}`;
         const meetingUrl = `https://meet.jit.si/${roomName}`;
         
         await pool.query(
-            `INSERT INTO sessions (id, room_name, appointment_id, doctor_id, patient_id, meeting_url)
-             VALUES ($1, $2, $3, $4, $5, $6)`,
-            [sessionId, roomName, appointmentId, doctorId, patientId, meetingUrl]
+            `INSERT INTO sessions (id, room_name, appointment_id, payment_id, meeting_url)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [sessionId, roomName, appointmentId, paymentId, meetingUrl]
         );
         
         return { sessionId, roomName, meetingUrl };

@@ -3,13 +3,21 @@ const sessionService = require('../services/sessionService');
 class SessionController {
     async createSession(req, res) {
         try {
-            const { appointmentId, doctorId, patientId } = req.body;
+            //const { appointmentId, doctorId, patientId } = req.body;
+
+            const { paymentId, appointmentId } = req.body;
             
-            if (!appointmentId || !doctorId || !patientId) {
+            if (!paymentId || !appointmentId) {
                 return res.status(400).json({ error: 'Missing fields' });
             }
+
+            /* if (!appointmentId || !doctorId || !patientId) {
+                return res.status(400).json({ error: 'Missing fields' });
+            }*/
             
-            const session = await sessionService.createSession(appointmentId, doctorId, patientId);
+            //const session = await sessionService.createSession(appointmentId, doctorId, patientId);
+
+            const session = await sessionService.createSession(appointmentId, paymentId);
             
             res.json({
                 success: true,

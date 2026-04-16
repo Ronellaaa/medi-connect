@@ -1,5 +1,5 @@
 // config/database.js
-const { Pool } = require('pg');
+const { Pool } = require('pg'); //Manages multiple database connections
 require('dotenv').config();
 
 const pool = new Pool({
@@ -17,8 +17,9 @@ const initDB = async () => {
             id UUID PRIMARY KEY,
             room_name VARCHAR(255) NOT NULL,
             appointment_id VARCHAR(100) NOT NULL,
-            doctor_id VARCHAR(100) NOT NULL,
-            patient_id VARCHAR(100) NOT NULL,
+            payment_id VARCHAR(100) NOT NULL,
+            doctor_id VARCHAR(100),
+            patient_id VARCHAR(100),
             status VARCHAR(20) DEFAULT 'CREATED',
             created_at TIMESTAMP DEFAULT NOW(),
             started_at TIMESTAMP,

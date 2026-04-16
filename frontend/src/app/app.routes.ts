@@ -19,6 +19,9 @@ import { Register } from './pages/register/register';
 import { DoctorsComponent } from './pages/doctors/doctors';
 import { Home } from './pages/home/home';
 
+//payments
+import { Payments } from './pages/payments/payments';
+
 export const routes: Routes = [
   {
     path: '',
@@ -63,4 +66,11 @@ export const routes: Routes = [
   { path: 'doctors/prescription', component: DoctorPrescriptionPageComponent },
   { path: 'doctors/reports', component: DoctorReportsPageComponent },
   { path: 'doctors/team', component: DoctorsComponent },
+  
+  { path: '', pathMatch: 'full', redirectTo: 'payments' },
+  { path: 'payments', component: Payments },
+  { path: 'payment/success', component: Payments, data: { state: 'success' } },
+  { path: 'payment/cancel', component: Payments, data: { state: 'cancel' } },
+  { path: '**', redirectTo: 'payments' }
+
 ];
