@@ -1,0 +1,217 @@
+<div class="doctor-page">
+  <div class="doctor-shell">
+    <aside class="doctor-sidebar">
+      <div class="brand-box">
+        <div class="brand-badge">MC</div>
+        <div class="brand-copy">
+          <h1>MediConnect</h1>
+          <p>Doctor Portal</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-links">
+        <a *ngFor="let item of navItems"
+           class="sidebar-link"
+           [routerLink]="item.route"
+           routerLinkActive="active">
+          <span class="sidebar-icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-note">
+        <p>Reports</p>
+        <strong>Review diagnostics, imaging summaries, and lab documents in one stream.</strong>
+      </div>
+    </aside>
+
+    <main class="doctor-main">
+      <header class="topbar">
+        <div class="header-copy">
+          <p>Reports desk</p>
+          <h2>Medical report review</h2>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="search-pill">Search patient or report...</div>
+          <div class="avatar-dot">DR</div>
+        </div>
+      </header>
+
+      <section class="report-stage">
+        <!-- LEFT SIDE -->
+        <aside class="patients-rail">
+          <div class="rail-head">
+            <p>Patients</p>
+            <h3>Report queue</h3>
+          </div>
+
+          <button
+            class="patient-card"
+            *ngFor="let patient of patients"
+            [class.active]="currentPatient.id === patient.id"
+            (click)="selectPatient(patient)"
+          >
+            <div class="patient-top">
+              <div>
+                <strong>{{ patient.patientName }}</strong>
+                <span>{{ patient.reportType }}</span>
+              </div>
+              <span class="mini-pill" [ngClass]="patient.tone">{{ patient.status }}</span>
+            </div>
+
+            <div class="patient-bottom">
+              <span>{{ patient.reportId }}</span>
+              <span>{{ patient.date }}</span>
+            </div>
+
+            <div class="report-btn">View Report</div>
+          </button>
+        </aside>
+
+        <!-- CENTER BOOK -->
+        <div class="book-scene">
+  <div class="book-3d" [class.flipping]="isFlipping">
+    <div class="book-shadow"></div>
+    <div class="book-spine"></div>
+
+    <!-- LEFT PAGE -->
+    <section class="book-page page-left">
+      <div class="page-left-inner">
+        <div class="chapter-no">04</div>
+
+        <div class="report-heading">
+          <h2>Medical<br />Report <em>Review</em></h2>
+        </div>
+
+        <div class="left-divider top"></div>
+        <div class="left-divider middle"></div>
+        <div class="left-divider vertical"></div>
+
+        <div class="patient-highlight">
+          <span>Patient</span>
+          <strong>{{ currentPatient.patientName }}</strong>
+          <p>{{ currentPatient.gender }}, {{ currentPatient.age }} years</p>
+        </div>
+
+        <div class="left-footer">
+          Doctor-facing clinical summary for review, signature, and archive sync.
+        </div>
+      </div>
+    </section>
+
+    <!-- CURRENT RIGHT PAGE -->
+    <section class="book-page page-right page-static">
+      <div class="page-right-inner">
+        <div class="paper-top">
+          <p>Clinical overview</p>
+          <span>{{ currentPatient.date }}</span>
+        </div>
+
+        <div class="paper-title">
+          <h3>{{ currentPatient.reportType }}</h3>
+          <p>Report ID: {{ currentPatient.reportId }}</p>
+        </div>
+
+        <div class="metric-list">
+          <div class="metric-row" *ngFor="let metric of currentPatient.metrics">
+            <strong>{{ metric.value }}</strong>
+            <span>{{ metric.label }}</span>
+          </div>
+        </div>
+
+        <div class="diagnosis-box">
+          <h4>Diagnosis</h4>
+          <p>{{ currentPatient.diagnosis }}</p>
+        </div>
+
+        <div class="diagnosis-box note-box">
+          <h4>Doctor note</h4>
+          <p>{{ currentPatient.doctorNote }}</p>
+        </div>
+
+        <div class="paper-bottom">
+          <span class="status-pill" [ngClass]="statusClass">{{ currentPatient.status }}</span>
+          <span>{{ leftPageNumber }}–{{ rightPageNumber }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLIPPING PAGE -->
+    <section class="book-page page-right page-turning" *ngIf="isFlipping">
+      <div class="page-turn-front">
+        <div class="page-right-inner">
+          <div class="paper-top">
+            <p>Clinical overview</p>
+            <span>{{ turningPatient.date }}</span>
+          </div>
+
+          <div class="paper-title">
+            <h3>{{ turningPatient.reportType }}</h3>
+            <p>Report ID: {{ turningPatient.reportId }}</p>
+          </div>
+
+          <div class="metric-list">
+            <div class="metric-row" *ngFor="let metric of turningPatient.metrics">
+              <strong>{{ metric.value }}</strong>
+              <span>{{ metric.label }}</span>
+            </div>
+          </div>
+
+          <div class="diagnosis-box">
+            <h4>Diagnosis</h4>
+            <p>{{ turningPatient.diagnosis }}</p>
+          </div>
+
+          <div class="diagnosis-box note-box">
+            <h4>Doctor note</h4>
+            <p>{{ turningPatient.doctorNote }}</p>
+          </div>
+
+          <div class="paper-bottom">
+            <span class="status-pill" [ngClass]="turningStatusClass">{{ turningPatient.status }}</span>
+            <span>{{ leftPageNumber }}–{{ rightPageNumber }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-turn-back">
+        <div class="page-back-inner">
+          <div class="back-shade"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+        <!-- RIGHT SIDE -->
+        <aside class="skeleton-rail">
+          <div class="skeleton-card">
+            <div class="skeleton-badge">
+              <span>Anatomy View</span>
+              <strong>Live reference</strong>
+            </div>
+
+            <div class="skeleton-rotator">
+              <img src="/assets/images/skeleton.png" alt="Medical skeleton view" />
+              <div class="ring ring-one"></div>
+              <div class="ring ring-two"></div>
+              <div class="ring ring-three"></div>
+            </div>
+
+            <div class="skeleton-stats">
+              <div class="s-stat">
+                <span>Heart Rate</span>
+                <strong>72 BPM</strong>
+              </div>
+              <div class="s-stat">
+                <span>Body Temp</span>
+                <strong>37°C</strong>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+</div>

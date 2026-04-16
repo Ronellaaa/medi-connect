@@ -1,1 +1,149 @@
-<p>home works!</p>
+<div class="page-shell">
+  <div id="smooth-wrapper">
+    <div id="smooth-content">
+      <section class="hero-orbit">
+        <div class="bg-blur blur-1"></div>
+        <div class="bg-blur blur-2"></div>
+        <div class="bg-blur blur-3"></div>
+        <div class="hero-pulse"></div>
+
+        <div class="hero-side-chip chip-left top">Real-time care flow</div>
+        <div class="hero-side-chip chip-left bottom">Reports. Rooms. Recovery.</div>
+        <div class="hero-side-chip chip-right top">Doctors on demand</div>
+        <div class="hero-side-chip chip-right bottom">Premium hospital experience</div>
+
+        <div class="hero-center">
+          <p class="eyebrow">AI-powered care experience</p>
+          <h1>Healthcare that moves beautifully.</h1>
+          <p class="subtitle">
+            Appointments, reports, prescriptions, and doctor access in one immersive digital flow.
+          </p>
+
+          <div class="hero-actions">
+            <a routerLink="/register" class="primary-btn">Start Now</a>
+            <a routerLink="/login" class="ghost-btn">Doctor Login</a>
+          </div>
+        </div>
+
+        <div class="orbit-shell">
+          <div class="orbit-ring" #orbitRing>
+            <article
+              class="orbit-card"
+              *ngFor="let image of orbitImages; let i = index"
+              [style.backgroundImage]="'url(' + image.src + ')'"
+              [attr.data-index]="i">
+            </article>
+          </div>
+        </div>
+
+        <div class="scroll-indicator">
+          <span>Scroll</span>
+        </div>
+      </section>
+
+      <section class="marquee-section">
+        <div class="marquee-track">
+          <span>Appointments</span>
+          <span>Reports</span>
+          <span>Prescriptions</span>
+          <span>Doctor Access</span>
+          <span>Patient Flow</span>
+          <span>Appointments</span>
+          <span>Reports</span>
+          <span>Prescriptions</span>
+          <span>Doctor Access</span>
+          <span>Patient Flow</span>
+        </div>
+      </section>
+
+      <section class="story-section">
+        <div class="story-left">
+          <div class="story-card">
+            <p class="mini-label">01</p>
+            <h2>Everything feels connected.</h2>
+            <p>
+              From appointments to prescriptions, every care moment lives inside one beautiful experience.
+            </p>
+          </div>
+
+          <div class="story-card">
+            <p class="mini-label">02</p>
+            <h2>Built for real hospital flow.</h2>
+            <p>
+              Doctors, patients, and teams move faster with cleaner screens and smoother digital actions.
+            </p>
+          </div>
+
+          <div class="story-card">
+            <p class="mini-label">03</p>
+            <h2>More than just a dashboard.</h2>
+            <p>
+              Motion, depth, and interaction make the platform feel modern instead of static and boring.
+            </p>
+          </div>
+        </div>
+
+        <div class="story-right">
+          <div class="feature-panel">
+            <video
+              class="feature-video"
+              autoplay
+              loop
+              muted
+              [defaultMuted]="true"
+              playsinline
+            >
+              <source src="assets/videos/12.mp4" type="video/mp4" />
+            </video>
+            <div class="feature-video-overlay"></div>
+            <div class="feature-panel-inner">
+              <span class="feature-tag">Live Care Layer</span>
+              <h3>Modern healthcare experience</h3>
+              <p>
+                A premium visual system for appointments, reports, and follow-up care.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="gallery-section">
+        <div class="section-heading">
+          <p class="mini-label dark-label">Care Excellence</p>
+          <h2 class="dark-heading">A hospital experience people can trust.</h2>
+          <p class="gallery-intro">
+            Explore the care experience through a clean premium gallery.
+          </p>
+        </div>
+
+        <div class="premium-gallery">
+          <article
+            class="gallery-card"
+            *ngFor="let item of orbitImages; let i = index"
+            [style.backgroundImage]="'url(' + item.src + ')'"
+            [class.tall]="i === 1 || i === 5"
+          >
+            <div class="gallery-shine"></div>
+            <div class="gallery-overlay">
+              <p>{{ item.label }}</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="cta-section">
+        <div class="cta-panel">
+          <div>
+            <p class="mini-label">MediConnect</p>
+            <h2>Bring your homepage to life.</h2>
+            <p>
+              Smooth scroll, draggable cards, and a premium interactive hero.
+            </p>
+          </div>
+
+          <a routerLink="/register" class="primary-btn">Launch Experience</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,261 @@
+<div class="doctor-page">
+  <div class="doctor-shell">
+    <aside class="doctor-sidebar">
+      <div class="brand-box">
+        <div class="brand-badge">MC</div>
+        <div class="brand-copy">
+          <h1>MediConnect</h1>
+          <p>Doctor Portal</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-links">
+        <a
+          *ngFor="let item of navItems"
+          class="sidebar-link"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+        >
+          <span class="sidebar-icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-note">
+        <p>Availability</p>
+        <strong>
+          Shape your weekly slots beautifully and keep each consultation window easy to review.
+        </strong>
+      </div>
+    </aside>
+
+    <main class="doctor-main">
+      <header class="topbar">
+        <div class="header-copy">
+          <p>Availability</p>
+          <h2>Pocket schedule planner</h2>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="search-pill">Design-style doctor availability</div>
+          <div class="avatar-dot">DR</div>
+        </div>
+      </header>
+
+      <section class="availability-hero" #heroSection>
+        <div class="availability-copy">
+          <span class="hero-tag">Weekly rhythm</span>
+          <h3>
+            Save your clinic slots on the left and preview them as interactive pocket cards on the
+            right.
+          </h3>
+          <p>
+            Each saved slot becomes a visual pocket. Tap a pocket to open its pinned note and
+            inspect the full slot details.
+          </p>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span>Availability rate</span>
+            <strong>{{ availabilityRate }}</strong>
+          </div>
+
+          <div class="hero-stat">
+            <span>Total slots</span>
+            <strong>{{ slots.length }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="availability-layout">
+        <section class="lung-panel">
+          <div class="lung-form-shell" #lungShell>
+            <div class="lung-top">
+              <div class="lung-title">
+                <p>Slot form</p>
+                <h3>{{ isEditMode ? 'Edit availability slot' : 'Create availability slot' }}</h3>
+              </div>
+
+              <div class="lung-actions">
+                <button class="soft-btn" type="button" (click)="openAddMode()">New</button>
+
+                <button
+                  class="soft-btn"
+                  type="button"
+                  [disabled]="!selectedSlot"
+                  (click)="fillFormFromSelected()"
+                >
+                  Edit selected
+                </button>
+              </div>
+            </div>
+
+            <div class="form-grid-medical">
+              <div class="form-card wide">
+                <div class="field-group">
+                  <label>Day of week</label>
+                  <select [(ngModel)]="formData.dayOfWeek" name="dayOfWeek">
+                    <option value="">Select day</option>
+                    <option>Monday</option>
+                    <option>Tuesday</option>
+                    <option>Wednesday</option>
+                    <option>Thursday</option>
+                    <option>Friday</option>
+                    <option>Saturday</option>
+                    <option>Sunday</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-card">
+                <div class="field-group">
+                  <label>Start time</label>
+                  <input type="time" [(ngModel)]="formData.startTime" name="startTime" />
+                </div>
+              </div>
+
+              <div class="form-card">
+                <div class="field-group">
+                  <label>End time</label>
+                  <input type="time" [(ngModel)]="formData.endTime" name="endTime" />
+                </div>
+              </div>
+
+              <div class="form-card wide">
+                <div class="field-group">
+                  <label>Hospital / Clinic</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="formData.hospitalOrClinic"
+                    name="hospitalOrClinic"
+                    placeholder="MediConnect Main"
+                  />
+                </div>
+              </div>
+
+              <div class="form-card wide">
+                <div class="field-group">
+                  <label>Consultation type</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="formData.consultationType"
+                    name="consultationType"
+                    placeholder="Walk-in / Online / Break"
+                  />
+                </div>
+              </div>
+
+              <div class="form-card wide toggle-card">
+                <div class="availability-toggle">
+                  <div class="toggle-copy">
+                    <span class="toggle-label">Booking status</span>
+                    <strong>{{ formData.available ? 'Open for booking' : 'Unavailable' }}</strong>
+                  </div>
+
+                  <label class="switch">
+                    <input type="checkbox" [(ngModel)]="formData.available" name="available" />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <p *ngIf="statusMessage" class="status-text">{{ statusMessage }}</p>
+
+            <div class="form-footer">
+              <button
+                class="danger-btn"
+                type="button"
+                [disabled]="!selectedSlot"
+                (click)="deleteSelectedSlot()"
+              >
+                Delete selected
+              </button>
+
+              <button class="save-btn" type="button" [disabled]="isSaving" (click)="saveSlot()">
+                {{ isSaving ? 'Saving...' : 'Save Slot' }}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="pocket-panel">
+          <div class="pocket-board" #boardShell>
+            <div class="board-header">
+              <div>
+                <p>Saved view</p>
+                <h3>Pocket slots</h3>
+              </div>
+              <span class="board-chip">{{ slots.length }} saved</span>
+            </div>
+
+            <div class="pocket-grid floating-pocket-grid" *ngIf="slots.length > 0; else emptySlots">
+              <button
+                #pocketRef
+                type="button"
+                class="pocket-card floating-pocket"
+                *ngFor="let slot of slots; let i = index"
+                [ngClass]="[
+                  slot.pocketColor,
+                  selectedSlot?.id === slot.id ? 'active' : '',
+                  'float-' + ((i % 6) + 1),
+                ]"
+                (click)="selectPocket(slot)"
+              >
+                <span class="pocket-day">{{ slot.day }}</span>
+                <strong>{{ slot.detail }}</strong>
+                <small>{{ slot.shortType }}</small>
+              </button>
+            </div>
+
+            <ng-template #emptySlots>
+              <div class="empty-pocket">
+                <h4>No slots yet</h4>
+                <p>Save a new slot from the lung form to create your first pocket card.</p>
+              </div>
+            </ng-template>
+
+            <div class="pin-note" *ngIf="selectedSlot" #pinNoteRef>
+              <div class="pin-dot"></div>
+
+              <div class="note-meta">
+                <span class="note-date">{{ selectedSlot.day }}</span>
+                <span class="pill" [ngClass]="selectedSlot.tone">{{ selectedSlot.status }}</span>
+              </div>
+
+              <h4>{{ selectedSlot.record.consultationType || 'General consultation' }}</h4>
+
+              <div class="note-lines">
+                <div class="note-line">
+                  <span>Time</span>
+                  <strong>{{ selectedSlot.detail }}</strong>
+                </div>
+
+                <div class="note-line">
+                  <span>Clinic</span>
+                  <strong>{{ selectedSlot.record.hospitalOrClinic || 'Not provided' }}</strong>
+                </div>
+
+                <div class="note-line">
+                  <span>Booking</span>
+                  <strong>
+                    {{
+                      selectedSlot.record.available ? 'Open for patients' : 'Currently unavailable'
+                    }}
+                  </strong>
+                </div>
+              </div>
+
+              <div class="note-actions">
+                <button class="soft-btn" type="button" (click)="fillFormFromSelected()">
+                  Load into form
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+</div>

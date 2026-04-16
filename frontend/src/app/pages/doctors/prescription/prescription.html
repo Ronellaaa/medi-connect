@@ -1,0 +1,290 @@
+<div class="doctor-page">
+  <aside class="doctor-sidebar">
+    <div>
+      <div class="brand-box">
+        <div class="brand-badge">MC</div>
+        <div class="brand-copy">
+          <h1>MediConnect</h1>
+          <p>Doctor Portal</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-links">
+        <a
+          *ngFor="let item of navItems"
+          class="sidebar-link"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+        >
+          <span class="sidebar-icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-note">
+      <p>Prescription flow</p>
+      <strong>
+        Select a common template from the wallet. Fill the diary for other diseases.
+      </strong>
+    </div>
+  </aside>
+
+  <main class="doctor-main">
+    <section class="issued-strip-shell" *ngIf="issuedPrescriptions.length > 0">
+      <button
+        class="issued-arrow"
+        type="button"
+        (click)="scrollIssued('left')"
+        [disabled]="!canScrollIssuedLeft"
+        aria-label="Scroll issued prescriptions left"
+      >
+        &#8592;
+      </button>
+
+      <section class="issued-strip" #issuedStripScroller (scroll)="onIssuedScroll()">
+        <div
+          class="issued-tag"
+          *ngFor="let item of issuedPrescriptions; let i = index"
+          [class.dark]="i % 2 === 1"
+          [class.active]="selectedPrescriptionId === item.raw.id"
+          (click)="selectIssuedPrescription(item)"
+        >
+          <div class="strap"></div>
+          <div class="ring"></div>
+
+          <div class="tag-card">
+            <div class="tag-card-top">
+              <p>MediConnect Prescription</p>
+              <span class="tag-id">{{ item.idText }}</span>
+            </div>
+            <h4>{{ item.diagnosis }}</h4>
+            <span class="tag-medicine">{{ item.title }}</span>
+            <strong>{{ item.patientName }}</strong>
+            <div class="tag-meta">
+              <span>{{ item.issuedDate }}</span>
+              <span>{{ item.notePreview }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <button
+        class="issued-arrow"
+        type="button"
+        (click)="scrollIssued('right')"
+        [disabled]="!canScrollIssuedRight"
+        aria-label="Scroll issued prescriptions right"
+      >
+        &#8594;
+      </button>
+    </section>
+
+    <section class="issued-empty-state" *ngIf="issuedPrescriptions.length === 0">
+      <p *ngIf="issuedLoadMessage; else noIssuedCopy">{{ issuedLoadMessage }}</p>
+      <ng-template #noIssuedCopy>
+        <p>No issued prescriptions are available yet for this doctor.</p>
+      </ng-template>
+    </section>
+
+    <section class="workspace-grid">
+      <!-- LEFT WALLET -->
+      <div class="wallet-panel">
+        <div class="wallet-stage">
+          <div class="wallet-bg-card"></div>
+
+          <div class="wallet-shell">
+            <div
+              *ngFor="let template of templates; let i = index"
+              class="wallet-card"
+              [ngClass]="[template.color, getCardPosition(i)]"
+              (click)="selectTemplate(i)"
+            >
+              <div class="wallet-card-top">
+                <span>{{ template.subtitle }}</span>
+                <span>{{ template.amount }}</span>
+              </div>
+
+              <div class="wallet-card-main">
+                <h3>{{ template.title }}</h3>
+                <p>{{ template.diagnosis }}</p>
+              </div>
+            </div>
+
+            <div class="wallet-pocket">
+              <div class="wallet-pocket-content">
+                <div class="wallet-pocket-top">
+                  <div class="balance">{{ selectedTemplate.title }}</div>
+                  <div class="balance-label">{{ selectedTemplate.diagnosis }}</div>
+                </div>
+
+                <div class="wallet-pocket-body">
+                  <p>{{ selectedTemplate.note }}</p>
+
+                  <div class="wallet-medicine-list">
+                    <div *ngFor="let med of selectedTemplate.medicines" class="wallet-med-row">
+                      <strong>{{ med.name }}</strong>
+                      <span>{{ med.dosage }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="wallet-apply-btn" (click)="applyTemplateToDiary()">
+                  Use in Diary
+                </button>
+              </div>
+
+              <div class="wallet-eye">◉</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER MOTION PANEL -->
+      <div class="bridge-panel" aria-hidden="true">
+        <div class="bridge-lottie-shell">
+          <div class="bridge-orbit orbit-one"></div>
+          <div class="bridge-orbit orbit-two"></div>
+          <div class="bridge-glow"></div>
+
+          <div class="bridge-core">
+            <div class="bridge-core-ring"></div>
+            <div class="bridge-core-icon">RX</div>
+          </div>
+
+          <span class="bridge-pill pill-one"></span>
+          <span class="bridge-pill pill-two"></span>
+          <span class="bridge-pill pill-three"></span>
+
+          <div class="bridge-pulse pulse-one"></div>
+          <div class="bridge-pulse pulse-two"></div>
+        </div>
+
+        <div class="bridge-copy">
+          <span>Smart Flow</span>
+          <strong>Template to Diary</strong>
+          <p>Choose a saved treatment on the left, then refine and issue the final prescription on the right.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT DIARY -->
+      <div class="diary-panel">
+        <article class="diary-card" [class.tear-out]="isTearing">
+          <div class="diary-rings">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <div class="diary-header">
+            <div class="diary-heading-block">
+              <span class="diary-pill">Other Disease Prescription</span>
+              <span class="diary-pill edit-pill" *ngIf="isEditingIssued">Editing {{ selectedPrescriptionId ? ('RX-' + selectedPrescriptionId) : 'Prescription' }}</span>
+              <input
+                class="diary-title-input"
+                [(ngModel)]="diaryForm.diagnosis"
+                placeholder="Enter diagnosis"
+              />
+              <input
+                class="diary-subtitle-input"
+                [(ngModel)]="diaryForm.title"
+                placeholder="Enter prescription title"
+              />
+            </div>
+
+            <div class="rx-badge">RX</div>
+          </div>
+
+          <div class="diary-meta">
+            <div class="meta-box">
+              <span>Patient</span>
+              <input [(ngModel)]="diaryForm.patientName" placeholder="Patient name" />
+            </div>
+
+            <div class="meta-box">
+              <span>Age</span>
+              <input [(ngModel)]="diaryForm.age" placeholder="Age" />
+            </div>
+
+            <div class="meta-box">
+              <span>Doctor</span>
+              <input [(ngModel)]="diaryForm.doctorName" placeholder="Doctor name" />
+            </div>
+
+            <div class="meta-box">
+              <span>Issued</span>
+              <input [(ngModel)]="diaryForm.issuedAt" placeholder="Today · 10:45 AM" />
+            </div>
+          </div>
+
+          <div class="diary-note">
+            <span>Doctor Note</span>
+            <textarea
+              [(ngModel)]="diaryForm.note"
+              placeholder="Write doctor note..."
+            ></textarea>
+          </div>
+
+          <div class="diary-medicine-list">
+            <div class="diary-med-row" *ngFor="let med of diaryForm.medicines; let i = index">
+              <div>
+                <span>Medicine</span>
+                <input
+                  [(ngModel)]="diaryForm.medicines[i].name"
+                  placeholder="Medicine name"
+                />
+              </div>
+
+              <div>
+                <span>Dosage</span>
+                <input
+                  [(ngModel)]="diaryForm.medicines[i].dosage"
+                  placeholder="Dosage"
+                />
+              </div>
+
+              <div>
+                <span>Duration</span>
+                <input
+                  [(ngModel)]="diaryForm.medicines[i].duration"
+                  placeholder="Duration"
+                />
+              </div>
+            </div>
+          </div>
+
+          <p class="validation-message" *ngIf="validationMessage">
+            {{ validationMessage }}
+          </p>
+
+          <div class="diary-actions">
+            <button class="ghost-btn" type="button" (click)="saveDraft()">Save Draft</button>
+            <button class="ghost-btn" type="button" *ngIf="isEditingIssued" (click)="clearSelectedPrescription()">Cancel Edit</button>
+            <button class="ghost-btn danger-btn" type="button" *ngIf="isEditingIssued" (click)="deleteSelectedPrescription()">Delete</button>
+            <button class="solid-btn" type="button" (click)="issuePrescription()">
+              {{ isEditingIssued ? 'Update Prescription' : 'Issue Prescription' }}
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="confirm-overlay" *ngIf="showConfirmModal">
+    <div class="confirm-box">
+      <h3>{{ isEditingIssued ? 'Update Prescription' : 'Confirm Prescription' }}</h3>
+      <p>{{ isEditingIssued ? 'Are you sure you want to update this prescription?' : 'Are you sure you want to issue this prescription?' }}</p>
+
+      <div class="confirm-preview">
+        <strong>{{ diaryForm.diagnosis }}</strong>
+        <span>{{ diaryForm.title }}</span>
+        <span>{{ diaryForm.patientName }}</span>
+      </div>
+
+      <div class="confirm-actions">
+        <button class="ghost-btn" type="button" (click)="cancelConfirm()">Cancel</button>
+        <button class="solid-btn" type="button" (click)="confirmIssue()">{{ isEditingIssued ? 'Update' : 'Confirm' }}</button>
+      </div>
+    </div>
+  </div>
+</div>
