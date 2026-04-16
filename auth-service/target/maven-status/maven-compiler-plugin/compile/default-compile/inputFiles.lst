@@ -1,0 +1,16 @@
+/app/src/main/java/com/medi_connect/auth_service/AuthServiceApplication.java
+/app/src/main/java/com/medi_connect/auth_service/client/DoctorServiceClient.java
+/app/src/main/java/com/medi_connect/auth_service/config/AuthUserDetailsService.java
+/app/src/main/java/com/medi_connect/auth_service/config/CorsConfig.java
+/app/src/main/java/com/medi_connect/auth_service/config/JwtService.java
+/app/src/main/java/com/medi_connect/auth_service/config/RestClientConfig.java
+/app/src/main/java/com/medi_connect/auth_service/config/SecurityConfig.java
+/app/src/main/java/com/medi_connect/auth_service/controller/AuthController.java
+/app/src/main/java/com/medi_connect/auth_service/dto/AuthRequest.java
+/app/src/main/java/com/medi_connect/auth_service/dto/AuthResponse.java
+/app/src/main/java/com/medi_connect/auth_service/dto/DoctorProfileDto.java
+/app/src/main/java/com/medi_connect/auth_service/dto/RegisterRequest.java
+/app/src/main/java/com/medi_connect/auth_service/entity/AuthUser.java
+/app/src/main/java/com/medi_connect/auth_service/entity/UserRole.java
+/app/src/main/java/com/medi_connect/auth_service/repository/AuthUserRepository.java
+/app/src/main/java/com/medi_connect/auth_service/service/AuthService.java

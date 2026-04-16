@@ -1,0 +1,742 @@
+@import "../shared/doctor-portal.css";
+
+:host {
+  display: block;
+}
+
+.doctor-main {
+  background:
+    radial-gradient(circle at top left, rgba(255, 190, 220, 0.12), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(185, 141, 255, 0.12), transparent 25%),
+    linear-gradient(180deg, #fffafc 0%, #fff6fb 100%);
+}
+
+/* top */
+.availability-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding: 24px;
+  border-radius: 30px;
+  border: 1px solid rgba(128, 49, 167, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 240, 248, 0.94));
+  box-shadow: 0 20px 50px rgba(123, 46, 139, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.availability-hero::before {
+  content: "";
+  position: absolute;
+  top: -70px;
+  right: -40px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(255, 182, 228, 0.28), transparent 70%);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+.hero-tag {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8b2ca9;
+  background: rgba(222, 173, 255, 0.22);
+  margin-bottom: 10px;
+  letter-spacing: 0.02em;
+}
+
+.availability-copy h3 {
+  margin: 0 0 10px;
+  font-size: 30px;
+  line-height: 1.15;
+  color: #47204d;
+}
+
+.availability-copy p {
+  margin: 0;
+  color: #7e6083;
+  line-height: 1.7;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.hero-stat {
+  min-height: 110px;
+  border-radius: 22px;
+  padding: 18px;
+  background: linear-gradient(180deg, #fff, #fff2fa);
+  border: 1px solid rgba(135, 63, 158, 0.12);
+  box-shadow: 0 16px 32px rgba(126, 71, 139, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-stat::after {
+  content: "";
+  position: absolute;
+  inset: auto -30px -30px auto;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(215, 149, 255, 0.18), transparent 70%);
+}
+
+.hero-stat span {
+  display: block;
+  font-size: 13px;
+  color: #8c708e;
+  margin-bottom: 10px;
+}
+
+.hero-stat strong {
+  font-size: 32px;
+  color: #54285f;
+}
+
+/* layout */
+.availability-layout {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.lung-panel,
+.pocket-panel {
+  min-width: 0;
+}
+
+/* shells */
+.lung-form-shell,
+.pocket-board {
+  border-radius: 34px;
+  border: 2px solid #7e35a7;
+  background: rgba(255, 252, 255, 0.96);
+  box-shadow: 0 28px 60px rgba(106, 37, 127, 0.12);
+  padding: 22px;
+}
+
+.lung-form-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.lung-form-shell::before {
+  content: "";
+  position: absolute;
+  inset: -20% auto auto -10%;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(255, 180, 227, 0.28), transparent 70%);
+  pointer-events: none;
+  filter: blur(12px);
+}
+
+.lung-top,
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.lung-title p,
+.board-header p {
+  margin: 0 0 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a569be;
+}
+
+.lung-title h3,
+.board-header h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #4a2152;
+}
+
+.lung-actions,
+.note-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* buttons */
+.soft-btn,
+.save-btn,
+.danger-btn {
+  border: none;
+  cursor: pointer;
+  transition: 0.25s ease;
+  font-weight: 700;
+}
+
+.soft-btn {
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #f7ecff;
+  color: #732f93;
+  box-shadow: 0 8px 18px rgba(128, 61, 160, 0.08);
+}
+
+.soft-btn:hover {
+  transform: translateY(-1px);
+}
+
+.save-btn {
+  padding: 14px 18px;
+  border-radius: 16px;
+  color: white;
+  background: linear-gradient(135deg, #ff7a59, #ff4fa6);
+  box-shadow: 0 16px 28px rgba(255, 108, 143, 0.28);
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 34px rgba(255, 108, 143, 0.32);
+}
+
+.danger-btn {
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: #fff1f3;
+  color: #c63f5d;
+}
+
+.danger-btn:hover {
+  transform: translateY(-2px);
+}
+
+.save-btn:disabled,
+.soft-btn:disabled,
+.danger-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* lung form */
+.lung-shape {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 18px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+.lung-lobe {
+  position: relative;
+  padding: 28px 20px 24px;
+  border: 2px dashed rgba(123, 48, 152, 0.24);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 246, 0.92));
+  box-shadow: inset 0 10px 30px rgba(255, 255, 255, 0.7);
+}
+
+.lung-left {
+  border-radius: 120px 120px 70px 90px;
+}
+
+.lung-right {
+  border-radius: 120px 120px 90px 70px;
+}
+
+.lung-center-line {
+  width: 18px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f1c4ff, #cc91ee);
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.5);
+}
+
+/* fields */
+.field-group {
+  margin-bottom: 16px;
+}
+
+.field-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #70497c;
+}
+
+.field-group input,
+.field-group select {
+  width: 100%;
+  border: 1.5px solid rgba(128, 67, 153, 0.18);
+  outline: none;
+  border-radius: 16px;
+  padding: 13px 14px;
+  font-size: 14px;
+  color: #4e2a56;
+  background: rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
+  transition: 0.25s ease;
+  appearance: none;
+}
+
+.field-group input:focus,
+.field-group select:focus {
+  border-color: #c04fff;
+  box-shadow: 0 0 0 4px rgba(208, 103, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.checkbox-group {
+  margin-top: 22px;
+}
+
+.checkbox-row {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.checkbox-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.status-text {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: #cc4166;
+  font-weight: 600;
+}
+
+.form-footer {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* pocket board */
+.board-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #fff0a8;
+  color: #6b4b00;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pocket-board {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: box-shadow 0.3s ease;
+}
+
+.pocket-board::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 201, 230, 0.18), transparent 24%),
+    radial-gradient(circle at 80% 30%, rgba(204, 163, 255, 0.14), transparent 22%),
+    radial-gradient(circle at 50% 85%, rgba(255, 230, 160, 0.14), transparent 20%);
+  pointer-events: none;
+}
+
+.pocket-grid,
+.pin-note,
+.board-header {
+  position: relative;
+  z-index: 1;
+}
+
+.pocket-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+/* cards */
+.pocket-card {
+  min-height: 150px;
+  border-radius: 26px;
+  border: 3px solid #7f36a9;
+  padding: 16px 14px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  box-shadow: 0 14px 30px rgba(117, 44, 142, 0.12);
+  transform-style: preserve-3d;
+  perspective: 900px;
+  overflow: hidden;
+}
+
+.pocket-card::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 20px;
+  border: 2px dashed rgba(125, 60, 158, 0.18);
+  pointer-events: none;
+}
+
+.pocket-card::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 80%;
+  height: 180%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.14) 35%,
+    rgba(255, 255, 255, 0.38) 50%,
+    transparent 65%
+  );
+  transform: rotate(18deg);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.pocket-card:hover::before {
+  opacity: 1;
+  animation: pocketShine 0.9s ease;
+}
+
+.pocket-card:hover,
+.pocket-card.active {
+  transform: translateY(-6px) rotate(-1deg);
+  box-shadow: 0 22px 38px rgba(117, 44, 142, 0.18);
+}
+
+.pocket-card.active {
+  outline: 3px solid rgba(188, 88, 255, 0.25);
+}
+
+.pocket-card strong,
+.pocket-card small,
+.pocket-day {
+  position: relative;
+  z-index: 1;
+  transform: translateZ(20px);
+}
+
+.pocket-day {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(58, 27, 61, 0.72);
+}
+
+.pocket-card strong {
+  display: block;
+  font-size: 20px;
+  line-height: 1.2;
+  color: #4b2552;
+  margin-bottom: 8px;
+}
+
+.pocket-card small {
+  font-size: 13px;
+  color: #6f4e78;
+}
+
+/* colors */
+.pocket-yellow { background: linear-gradient(180deg, #fff8a2, #ffe67d); }
+.pocket-peach  { background: linear-gradient(180deg, #ffd9c8, #ffbea4); }
+.pocket-lilac  { background: linear-gradient(180deg, #ecd9ff, #d9bbff); }
+.pocket-pink   { background: linear-gradient(180deg, #ffb6ef, #ff8fe3); }
+.pocket-mint   { background: linear-gradient(180deg, #d8ffe8, #b8f5d1); }
+.pocket-sky    { background: linear-gradient(180deg, #d8f1ff, #b5e3ff); }
+
+/* pin note */
+.pin-note {
+  position: relative;
+  border-radius: 26px;
+  padding: 24px 22px 20px;
+  background: linear-gradient(180deg, #fff7fb, #fff1f7);
+  border: 1px solid rgba(140, 70, 161, 0.14);
+  box-shadow: 0 18px 34px rgba(128, 69, 147, 0.1);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.pin-dot {
+  position: absolute;
+  top: -14px;
+  left: 38px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, #ff71c2, #a10076);
+  box-shadow: 0 10px 18px rgba(194, 46, 133, 0.24);
+}
+
+.note-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.note-date {
+  font-size: 13px;
+  font-weight: 700;
+  color: #8f5b96;
+}
+
+.pin-note h4 {
+  margin: 0 0 16px;
+  font-size: 24px;
+  color: #48204d;
+}
+
+.note-lines {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.note-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed rgba(136, 83, 151, 0.18);
+}
+
+.note-line span {
+  color: #8b6c8f;
+  font-size: 13px;
+}
+
+.note-line strong {
+  text-align: right;
+  color: #4e2854;
+  font-size: 14px;
+}
+
+/* empty */
+.empty-pocket {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-radius: 26px;
+  border: 2px dashed rgba(130, 72, 151, 0.2);
+  background: rgba(255, 247, 252, 0.8);
+  padding: 20px;
+}
+
+.empty-pocket h4 {
+  margin: 0 0 8px;
+  color: #55285d;
+}
+
+.empty-pocket p {
+  margin: 0;
+  color: #816885;
+}
+
+/* pills */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pill.green {
+  background: #daf8e6;
+  color: #1b7b47;
+}
+
+.pill.orange {
+  background: #ffe6cc;
+  color: #b96300;
+}
+
+.pill.blue {
+  background: #ddeeff;
+  color: #2a67a9;
+}
+
+/* floating cards */
+.floating-pocket-grid {
+  perspective: 1200px;
+  align-items: start;
+}
+
+.floating-pocket {
+  transform-style: preserve-3d;
+  animation-duration: 6s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-pocket::before {
+  content: "";
+  position: absolute;
+  inset: -30% auto auto -20%;
+  width: 90px;
+  height: 90px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.floating-pocket::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 20px;
+  border: 2px dashed rgba(125, 60, 158, 0.18);
+  pointer-events: none;
+}
+
+.floating-pocket:hover {
+  animation-play-state: paused;
+}
+
+.floating-pocket.active {
+  z-index: 5;
+  animation-play-state: paused;
+  box-shadow:
+    0 26px 44px rgba(117, 44, 142, 0.22),
+    0 0 0 4px rgba(188, 88, 255, 0.18);
+}
+
+.float-1 { animation-name: pocketFloat1; }
+.float-2 { animation-name: pocketFloat2; }
+.float-3 { animation-name: pocketFloat3; }
+.float-4 { animation-name: pocketFloat4; }
+.float-5 { animation-name: pocketFloat5; }
+.float-6 { animation-name: pocketFloat6; }
+
+@keyframes pocketFloat1 {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes pocketFloat2 {
+  0%, 100% { transform: translateY(-4px) rotate(1.5deg); }
+  50% { transform: translateY(5px) rotate(-1deg); }
+}
+
+@keyframes pocketFloat3 {
+  0%, 100% { transform: translateY(2px) rotate(-1deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes pocketFloat4 {
+  0%, 100% { transform: translateY(0px) rotate(2deg); }
+  50% { transform: translateY(-6px) rotate(-1.5deg); }
+}
+
+@keyframes pocketFloat5 {
+  0%, 100% { transform: translateY(-3px) rotate(-1.2deg); }
+  50% { transform: translateY(6px) rotate(1deg); }
+}
+
+@keyframes pocketFloat6 {
+  0%, 100% { transform: translateY(1px) rotate(1deg); }
+  50% { transform: translateY(-9px) rotate(-2deg); }
+}
+
+@keyframes pocketShine {
+  from {
+    left: -80%;
+  }
+  to {
+    left: 130%;
+  }
+}
+
+/* performance */
+.availability-hero,
+.lung-form-shell,
+.pocket-board,
+.pin-note,
+.pocket-card,
+.hero-stat {
+  will-change: transform, opacity;
+}
+
+/* responsive */
+@media (max-width: 1200px) {
+  .availability-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pocket-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .availability-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .lung-shape {
+    grid-template-columns: 1fr;
+  }
+
+  .lung-center-line {
+    display: none;
+  }
+
+  .lung-left,
+  .lung-right {
+    border-radius: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pocket-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .availability-copy h3 {
+    font-size: 24px;
+  }
+
+  .lung-title h3,
+  .board-header h3 {
+    font-size: 20px;
+  }
+
+  .availability-hero {
+    padding: 18px;
+  }
+
+  .lung-form-shell,
+  .pocket-board {
+    padding: 16px;
+  }
+}

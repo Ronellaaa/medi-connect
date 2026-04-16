@@ -1,8 +1,8 @@
 # Copy this file and rename it to application.properties
 # Fill in your own values
 
-spring.application.name=appointment-service
-server.port=8083
+spring.application.name=appoinment-service
+server.port=8087
 
 spring.datasource.url=jdbc:postgresql://localhost:5432/mediconnectdb
 spring.datasource.username=YOUR_DB_USERNAME
