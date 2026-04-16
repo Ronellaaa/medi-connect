@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@reference "../../../../styles.css";
+
+:host {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Custom Glassmorphism Classes mapping to Tailwind */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(30, 58, 138, 0.05);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+.glass-panel-inner {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #a5f3fc;
+  border-radius: 9999px;
+}
+
+/* Sidebar Active State Custom Override */
+.nav-item.active {
+  @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 border-none;
+}
+
+/* 3D Pulse Hero Visual */
+.hero-visual-container {
+  perspective: 800px;
+  transform-style: preserve-3d;
+}
+
+.hero-heart-layer {
+  filter: drop-shadow(0 15px 35px rgba(6, 182, 212, 0.4));
+  z-index: 5;
+}
+
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(6, 182, 212, 0.5);
+  box-shadow:
+    inset 0 0 15px rgba(6, 182, 212, 0.2),
+    0 0 15px rgba(6, 182, 212, 0.2);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ring-1 {
+  width: 140px;
+  height: 140px;
+  animation: pulseInOut 3s infinite alternate ease-in-out;
+}
+.ring-2 {
+  width: 200px;
+  height: 200px;
+  border-style: dashed;
+  animation: spinRing 10s linear infinite;
+}
+.ring-3 {
+  width: 260px;
+  height: 260px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  animation: pulseInOut 4s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes spinRing {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(180deg) scale(1.05);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) scale(1);
+  }
+}
+
+@keyframes pulseInOut {
+  0% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Stat Card Hover Lift */
+.stat-lift {
+  transition:
+    transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.3s;
+}
+
+.stat-lift:hover {
+  transform: translateY(-8px) translateZ(10px);
+  @apply shadow-[0_20px_40px_rgba(6,182,212,0.15)] border-cyan-200/60;
+}
+
+/* Urgency Badges */
+.u-high {
+  @apply bg-rose-50 border-rose-200 text-rose-500;
+}
+.u-high-dot {
+  @apply bg-rose-500;
+}
+
+.u-med {
+  @apply bg-amber-50 border-amber-200 text-amber-500;
+}
+.u-med-dot {
+  @apply bg-amber-500;
+}
+
+.u-low {
+  @apply bg-emerald-50 border-emerald-200 text-emerald-500;
+}
+.u-low-dot {
+  @apply bg-emerald-500;
+}

@@ -1,0 +1,18 @@
+{
+  "/auth-api": {
+    "target": "http://auth-service:8081",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/auth-api": "/api"
+    }
+  },
+  "/doctor-api": {
+    "target": "http://doctors-service:8083",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/doctor-api": "/api"
+    }
+  }
+}

@@ -1,1 +1,6 @@
 **/application.properties
+
+# Node
+node_modules/
+.env
+npm-debug.log

@@ -1,1 +1,79 @@
-<p>payments works!</p>
+<section class="payment-shell">
+  <div class="payment-card">
+    <div class="payment-header">
+      <p class="eyebrow">Medi-Connect Payments</p>
+      <h1>Complete your payment</h1>
+      <p class="intro">
+        Fill in your details below and you'll be redirected to PayHere's secure checkout page.
+      </p>
+    </div>
+
+    <p *ngIf="successMessage" class="notice success">{{ successMessage }}</p>
+    <p *ngIf="errorMessage" class="notice error">{{ errorMessage }}</p>
+
+    <!-- Add #paymentForm="ngForm" -->
+    <form #paymentForm="ngForm" class="payment-form" (ngSubmit)="submitPayment()">
+      <!-- Hidden fields -->
+      <input type="hidden" name="appointmentId" [(ngModel)]="form.appointmentId" />
+      <input type="hidden" name="patientId" [(ngModel)]="form.patientId" />
+      <input type="hidden" name="doctorId" [(ngModel)]="form.doctorId" />
+
+      <label>
+        First name
+        <input type="text" name="firstName" [(ngModel)]="form.firstName" required />
+      </label>
+
+      <label>
+        Last name
+        <input type="text" name="lastName" [(ngModel)]="form.lastName" required />
+      </label>
+
+      <label>
+        Email
+        <input type="email" name="email" [(ngModel)]="form.email" required email />
+      </label>
+
+      <label>
+        Phone
+        <input type="text" name="phone" [(ngModel)]="form.phone" required />
+      </label>
+
+      <label>
+        Address
+        <input type="text" name="address" [(ngModel)]="form.address" required />
+      </label>
+
+      <label>
+        City
+        <input type="text" name="city" [(ngModel)]="form.city" required />
+      </label>
+
+      <label>
+        Country
+        <input type="text" name="country" [(ngModel)]="form.country" required />
+      </label>
+
+      <label class="full-width">
+        Description
+        <textarea name="description" rows="3" [(ngModel)]="form.description"></textarea>
+      </label>
+
+      <!-- Amount display -->
+      <input type="hidden" name="amount" [(ngModel)]="form.amount" />
+      
+      <div class="amount-display">
+        <span class="amount-label">Total Amount:</span>
+        <span class="amount-value">LKR {{ form.amount | number:'1.2-2' }}</span>
+      </div>
+
+      <!-- Disable button when form is invalid OR submitting -->
+      <button type="submit" [disabled]="!paymentForm.valid || isSubmitting || isPaymentCompleted">
+        {{ isSubmitting ? 'Redirecting to PayHere...' : 'Proceed to PayHere' }}
+      </button>
+    </form>
+
+    <p class="footnote">
+      You'll be redirected to PayHere's secure payment page to complete your transaction.
+    </p>
+  </div>
+</section>
