@@ -1,0 +1,525 @@
+:host {
+  display: block;
+}
+
+.appoinments-booking-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle at top left, rgba(224, 47, 117, 0.18), transparent 34%),
+    radial-gradient(circle at right center, rgba(103, 0, 163, 0.16), transparent 32%),
+    linear-gradient(135deg, #050c38 0%, #11164c 48%, #1b2062 100%);
+}
+
+.appoinments-hero-card {
+  position: relative;
+  z-index: 3;
+  max-width: 1440px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 28px 60px rgba(3, 7, 32, 0.42);
+  backdrop-filter: blur(18px);
+}
+
+.appoinments-hero-banner {
+  position: relative;
+  display: grid;
+  gap: 32px;
+  align-items: center;
+  min-height: 360px;
+  padding: 36px 20px 120px;
+  overflow: hidden;
+  text-align: center;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(252, 203, 240, 0.22),
+      rgba(255, 90, 87, 0.24) 36%,
+      rgba(224, 47, 117, 0.22) 68%,
+      rgba(103, 0, 163, 0.22)
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 75%),
+    linear-gradient(135deg, rgba(10, 16, 64, 0.95), rgba(7, 12, 56, 0.98));
+}
+
+.appoinments-doctor-watch {
+  position: absolute;
+  left: -20px;
+  bottom: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.appoinments-doctor-image {
+  display: block;
+  width: clamp(200px, 24vw, 360px);
+  height: auto;
+  object-fit: contain;
+  opacity: 0.95;
+  filter: drop-shadow(0 20px 35px rgba(5, 12, 56, 0.38));
+}
+
+.appoinments-hero-banner::before,
+.appoinments-hero-banner::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(252, 203, 240, 0.08);
+}
+
+.appoinments-hero-banner::before {
+  left: -80px;
+  bottom: 10px;
+  width: 220px;
+  height: 220px;
+}
+
+.appoinments-hero-banner::after {
+  top: -120px;
+  right: -60px;
+  width: 280px;
+  height: 280px;
+}
+
+.appoinments-hero-text,
+.appoinments-hero-visual {
+  position: relative;
+  z-index: 3;
+}
+
+.appoinment-hero-label {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fccbf0;
+}
+
+.appoinment-hero-title {
+  margin: 0;
+  font-size: 2.8rem;
+  font-weight: 600;
+  line-height: 1.02;
+  color: #ffffff;
+  text-shadow: 0 10px 30px rgba(5, 12, 56, 0.4);
+}
+
+.appoinment-hero-description {
+  max-width: 620px;
+  margin: 20px auto 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(252, 203, 240, 0.82);
+}
+
+.appoinments-hero-visual {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+}
+
+.wave {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: 100%;
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
+.wave path {
+  filter: drop-shadow(0 8px 18px rgba(5, 12, 56, 0.28));
+}
+
+.wave-back {
+  bottom: 96px;
+  height: 184px;
+  opacity: 0.9;
+  animation: wave-back 9s ease-in-out infinite alternate;
+}
+
+.wave-mid {
+  bottom: 48px;
+  height: 180px;
+  opacity: 0.95;
+  animation: wave-mid 6.4s ease-in-out infinite alternate;
+}
+
+.wave-front {
+  bottom: -6px;
+  height: 196px;
+  animation: wave-front 4.6s ease-in-out infinite alternate;
+}
+
+.appoinments-booking-panel {
+  position: relative;
+  z-index: 3;
+  margin-top: -32px;
+  padding: 0 20px 28px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(14, 18, 68, 0.96), rgba(5, 12, 56, 0.98)),
+    radial-gradient(circle at 10% 0, rgba(255, 90, 87, 0.14), transparent 28%),
+    radial-gradient(circle at 100% 100%, rgba(103, 0, 163, 0.16), transparent 30%);
+}
+
+.appoinment-booking-grid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 18px;
+  padding-top: 20px;
+}
+
+.appoinment-booking-card,
+.booking-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 20px;
+  border-radius: 24px;
+  background: rgba(252, 203, 240, 0.08);
+  box-shadow: 0 16px 30px rgba(5, 12, 56, 0.24);
+  border: 1px solid rgba(252, 203, 240, 0.08);
+}
+
+.booking-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #ff5a57, #e02f75);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.booking-icon mat-icon {
+  font-size: 1.35rem;
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.appoinment-booking-content,
+.booking-content {
+  flex: 1;
+}
+
+.doctor-booking-title,
+.booking-title {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #fccbf0;
+}
+
+.booking-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(5, 12, 56, 0.4);
+  border: 1px solid rgba(252, 203, 240, 0.12);
+}
+
+.field-prefix,
+.field-suffix {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(252, 203, 240, 0.72);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.field-prefix mat-icon {
+  font-size: 1.1rem;
+  width: 2.1rem;
+  height: 1.1rem;
+}
+
+.booking-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 0.98rem;
+  font-family: inherit;
+}
+
+.booking-input::placeholder {
+  color: rgba(252, 203, 240, 0.55);
+}
+
+.booking-field-date {
+  gap: 12px;
+}
+
+.booking-input-date {
+  color-scheme: dark;
+}
+
+.booking-input-date::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+}
+
+.appoinment-search-button {
+  position: relative;
+  z-index: 3;
+  display: block;
+  width: 100%;
+  margin: 36px auto 0;
+  padding: 18px 34px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff5a57, #e02f75 52%, #6700a3);
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 14px 0 #7c1854, 0 24px 34px rgba(5, 12, 56, 0.32);
+  transition: transform 150ms ease;
+}
+
+.appoinment-search-button:hover {
+  transform: translateY(1px);
+}
+
+.appoinment-search-button:active {
+  transform: translateY(4px);
+}
+
+.appoinments-stack-motion {
+  position: relative;
+  width: min(430px, 100%);
+  height: 300px;
+}
+
+.stack-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 10px;
+  box-shadow: 0 18px 30px rgba(5, 12, 56, 0.3);
+  transform-origin: center center;
+  animation: stack-slide 9s ease-in-out infinite;
+}
+
+.stack-card-left {
+  width: 180px;
+  height: 230px;
+  background: linear-gradient(180deg, rgba(252, 203, 240, 0.92), rgba(255, 90, 87, 0.88));
+  animation-delay: -6s;
+}
+
+.stack-card-center {
+  width: 180px;
+  height: 230px;
+  background: linear-gradient(180deg, #ff5a57, #e02f75 56%, #6700a3);
+  animation-delay: 0s;
+}
+
+.stack-card-right {
+  width: 180px;
+  height: 230px;
+  background: linear-gradient(180deg, #6700a3, #1b2062);
+  animation-delay: -3s;
+}
+
+.stack-glow {
+  position: absolute;
+  inset: 18px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(252, 203, 240, 0.18), rgba(255, 255, 255, 0));
+}
+.stack-image{
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes wave-back {
+  0% {
+    transform: translate3d(-5%, 14px, 0) scaleX(1.08) scaleY(1.02);
+  }
+
+  100% {
+    transform: translate3d(5%, -18px, 0) scaleX(1.16) scaleY(1.1);
+  }
+}
+
+@keyframes wave-mid {
+  0% {
+    transform: translate3d(4%, 10px, 0) scaleX(1.06) scaleY(1.02);
+  }
+
+  100% {
+    transform: translate3d(-4%, -16px, 0) scaleX(1.14) scaleY(1.12);
+  }
+}
+
+@keyframes wave-front {
+  0% {
+    transform: translate3d(-3.5%, 8px, 0) scaleX(1.05) scaleY(1.03);
+  }
+
+  100% {
+    transform: translate3d(3.5%, -20px, 0) scaleX(1.13) scaleY(1.14);
+  }
+}
+
+@keyframes stack-slide {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    z-index: 3;
+  }
+
+  26% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    z-index: 3;
+  }
+
+  33.333% {
+    transform: translate(calc(-50% + 128px), -50%) perspective(800px) rotateY(-24deg) scale(0.88);
+    opacity: 0.78;
+    z-index: 1;
+  }
+
+  59% {
+    transform: translate(calc(-50% + 128px), -50%) perspective(800px) rotateY(-24deg) scale(0.88);
+    opacity: 0.78;
+    z-index: 1;
+  }
+
+  66.666% {
+    transform: translate(calc(-50% - 128px), -50%) perspective(800px) rotateY(24deg) scale(0.88);
+    opacity: 0.72;
+    z-index: 1;
+  }
+
+  92% {
+    transform: translate(calc(-50% - 128px), -50%) perspective(800px) rotateY(24deg) scale(0.88);
+    opacity: 0.72;
+    z-index: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    z-index: 3;
+  }
+}
+
+@media (min-width: 640px) {
+  .appoinments-booking-page {
+    padding: 40px 20px;
+  }
+
+  .appoinments-hero-card {
+    border-radius: 36px;
+  }
+
+  .appoinment-hero-title {
+    font-size: 4.8rem;
+  }
+
+  .appoinment-hero-description {
+    font-size: 1.4rem;
+  }
+
+  .appoinment-search-button {
+    width: auto;
+    min-width: 220px;
+    font-size: 1.8rem;
+  }
+
+  .appoinments-stack-motion {
+    width: 470px;
+    height: 320px;
+  }
+
+  .stack-card-left,
+  .stack-card-right {
+    width: 176px;
+    height: 228px;
+  }
+
+  .stack-card-center {
+    width: 234px;
+    height: 278px;
+  }
+}
+
+@media (min-width: 768px) {
+  .appoinment-booking-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .appoinments-hero-banner {
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, 360px);
+    padding: 56px 56px 120px;
+    text-align: left;
+  }
+
+  .appoinment-hero-description {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .appoinments-booking-panel {
+    padding: 0 44px 44px;
+  }
+
+  .appoinments-doctor-watch {
+    left: -18px;
+    bottom: -8px;
+  }
+
+  .appoinments-doctor-image {
+    width: clamp(210px, 16vw, 290px);
+    opacity: 0.78;
+  }
+}
+
+@media (min-width: 1280px) {
+  .appoinment-booking-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .appoinments-doctor-watch {
+    left: -42px;
+    bottom: -8px;
+  }
+
+  .appoinments-doctor-image {
+    width: clamp(120px, 38vw, 180px);
+    opacity: 0.22;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-back,
+  .wave-mid,
+  .wave-front,
+  .stack-card-left,
+  .stack-card-center,
+  .stack-card-right {
+    animation: none;
+  }
+}

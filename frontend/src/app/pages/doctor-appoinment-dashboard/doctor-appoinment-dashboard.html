@@ -1,0 +1,134 @@
+<main class="doctor-dashboard-page">
+  <section class="doctor-dashboard-shell">
+    <header class="doctor-dashboard-header">
+      <button class="doctor-dashboard-back" type="button" routerLink="/appointments/results">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back</span>
+      </button>
+
+      <div class="doctor-dashboard-heading">
+        <p class="doctor-dashboard-label">Telemedicine Dashboard</p>
+        <h1 class="doctor-dashboard-title">Appoinments</h1>
+        <p class="doctor-dashboard-subtitle">Welcome back, {{ doctorName }}!</p>
+      </div>
+    </header>
+
+    <section class="doctor-dashboard-layout">
+      <aside class="doctor-dashboard-sidebar">
+        <article class="doctor-dashboard-profile-card">
+          <div class="doctor-dashboard-profile-image">
+            <img src="/doctor-watcher.png" alt="Doctor profile" />
+          </div>
+          <div class="doctor-dashboard-profile-copy">
+            <h2>{{ doctorName }}</h2>
+            <p>{{ specialty }}</p>
+          </div>
+        </article>
+
+        <article class="doctor-dashboard-mini-calendar">
+          <div class="doctor-dashboard-calendar-top">
+            <div class="doctor-dashboard-calendar-nav">
+              <button class="doctor-dashboard-calendar-arrow" type="button" (click)="goToPreviousMonth()">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <h3>{{ calendarMonthLabel() }}</h3>
+              <button class="doctor-dashboard-calendar-arrow" type="button" (click)="goToNextMonth()">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+            <p>Assigned dates</p>
+          </div>
+
+          <div class="doctor-dashboard-mini-weekdays">
+            <span>S</span>
+            <span>M</span>
+            <span>T</span>
+            <span>W</span>
+            <span>T</span>
+            <span>F</span>
+            <span>S</span>
+          </div>
+
+          <div class="doctor-dashboard-mini-grid" *ngIf="calendarDays().length; else noDates">
+            <button
+              *ngFor="let day of calendarDays()"
+              type="button"
+              class="doctor-dashboard-mini-day"
+              [class.is-empty]="!day.isCurrentMonth"
+              [class.is-highlighted]="day.isHighlighted"
+              [class.is-active]="day.isActive"
+              [disabled]="!day.isoDate"
+              (click)="day.isoDate && selectDate(day.isoDate)"
+            >
+              {{ day.dateNumber || '' }}
+            </button>
+          </div>
+
+          <ng-template #noDates>
+            <p class="doctor-dashboard-empty">No appointment dates available yet.</p>
+          </ng-template>
+        </article>
+      </aside>
+
+      <section class="doctor-dashboard-main">
+        <article class="doctor-dashboard-notice-card">
+          <p class="doctor-dashboard-notice-label">Appointment Notice</p>
+          <p class="doctor-dashboard-notice-copy">{{ appointmentNotice() }}</p>
+        </article>
+
+        <article class="doctor-dashboard-schedule-card">
+          <div class="doctor-dashboard-schedule-header">
+            <div>
+              <h3>Upcoming Appointments</h3>
+              <p *ngIf="selectedDate()">{{ formatDate(selectedDate() + 'T00:00:00') }}</p>
+            </div>
+            <div class="doctor-dashboard-selected-badge" *ngIf="selectedDate()">
+              {{ formatSelectedDayLabel() }}
+            </div>
+          </div>
+
+          <div *ngIf="loading()" class="doctor-dashboard-empty">Loading appointments...</div>
+          <div *ngIf="errorMessage()" class="doctor-dashboard-empty">{{ errorMessage() }}</div>
+
+          <div
+            class="doctor-dashboard-appointments-list"
+            *ngIf="!loading() && !errorMessage() && filteredAppointments().length"
+          >
+            <article
+              class="doctor-dashboard-event-card"
+              *ngFor="let appointment of filteredAppointments(); trackBy: trackByAppointmentId"
+            >
+              <div class="doctor-dashboard-event-main">
+                <div class="doctor-dashboard-event-avatar">
+                  {{ appointment.patientName.charAt(0) }}
+                </div>
+
+                <div class="doctor-dashboard-event-copy">
+                  <h4>{{ appointment.patientName }}</h4>
+                  <p>Age {{ appointment.patientAge }}</p>
+                  <span
+                    class="doctor-dashboard-status"
+                    [class.is-pending]="appointment.status === 'PENDING'"
+                  >
+                    {{ appointment.status || 'PENDING' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="doctor-dashboard-event-side">
+                <strong>{{ formatTime(appointment.appointmentDate) }}</strong>
+                <span>{{ formatDate(appointment.appointmentDate) }}</span>
+              </div>
+
+              <button class="doctor-dashboard-join" type="button">Join</button>
+            </article>
+          </div>
+
+          <div class="doctor-dashboard-empty" *ngIf="!loading() && !errorMessage() && !filteredAppointments().length">
+            No appointments for this date yet.
+          </div>
+        </article>
+      </section>
+    </section>
+  </section>
+</main>

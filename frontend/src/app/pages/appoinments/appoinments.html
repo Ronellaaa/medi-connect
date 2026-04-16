@@ -1,1 +1,143 @@
-<p>appoinments works!</p>
+<main class="appoinments-booking-page">
+  <div class="appoinments-doctor-watch" aria-hidden="true">
+    <img
+      class="appoinments-doctor-image"
+      src="/doctor-watcher.png"
+      alt=""
+    />
+  </div>
+  <section class="appoinments-hero-card">
+    <div class="appoinments-hero-banner">
+      <div class="appoinments-hero-text">
+        <p class="appoinment-hero-label">Channel Your Doctor</p>
+        <h1 class="appoinment-hero-title">Book an Appointment</h1>
+        <p class="appoinment-hero-description">
+         Connect with trusted specialists, explore your options, and secure your appointment in
+          just a few clicks.
+        </p>
+      </div>
+
+      <div class="appoinments-hero-visual" aria-hidden="true">
+        <div class="appoinments-stack-motion">
+          <div class="stack-card stack-card-left">
+            <div class="stack-glow">
+              <img class="stack-image" src="/stack-2.png" alt="">
+            </div>
+          </div>
+          <div class="stack-card stack-card-center">
+            <div class="stack-glow">
+               <img class="stack-image" src="/stack-1.png" alt="">
+            </div>
+          </div>
+          <div class="stack-card stack-card-right">
+            <div class="stack-glow">
+              <img class="stack-image" src="/stack-3.png" alt="">
+            </div>
+          </div>
+        </div>
+      </div>
+      <svg
+        class="wave wave-back"
+        viewBox="0 0 1440 320"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          fill="rgba(255,255,255,0.28)"
+          d="M0,238C83,294,166,350,258,334C350,318,451,230,545,193C638,157,724,171,817,224C909,277,1009,368,1112,365C1214,362,1318,266,1379,218L1440,170L1440,320L1379,320C1318,320,1214,320,1112,320C1009,320,909,320,817,320C724,320,638,320,545,320C451,320,350,320,258,320C166,320,83,320,0,320Z"
+        ></path>
+      </svg>
+      <svg
+        class="wave wave-mid"
+        viewBox="0 0 1440 320"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          fill="rgba(255,255,255,0.52)"
+          d="M0,205C90,169,180,132,278,143C376,155,483,214,577,251C670,288,751,303,844,278C936,253,1041,187,1142,182C1242,177,1338,233,1389,261L1440,288L1440,320L1389,320C1338,320,1242,320,1142,320C1041,320,936,320,844,320C751,320,670,320,577,320C483,320,376,320,278,320C180,320,90,320,0,320Z"
+        ></path>
+      </svg>
+      <svg
+        class="wave wave-front"
+        viewBox="0 0 1440 320"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          fill="#f8fbff"
+          d="M0,256C83,194,165,131,260,141C355,151,463,234,562,260C660,285,748,252,839,211C929,171,1022,124,1118,132C1214,140,1312,203,1376,235L1440,267L1440,320L1376,320C1312,320,1214,320,1118,320C1022,320,929,320,839,320C748,320,660,320,562,320C463,320,355,320,260,320C165,320,83,320,0,320Z"
+        ></path>
+      </svg>
+    </div>
+
+    <div class="appoinments-booking-panel">
+      <div class="appoinment-booking-grid">
+        <article class="appoinment-booking-card">
+          <div class="booking-icon">
+            <mat-icon>medical_services</mat-icon>
+          </div>
+          <div class="appoinment-booking-content">
+            <h2 class="doctor-booking-title booking-title">Doctor</h2>
+            <label class="booking-field">
+              <span class="field-prefix">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input class="booking-input" type="search" placeholder="Search doctor" />
+            </label>
+          </div>
+        </article>
+
+        <article class="booking-card">
+          <div class="booking-icon">
+            <mat-icon>health_and_safety</mat-icon>
+          </div>
+          <div class="booking-content">
+            <h2 class="booking-title">Speciality</h2>
+            <label class="booking-field">
+              <span class="field-prefix">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input class="booking-input" type="search" placeholder="Select speciality" />
+            </label>
+          </div>
+        </article>
+
+        <article class="booking-card">
+          <div class="booking-icon">
+            <mat-icon>local_hospital</mat-icon>
+          </div>
+          <div class="booking-content">
+            <h2 class="booking-title">Hospital</h2>
+            <label class="booking-field">
+              <span class="field-prefix">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input class="booking-input" type="search" placeholder="Choose hospital" />
+            </label>
+          </div>
+        </article>
+
+        <article class="booking-card">
+          <div class="booking-icon">
+            <mat-icon>calendar_month</mat-icon>
+          </div>
+          <div class="booking-content">
+            <h2 class="booking-title">Date</h2>
+            <label class="booking-field booking-field-date">
+              <span class="field-prefix">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input class="booking-input booking-input-date" type="date" />
+              <span class="field-suffix">📅</span>
+            </label>
+          </div>
+        </article>
+      </div>
+
+      <button class="appoinment-search-button" type="button" routerLink="/appointments/results">
+        Search
+      </button>
+    </div>
+  </section>
+</main>
