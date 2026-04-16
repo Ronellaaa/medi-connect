@@ -4,28 +4,17 @@
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
       <profile name="Annotation profile for doctors-service" enabled="true">
-
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.44/lombok-1.18.44.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.44/lombok-1.18.44.jar" />
         </processorPath>
         <module name="doctors-service" />
       </profile>
-      <profile name="Annotation profile for notification-service" enabled="true">
-        <module name="patients-service" />
-        <module name="appointment-service" />
-        <module name="notification-service" />
-        <module name="payments-service" />
-        <module name="ai-service" />
-
-        <module name="doctors-service" />
-
-      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="appointment-service" target="17" />
       <module name="telemedicine-service" target="17" />
     </bytecodeTargetLevel>
   </component>
