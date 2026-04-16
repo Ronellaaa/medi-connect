@@ -2,7 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for patients-service" enabled="true">
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for doctors-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -23,16 +24,14 @@
         <module name="payments-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="appointment-service" target="17" />
+      <module name="telemedicine-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="ai-service" options="-parameters" />
-      <module name="appointment-service" options="-parameters" />
       <module name="doctors-service" options="-parameters" />
-      <module name="notification-service" options="-parameters" />
-      <module name="patients-service" options="-parameters" />
-      <module name="payments-service" options="-parameters" />
-      <module name="telemedicine-service" options="-parameters" />
     </option>
   </component>
 </project>

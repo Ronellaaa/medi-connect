@@ -1,1 +1,135 @@
-<p>register works!</p>
+<div class="min-h-screen register-page flex items-center justify-center px-6 py-10">
+  <video
+    #backgroundVideo
+    autoplay
+    loop
+    muted
+    [defaultMuted]="true"
+    playsinline
+    (loadedmetadata)="backgroundVideo.muted = true; backgroundVideo.defaultMuted = true; backgroundVideo.volume = 0"
+    class="register-bg-video"
+  >
+    <source src="assets/videos/12.mp4" type="video/mp4" />
+  </video>
+
+  <div class="register-video-overlay"></div>
+
+  <div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+    <div class="flex justify-center lg:justify-start order-2 lg:order-1">
+      <div class="w-full max-w-3xl rounded-[32px] bg-white/85 backdrop-blur-xl shadow-2xl p-8 md:p-10 border border-white/60">
+        <div class="mb-8">
+          <p class="text-sm font-medium text-pink-500 tracking-[0.2em] uppercase">Role Signup</p>
+          <h1 class="text-4xl font-extrabold text-slate-800 mt-2 leading-tight">Create your {{ selectedRole | lowercase }} account</h1>
+          <p class="text-slate-500 mt-3 text-sm">Doctors create an auth account and a linked doctor profile. Patient and admin accounts are stored in auth-service.</p>
+        </div>
+
+        <div class="mb-6 flex flex-wrap gap-2">
+          <button type="button" (click)="selectRole('DOCTOR')" [class]="selectedRole === 'DOCTOR' ? 'rounded-full bg-pink-500 px-4 py-2 text-xs font-bold text-white' : 'rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-600'">Doctor</button>
+          <button type="button" (click)="selectRole('PATIENT')" [class]="selectedRole === 'PATIENT' ? 'rounded-full bg-pink-500 px-4 py-2 text-xs font-bold text-white' : 'rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-600'">Patient</button>
+          <button type="button" (click)="selectRole('ADMIN')" [class]="selectedRole === 'ADMIN' ? 'rounded-full bg-pink-500 px-4 py-2 text-xs font-bold text-white' : 'rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-600'">Admin</button>
+        </div>
+
+        <form (ngSubmit)="submit()" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+        <input [(ngModel)]="form.fullName" name="fullName" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+        <input [(ngModel)]="form.email" name="email" type="email" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+        <input [(ngModel)]="form.password" name="password" type="password" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Phone</label>
+        <input [(ngModel)]="form.phone" name="phone" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div *ngIf="selectedRole === 'DOCTOR'">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Main Specialization</label>
+        <input [(ngModel)]="form.mainSpecialization" name="mainSpecialization" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div *ngIf="selectedRole === 'DOCTOR'">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Qualifications</label>
+        <input [(ngModel)]="form.qualifications" name="qualifications" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div *ngIf="selectedRole === 'DOCTOR'">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Experience Years</label>
+        <input [(ngModel)]="form.experienceYears" name="experienceYears" type="number" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div *ngIf="selectedRole === 'DOCTOR'">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Clinic</label>
+        <input [(ngModel)]="form.clinic" name="clinic" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div *ngIf="selectedRole === 'DOCTOR'">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">License</label>
+        <input [(ngModel)]="form.license" name="license" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none" />
+      </div>
+
+      <div class="md:col-span-2" *ngIf="selectedRole === 'DOCTOR'">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Bio</label>
+        <textarea [(ngModel)]="form.bio" name="bio" rows="4" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm outline-none"></textarea>
+      </div>
+
+      <div class="md:col-span-2 flex items-center gap-4">
+        <button type="submit" class="rounded-2xl bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 px-6 py-3.5 text-white font-bold shadow-lg" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Creating...' : 'Create Account' }}
+        </button>
+        <a routerLink="/login" class="font-bold text-pink-500 hover:text-pink-600">Already have an account?</a>
+      </div>
+
+      <p *ngIf="message" class="md:col-span-2 text-sm font-semibold text-slate-600">{{ message }}</p>
+        </form>
+      </div>
+    </div>
+
+    <div class="flex justify-center order-1 lg:order-2">
+      <div class="visual-wrapper">
+        <div class="scene-360">
+          <div
+            class="drum-360"
+            [style.transform]="'rotateY(-' + (currentIndex * 120) + 'deg)'"
+          >
+            <div
+              class="card-360"
+              *ngFor="let slide of slides; let i = index"
+              [style.background]="slide.bg"
+              [style.transform]="'rotateY(' + (i * 120) + 'deg) translateZ(420px)'"
+            >
+              <img [src]="slide.center" alt="center image" class="center-img" />
+
+              <img
+                *ngFor="let item of slide.items"
+                [src]="item.img"
+                alt="floating image"
+                class="float-img"
+                [style.left]="item.x"
+                [style.top]="item.y"
+                [style.animationDelay]="item.delay"
+              />
+
+              <h3>{{ slide.title }}</h3>
+            </div>
+          </div>
+
+          <div class="dots-360">
+            <span
+              *ngFor="let dot of slides; let d = index"
+              [class.active]="d === currentIndex"
+              (click)="goToSlide(d)"
+            ></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

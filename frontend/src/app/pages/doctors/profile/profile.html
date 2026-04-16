@@ -1,0 +1,292 @@
+<div class="doctor-page">
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="assets/videos/cw.mp4" type="video/mp4" />
+  </video>
+
+  <div class="video-overlay"></div>
+
+  <div class="doctor-shell">
+    <aside class="doctor-sidebar">
+      <div class="brand-box">
+        <div class="brand-badge">MC</div>
+        <div class="brand-copy">
+          <h1>MediConnect</h1>
+          <p>Doctor Portal</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-links">
+        <a
+          *ngFor="let item of navItems"
+          class="sidebar-link"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+        >
+          <span class="sidebar-icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-note">
+        <p>Profile focus</p>
+        <strong>Keep your professional details updated.</strong>
+      </div>
+    </aside>
+
+    <main class="doctor-main">
+      <header class="topbar">
+        <div class="header-copy">
+          <p>Doctor profile</p>
+          <h2>Professional identity</h2>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="action-chip" type="button" (click)="toggleEdit()">
+            {{ isEditMode ? 'Close Edit' : 'Edit Profile' }}
+          </button>
+          <div class="avatar-dot">DR</div>
+        </div>
+      </header>
+
+      <p
+        class="profile-status"
+        [class.success]="statusTone === 'success'"
+        [class.error]="statusTone === 'error'"
+        *ngIf="statusMessage"
+      >
+        {{ statusMessage }}
+      </p>
+
+      <div class="loading-wrap" *ngIf="isLoadingProfile">
+        <div class="loading-card">
+          <p>Loading doctor profile...</p>
+        </div>
+      </div>
+
+      <section
+        class="profile-stage"
+        [class.edit-open]="isEditMode"
+        *ngIf="!isLoadingProfile"
+      >
+        <!-- LEFT EDIT PANEL -->
+        <aside class="edit-panel left-panel" [class.show]="isEditMode">
+          <div class="panel-card">
+            <h3>Personal Details</h3>
+
+            <label>Full Name</label>
+            <input type="text" [(ngModel)]="draftProfile.fullName" name="fullName" autocomplete="name" />
+
+            <label>Email</label>
+            <input type="email" [(ngModel)]="draftProfile.email" name="email" autocomplete="email" />
+
+            <label>Phone</label>
+            <input type="text" [(ngModel)]="draftProfile.phone" name="phone" autocomplete="tel" />
+
+            <label>Clinic</label>
+            <input type="text" [(ngModel)]="draftProfile.clinic" name="clinic" />
+
+            <label>Languages</label>
+            <input type="text" [(ngModel)]="draftProfile.languages" name="languages" />
+          </div>
+        </aside>
+
+        <!-- CENTER CARD -->
+        <section class="profile-center" [class.landscape]="!isEditMode">
+          <div class="profile-card" [class.landscape-card]="!isEditMode">
+            <div class="profile-landscape" *ngIf="!isEditMode">
+              <div class="landscape-left">
+                <div class="profile-icon-wrap">
+                  <div class="profile-icon-3d">
+                    <div class="profile-icon-ring">
+                      <div class="profile-icon-inner">
+                        <span>👨‍⚕️</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="landscape-main-info">
+                  <div class="profile-top compact">
+                    <div class="profile-avatar">DR</div>
+                    <div>
+                      <h3>{{ doctorProfile.fullName || 'Doctor Name' }}</h3>
+                      <p>{{ doctorProfile.specialty || 'Specialty' }}</p>
+                    </div>
+                  </div>
+
+                  <div class="hero-tags">
+                    <span class="hero-tag">Verified Specialist</span>
+                    <span class="hero-tag">Top Rated</span>
+                    <span class="hero-tag">Available</span>
+                  </div>
+
+                  <p class="landscape-bio">
+                    {{ doctorProfile.bio || 'No bio added yet.' }}
+                  </p>
+
+                  <div class="profile-bottom left-align">
+                    <button class="main-btn" type="button" (click)="toggleEdit()">Edit Profile</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="landscape-right">
+                <div class="landscape-stat-card">
+                  <span>Qualification</span>
+                  <strong>{{ doctorProfile.qualification || '-' }}</strong>
+                </div>
+
+                <div class="landscape-grid">
+                  <div class="profile-info">
+                    <span>Email</span>
+                    <strong>{{ doctorProfile.email || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info">
+                    <span>Phone</span>
+                    <strong>{{ doctorProfile.phone || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info">
+                    <span>Experience</span>
+                    <strong>{{ doctorProfile.experience ? doctorProfile.experience + ' Years' : '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info">
+                    <span>Fee</span>
+                    <strong>{{ doctorProfile.consultationFee || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info full-width">
+                    <span>Clinic</span>
+                    <strong>{{ doctorProfile.clinic || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info full-width">
+                    <span>Availability</span>
+                    <strong>{{ doctorProfile.availability || '-' }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="isEditMode">
+              <div class="profile-icon-wrap">
+                <div class="profile-icon-3d">
+                  <div class="profile-icon-ring">
+                    <div class="profile-icon-inner">
+                      <span>👨‍⚕️</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="profile-top">
+                <div class="profile-avatar">DR</div>
+                <div>
+                  <h3>{{ doctorProfile.fullName || 'Doctor Name' }}</h3>
+                  <p>{{ doctorProfile.specialty || 'Specialty' }}</p>
+                </div>
+              </div>
+
+              <div class="profile-body">
+                <div class="profile-highlight">
+                  <span>Qualification</span>
+                  <strong>{{ doctorProfile.qualification || '-' }}</strong>
+                </div>
+
+                <div class="profile-grid">
+                  <div class="profile-info">
+                    <span>Email</span>
+                    <strong>{{ doctorProfile.email || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info">
+                    <span>Phone</span>
+                    <strong>{{ doctorProfile.phone || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info">
+                    <span>License</span>
+                    <strong>{{ doctorProfile.license || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info">
+                    <span>Experience</span>
+                    <strong>{{ doctorProfile.experience ? doctorProfile.experience + ' Years' : '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info">
+                    <span>Clinic</span>
+                    <strong>{{ doctorProfile.clinic || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info">
+                    <span>Consultation Fee</span>
+                    <strong>{{ doctorProfile.consultationFee || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info full">
+                    <span>Availability</span>
+                    <strong>{{ doctorProfile.availability || '-' }}</strong>
+                  </div>
+
+                  <div class="profile-info full">
+                    <span>About Doctor</span>
+                    <strong class="bio-text">{{ doctorProfile.bio || 'No bio added yet.' }}</strong>
+                  </div>
+                </div>
+
+                <div class="profile-bottom">
+                  <button class="main-btn" type="button" disabled>
+                    {{ isSaving ? 'Saving...' : 'Editing...' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT EDIT PANEL -->
+        <aside class="edit-panel right-panel" [class.show]="isEditMode">
+          <div class="panel-card">
+            <h3>Professional Details</h3>
+
+            <label>Specialty</label>
+            <input type="text" [(ngModel)]="draftProfile.specialty" name="specialty" />
+
+            <label>Additional Specialization</label>
+            <input type="text" [(ngModel)]="draftProfile.additionalSpecialization" name="additionalSpecialization" />
+
+            <label>Qualification</label>
+            <input type="text" [(ngModel)]="draftProfile.qualification" name="qualification" />
+
+            <label>License</label>
+            <input type="text" [(ngModel)]="draftProfile.license" name="license" />
+
+            <label>Experience</label>
+            <input type="text" [(ngModel)]="draftProfile.experience" name="experience" />
+
+            <label>Consultation Fee</label>
+            <input type="text" [(ngModel)]="draftProfile.consultationFee" name="consultationFee" />
+
+            <label>Availability</label>
+            <input type="text" [(ngModel)]="draftProfile.availability" name="availability" />
+
+            <label>Bio</label>
+            <textarea rows="4" [(ngModel)]="draftProfile.bio" name="bio"></textarea>
+
+            <div class="panel-actions">
+              <button class="save-btn" type="button" (click)="saveProfile()" [disabled]="isSaving">
+                {{ isSaving ? 'Saving...' : 'Save' }}
+              </button>
+              <button class="cancel-btn" type="button" (click)="cancelEdit()" [disabled]="isSaving">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+</div>

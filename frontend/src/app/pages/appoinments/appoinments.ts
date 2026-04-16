@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-appoinments',
-  imports: [],
+  imports: [MatIconModule, RouterLink],
   templateUrl: './appoinments.html',
   styleUrl: './appoinments.css',
 })
-export class Appoinments {}
+export class Appoinments {
+  
+}

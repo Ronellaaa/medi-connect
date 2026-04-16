@@ -1,0 +1,227 @@
+<main class="patient-dashboard-page">
+  <section class="patient-dashboard-shell">
+    <aside class="patient-dashboard-sidebar">
+      <div class="patient-dashboard-profile-panel">
+        <div class="patient-dashboard-hero-image">
+          <img src="/doctor-watcher.png" alt="Patient profile" />
+        </div>
+
+        <div class="patient-dashboard-profile-copy">
+          <h2>{{ patientName }}</h2>
+          <p>{{ profileTag }}</p>
+        </div>
+
+        <button class="patient-dashboard-profile-button" type="button">View Profile</button>
+      </div>
+
+      <nav class="patient-dashboard-nav">
+        <a class="patient-dashboard-nav-item is-active" routerLink="/patient-dashboard">
+          <mat-icon>space_dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <a class="patient-dashboard-nav-item" routerLink="/appointments">
+          <mat-icon>event_note</mat-icon>
+          <span>My Appointments</span>
+        </a>
+        <a class="patient-dashboard-nav-item" routerLink="/appointments">
+          <mat-icon>medical_services</mat-icon>
+          <span>Doctors</span>
+        </a>
+        <a class="patient-dashboard-nav-item" routerLink="/appointments">
+          <mat-icon>folder_shared</mat-icon>
+          <span>My Records</span>
+        </a>
+        <a class="patient-dashboard-nav-item" routerLink="/appointments">
+          <mat-icon>payments</mat-icon>
+          <span>Bills</span>
+        </a>
+      </nav>
+    </aside>
+
+    <section class="patient-dashboard-main">
+      <header class="patient-dashboard-header">
+        <div>
+          <p class="patient-dashboard-label">Patient Dashboard</p>
+          <h1 class="patient-dashboard-title">Welcome back, {{ patientName }}!</h1>
+        </div>
+        <button class="patient-dashboard-add-button" type="button" routerLink="/appointments">
+          <mat-icon>add</mat-icon>
+          <span>Book an Appointment</span>
+        </button>
+      </header>
+
+      <article class="patient-dashboard-calendar-card">
+        <div class="patient-dashboard-calendar-header">
+          <div>
+            <h3>My Appointments</h3>
+            <p *ngIf="selectedDate()">{{ formatDate(selectedDate() + 'T00:00:00') }}</p>
+          </div>
+          <div class="patient-dashboard-selected-badge" *ngIf="selectedDate()">
+            {{ formatSelectedDayLabel() }}
+          </div>
+        </div>
+
+        <div class="patient-dashboard-calendar-top">
+          <div class="patient-dashboard-calendar-nav">
+            <button class="patient-dashboard-calendar-arrow" type="button" (click)="goToPreviousMonth()">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <h4>{{ calendarMonthLabel() }}</h4>
+            <button class="patient-dashboard-calendar-arrow" type="button" (click)="goToNextMonth()">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+          <span class="patient-dashboard-calendar-note">Assigned dates</span>
+        </div>
+
+        <div class="patient-dashboard-mini-weekdays">
+          <span>S</span>
+          <span>M</span>
+          <span>T</span>
+          <span>W</span>
+          <span>T</span>
+          <span>F</span>
+          <span>S</span>
+        </div>
+
+        <div class="patient-dashboard-mini-grid" *ngIf="calendarDays().length; else noDates">
+          <button
+            *ngFor="let day of calendarDays()"
+            type="button"
+            class="patient-dashboard-mini-day"
+            [class.is-empty]="!day.isCurrentMonth"
+            [class.is-highlighted]="day.isHighlighted"
+            [class.is-active]="day.isActive"
+            [disabled]="!day.isoDate"
+            (click)="day.isoDate && selectDate(day.isoDate)"
+          >
+            {{ day.dateNumber || '' }}
+          </button>
+        </div>
+
+        <ng-template #noDates>
+          <p class="patient-dashboard-empty">No appointment dates available yet.</p>
+        </ng-template>
+      </article>
+
+      <section class="patient-dashboard-appointments">
+        <div class="patient-dashboard-appointments-header">
+          <h3>Upcoming Appointments</h3>
+        </div>
+
+        <div *ngIf="loading()" class="patient-dashboard-empty">Loading appointments...</div>
+        <div *ngIf="errorMessage()" class="patient-dashboard-empty">{{ errorMessage() }}</div>
+
+        <div
+          class="patient-dashboard-appointment-list"
+          *ngIf="!loading() && !errorMessage() && filteredAppointments().length"
+        >
+          <article
+            class="patient-dashboard-appointment-card"
+            *ngFor="let appointment of filteredAppointments(); trackBy: trackByAppointmentId"
+          >
+            <div class="patient-dashboard-appointment-main">
+              <div class="patient-dashboard-doctor-avatar">
+                {{ appointment.doctorName.charAt(4) || appointment.doctorName.charAt(0) }}
+              </div>
+
+              <div class="patient-dashboard-appointment-copy">
+                <h4>{{ appointment.doctorName }}</h4>
+                <p>{{ appointment.specialty }}</p>
+                <span
+                  class="patient-dashboard-status"
+                  [class.is-pending]="appointment.status === 'PENDING'"
+                  [class.is-confirmed]="appointment.status === 'CONFIRMED'"
+                  [class.is-cancelled]="appointment.status === 'CANCELLED'"
+
+                >
+                  {{ appointment.status || 'PENDING' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="patient-dashboard-appointment-time">
+              <strong>{{ formatTime(appointment.appointmentDate) }}</strong>
+              <span>{{ formatDate(appointment.appointmentDate) }}</span>
+            </div>
+
+            <div class="patient-dashboard-appointment-actions">
+              <button class="patient-dashboard-join" type="button" [disabled]="appointment.status !== 'CONFIRMED'">Join</button>
+              <button class="patient-dashboard-cancel" type="button" (click)="openCancelModal(appointment)">Cancel</button>
+              <button class="patient-dashboard-reschedule" type="button" (click)="openRescheduleModal(appointment)">
+                Reschedule
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div class="patient-dashboard-empty" *ngIf="!loading() && !errorMessage() && !filteredAppointments().length">
+          No appointments for this date yet.
+        </div>
+      </section>
+    </section>
+  </section>
+
+  <div class="patient-dashboard-modal-backdrop" *ngIf="showCancelModal">
+    <section class="patient-dashboard-modal">
+      <div class="patient-dashboard-modal-copy">
+        <p class="patient-dashboard-modal-label">Cancel Appointment</p>
+        <h3>Are you sure you want to cancel this appointment?</h3>
+        <p *ngIf="appointmentToCancel">
+          {{ appointmentToCancel.doctorName }} on {{ formatDate(appointmentToCancel.appointmentDate) }} at
+          {{ formatTime(appointmentToCancel.appointmentDate) }}
+        </p>
+      </div>
+
+      <div class="patient-dashboard-modal-actions">
+        <button class="patient-dashboard-modal-secondary" type="button" (click)="closeCancelModal()">Keep It</button>
+        <button
+          class="patient-dashboard-modal-primary is-danger"
+          type="button"
+          (click)="confirmCancelAppointment()"
+          [disabled]="cancelPending()"
+        >
+          {{ cancelPending() ? 'Cancelling...' : 'Yes, Cancel' }}
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="patient-dashboard-modal-backdrop" *ngIf="showRescheduleModal">
+    <section class="patient-dashboard-modal">
+      <div class="patient-dashboard-modal-copy">
+        <p class="patient-dashboard-modal-label">Reschedule Appointment</p>
+        <h3>Choose a new date and time</h3>
+        <p *ngIf="appointmentToReschedule">
+          Update your appointment with {{ appointmentToReschedule.doctorName }}.
+        </p>
+      </div>
+
+      <div class="patient-dashboard-modal-form">
+        <label class="patient-dashboard-modal-field">
+          <span>New Date</span>
+          <input type="date" [(ngModel)]="rescheduleDate" />
+        </label>
+
+        <label class="patient-dashboard-modal-field">
+          <span>New Time</span>
+          <input type="time" [(ngModel)]="rescheduleTime" />
+        </label>
+      </div>
+
+      <p class="patient-dashboard-modal-error" *ngIf="rescheduleErrorMessage">{{ rescheduleErrorMessage }}</p>
+
+      <div class="patient-dashboard-modal-actions">
+        <button class="patient-dashboard-modal-secondary" type="button" (click)="closeRescheduleModal()">Back</button>
+        <button
+          class="patient-dashboard-modal-primary"
+          type="button"
+          (click)="confirmRescheduleAppointment()"
+          [disabled]="reschedulePending()"
+        >
+          {{ reschedulePending() ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </section>
+  </div>
+</main>

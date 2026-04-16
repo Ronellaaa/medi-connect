@@ -1,0 +1,161 @@
+<div class="doctor-page">
+  <div class="doctor-shell">
+    <aside class="doctor-sidebar">
+      <div class="brand-box">
+        <div class="brand-badge">MC</div>
+        <div class="brand-copy">
+          <h1>MediConnect</h1>
+          <p>Doctor Portal</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-links">
+        <a *ngFor="let item of navItems" class="sidebar-link" [routerLink]="item.route" routerLinkActive="active">
+          <span class="sidebar-icon">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-note">
+        <p>Appointments</p>
+        <strong>Review time slots, patient needs, and the live queue from one page.</strong>
+      </div>
+    </aside>
+
+    <main class="doctor-main">
+      <header class="topbar">
+        <div class="header-copy">
+          <p>Appointments</p>
+          <h2>Consultation schedule</h2>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="search-pill">Search appointment records...</div>
+          <div class="avatar-dot">DR</div>
+        </div>
+      </header>
+
+      <section class="hero-card">
+        <div class="hero-copy">
+          <h3>Follow the entire patient queue for today's consultation flow.</h3>
+          <p>
+            This appointments page keeps your daily schedule, high-priority visits, and confirmed sessions in one place.
+          </p>
+
+          <div class="hero-badges">
+            <span class="hero-badge">Morning sessions</span>
+            <span class="hero-badge">Walk-ins tracked</span>
+            <span class="hero-badge">Urgency labeled</span>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <span class="hero-kicker">Queue health</span>
+          <strong class="hero-value">{{ appointments.length }}</strong>
+
+          <div class="hero-mini-grid">
+            <div class="hero-mini-card">
+              <span>Accepted</span>
+              <strong>{{ stats[2].value }}</strong>
+            </div>
+            <div class="hero-mini-card">
+              <span>Pending</span>
+              <strong>{{ stats[1].value }}</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card" *ngFor="let stat of stats">
+          <p>{{ stat.label }}</p>
+          <strong>{{ stat.value }}</strong>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Appointment list</h3>
+            <p>All appointments from the database</p>
+          </div>
+
+          <div class="stack-list">
+            <div class="list-card" *ngFor="let item of appointments" style="flex-wrap: wrap;">
+              <div>
+                <span class="list-title">{{ item.patient }}</span>
+                <span class="list-subtle">{{ item.reason }}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap: 8px;">
+                <span class="list-subtle">{{ item.date }} · {{ item.time }}</span>
+                <span class="pill" [ngClass]="item.tone">{{ item.status }}</span>
+              </div>
+              <div style="display:flex; gap:8px; width:100%; margin-top:8px; justify-content:flex-end;">
+                <button
+                  *ngIf="item.raw.status.toUpperCase() === 'PENDING'"
+                  class="pill green"
+                  style="cursor:pointer; border:none; font-size:12px;"
+                  (click)="acceptAppointment(item.id)">
+                  ✓ Accept
+                </button>
+                <button
+                  *ngIf="item.raw.status.toUpperCase() === 'PENDING'"
+                  class="pill pink"
+                  style="cursor:pointer; border:none; font-size:12px;"
+                  (click)="rejectAppointment(item.id)">
+                  ✗ Reject
+                </button>
+                <button
+                  class="pill blue"
+                  style="cursor:pointer; border:none; font-size:12px;"
+                  (click)="deleteAppointment(item.id)">
+                  🗑 Delete
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="appointments.length === 0" style="text-align:center; padding:24px; opacity:0.6;">
+              No appointments yet.
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Urgency overview</h3>
+            <p>Quick overview of the clinic queue</p>
+          </div>
+
+          <div class="table-layout">
+            <div class="table-row">
+              <div>
+                <span class="table-title">High urgency</span>
+                <span class="table-subtle">Needs immediate attention</span>
+              </div>
+              <strong>{{ stats[3].value }}</strong>
+              <span class="pill pink">Critical</span>
+            </div>
+
+            <div class="table-row">
+              <div>
+                <span class="table-title">Pending approval</span>
+                <span class="table-subtle">Waiting for doctor response</span>
+              </div>
+              <strong>{{ stats[1].value }}</strong>
+              <span class="pill orange">Waiting</span>
+            </div>
+
+            <div class="table-row">
+              <div>
+                <span class="table-title">Accepted</span>
+                <span class="table-subtle">Confirmed consultations</span>
+              </div>
+              <strong>{{ stats[2].value }}</strong>
+              <span class="pill green">Confirmed</span>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+</div>

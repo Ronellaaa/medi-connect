@@ -1,0 +1,162 @@
+<main class="appointment-results-page">
+  <section class="appointment-results-shell">
+    <div class="results-search-panel">
+      <div class="results-search-header">
+        <button class="results-back-button" type="button" routerLink="/appointments">
+          <mat-icon>arrow_back</mat-icon>
+          <span>Back</span>
+        </button>
+        <div class="results-search-copy">
+          <p class="results-search-label">Booking Search</p>
+          <h1 class="results-search-title">Available Appointments</h1>
+        </div>
+      </div>
+
+      <div class="results-search-grid">
+        <article class="results-search-item">
+          <div class="results-search-icon">
+            <mat-icon>medical_services</mat-icon>
+          </div>
+          <div class="results-search-content">
+            <label class="results-search-heading" for="results-doctor">Doctor</label>
+            <label class="results-search-field">
+              <span class="results-field-prefix">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input id="results-doctor" class="results-search-input" type="search" value="Dr. John Smith" />
+            </label>
+          </div>
+        </article>
+
+        <article class="results-search-item">
+          <div class="results-search-icon">
+            <mat-icon>health_and_safety</mat-icon>
+          </div>
+          <div class="results-search-content">
+            <label class="results-search-heading" for="results-speciality">Speciality</label>
+            <label class="results-search-field">
+              <span class="results-field-prefix">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input id="results-speciality" class="results-search-input" type="search" value="Cardiology" />
+            </label>
+          </div>
+        </article>
+
+        <article class="results-search-item">
+          <div class="results-search-icon">
+            <mat-icon>local_hospital</mat-icon>
+          </div>
+          <div class="results-search-content">
+            <label class="results-search-heading" for="results-hospital">Hospital</label>
+            <label class="results-search-field">
+              <span class="results-field-prefix">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input id="results-hospital" class="results-search-input" type="search" value="Colombo Central" />
+            </label>
+          </div>
+        </article>
+
+        <article class="results-search-item">
+          <div class="results-search-icon">
+            <mat-icon>calendar_month</mat-icon>
+          </div>
+          <div class="results-search-content">
+            <label class="results-search-heading" for="results-date">Date</label>
+            <label class="results-search-field">
+              <span class="results-field-prefix">
+                <mat-icon>search</mat-icon>
+              </span>
+              <input id="results-date" class="results-search-input results-search-input-date" type="date" value="2026-04-25" />
+            </label>
+          </div>
+        </article>
+      </div>
+
+      <button class="results-top-search-button" type="button">Search Again</button>
+    </div>
+
+    <div class="results-content-grid">
+      <aside class="results-doctor-card">
+        <div class="results-doctor-image-frame">
+          <img class="results-doctor-image" src="/doctor-watcher.png" alt="Doctor profile" />
+        </div>
+        <div class="results-doctor-meta">
+          <h2 class="results-doctor-name">Dr. John Smith</h2>
+          <p class="results-doctor-speciality">Cardiologist</p>
+          <div class="results-doctor-rating" aria-label="5 star rating">
+            <mat-icon>star</mat-icon>
+            <mat-icon>star</mat-icon>
+            <mat-icon>star</mat-icon>
+            <mat-icon>star</mat-icon>
+            <mat-icon>star</mat-icon>
+          </div>
+        </div>
+        <button class="results-profile-button" type="button">View Profile</button>
+      </aside>
+
+      <section class="results-list">
+        <article class="results-hospital-card">
+          <div class="results-hospital-main">
+            <div class="results-hospital-icon">
+              <mat-icon>apartment</mat-icon>
+            </div>
+            <div class="results-hospital-copy">
+              <h3 class="results-hospital-name">City General Hospital</h3>
+              <p class="results-hospital-distance">Dr. John Smith</p>
+              <p class="results-hospital-speciality">Cardiologist</p>
+              <div class="results-date-chip">
+                <mat-icon>event_available</mat-icon>
+                <span>Apr 25, Apr 26, Apr 27</span>
+              </div>
+            </div>
+          </div>
+          <button class="results-book-button" type="button" routerLink="/appointments/booking">
+            Book Now
+          </button>
+        </article>
+
+        <article class="results-hospital-card">
+          <div class="results-hospital-main">
+            <div class="results-hospital-icon">
+              <mat-icon>apartment</mat-icon>
+            </div>
+            <div class="results-hospital-copy">
+              <h3 class="results-hospital-name">Harmony Medical Center</h3>
+              <p class="results-hospital-distance">Dr. Amelia Perera</p>
+              <p class="results-hospital-speciality">Cardiologist</p>
+              <div class="results-date-chip">
+                <mat-icon>event_available</mat-icon>
+                <span>Apr 25, Apr 27, Apr 28</span>
+              </div>
+            </div>
+          </div>
+          <button class="results-book-button" type="button" routerLink="/appointments/booking">
+            Book Now
+          </button>
+        </article>
+
+        <article class="results-hospital-card">
+          <div class="results-hospital-main">
+            <div class="results-hospital-icon">
+              <mat-icon>apartment</mat-icon>
+            </div>
+            <div class="results-hospital-copy">
+              <h3 class="results-hospital-name">Green Valley Hospital</h3>
+              <p class="results-hospital-distance">Dr. Nimal Fernando</p>
+              <p class="results-hospital-speciality">Cardiologist</p>
+              <div class="results-date-chip">
+                <mat-icon>event_available</mat-icon>
+                <span>Apr 25, Apr 27, Apr 30</span>
+              </div>
+            </div>
+          </div>
+          <button class="results-book-button" type="button" routerLink="/appointments/booking">
+            Book Now
+          </button>
+        </article>
+      </section>
+    </div>
+  </section>
+</main>
