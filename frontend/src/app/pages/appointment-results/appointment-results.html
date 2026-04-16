@@ -23,7 +23,13 @@
               <span class="results-field-prefix">
                 <mat-icon>search</mat-icon>
               </span>
-              <input id="results-doctor" class="results-search-input" type="search" value="Dr. John Smith" />
+              <input
+                id="results-doctor"
+                class="results-search-input"
+                type="search"
+                [value]="doctorQuery"
+                readonly
+              />
             </label>
           </div>
         </article>
@@ -38,7 +44,13 @@
               <span class="results-field-prefix">
                 <mat-icon>search</mat-icon>
               </span>
-              <input id="results-speciality" class="results-search-input" type="search" value="Cardiology" />
+              <input
+                id="results-speciality"
+                class="results-search-input"
+                type="search"
+                [value]="specialtyQuery"
+                readonly
+              />
             </label>
           </div>
         </article>
@@ -53,7 +65,13 @@
               <span class="results-field-prefix">
                 <mat-icon>search</mat-icon>
               </span>
-              <input id="results-hospital" class="results-search-input" type="search" value="Colombo Central" />
+              <input
+                id="results-hospital"
+                class="results-search-input"
+                type="search"
+                [value]="hospitalQuery"
+                readonly
+              />
             </label>
           </div>
         </article>
@@ -68,13 +86,21 @@
               <span class="results-field-prefix">
                 <mat-icon>search</mat-icon>
               </span>
-              <input id="results-date" class="results-search-input results-search-input-date" type="date" value="2026-04-25" />
+              <input
+                id="results-date"
+                class="results-search-input results-search-input-date"
+                type="date"
+                [value]="dateQuery"
+                readonly
+              />
             </label>
           </div>
         </article>
       </div>
 
-      <button class="results-top-search-button" type="button">Search Again</button>
+      <button class="results-top-search-button" type="button" routerLink="/appointments">
+        Search Again
+      </button>
     </div>
 
     <div class="results-content-grid">
@@ -83,8 +109,12 @@
           <img class="results-doctor-image" src="/doctor-watcher.png" alt="Doctor profile" />
         </div>
         <div class="results-doctor-meta">
-          <h2 class="results-doctor-name">Dr. John Smith</h2>
-          <p class="results-doctor-speciality">Cardiologist</p>
+          <h2 class="results-doctor-name">
+            {{ filteredDoctors[0]?.fullName || 'Select a doctor' }}
+          </h2>
+          <p class="results-doctor-speciality">
+            {{ filteredDoctors[0]?.mainSpecialization || 'Search results will appear here' }}
+          </p>
           <div class="results-doctor-rating" aria-label="5 star rating">
             <mat-icon>star</mat-icon>
             <mat-icon>star</mat-icon>
@@ -93,66 +123,41 @@
             <mat-icon>star</mat-icon>
           </div>
         </div>
-        <button class="results-profile-button" type="button">View Profile</button>
+        <button class="results-profile-button" type="button" routerLink="/appointments">
+          Refine Search
+        </button>
       </aside>
 
       <section class="results-list">
-        <article class="results-hospital-card">
-          <div class="results-hospital-main">
-            <div class="results-hospital-icon">
-              <mat-icon>apartment</mat-icon>
-            </div>
-            <div class="results-hospital-copy">
-              <h3 class="results-hospital-name">City General Hospital</h3>
-              <p class="results-hospital-distance">Dr. John Smith</p>
-              <p class="results-hospital-speciality">Cardiologist</p>
-              <div class="results-date-chip">
-                <mat-icon>event_available</mat-icon>
-                <span>Apr 25, Apr 26, Apr 27</span>
-              </div>
-            </div>
+        <div *ngIf="loading" class="results-hospital-card">
+          <div class="results-hospital-copy">
+            <h3 class="results-hospital-name">Loading doctors...</h3>
           </div>
-          <button class="results-book-button" type="button" routerLink="/appointments/booking">
-            Book Now
-          </button>
-        </article>
+        </div>
 
-        <article class="results-hospital-card">
-          <div class="results-hospital-main">
-            <div class="results-hospital-icon">
-              <mat-icon>apartment</mat-icon>
-            </div>
-            <div class="results-hospital-copy">
-              <h3 class="results-hospital-name">Harmony Medical Center</h3>
-              <p class="results-hospital-distance">Dr. Amelia Perera</p>
-              <p class="results-hospital-speciality">Cardiologist</p>
-              <div class="results-date-chip">
-                <mat-icon>event_available</mat-icon>
-                <span>Apr 25, Apr 27, Apr 28</span>
-              </div>
-            </div>
+        <div *ngIf="!loading && filteredDoctors.length === 0" class="results-hospital-card">
+          <div class="results-hospital-copy">
+            <h3 class="results-hospital-name">No matching doctors found.</h3>
+            <p class="results-hospital-speciality">Try changing doctor, specialty, or hospital.</p>
           </div>
-          <button class="results-book-button" type="button" routerLink="/appointments/booking">
-            Book Now
-          </button>
-        </article>
+        </div>
 
-        <article class="results-hospital-card">
+        <article class="results-hospital-card" *ngFor="let doctor of filteredDoctors">
           <div class="results-hospital-main">
             <div class="results-hospital-icon">
               <mat-icon>apartment</mat-icon>
             </div>
             <div class="results-hospital-copy">
-              <h3 class="results-hospital-name">Green Valley Hospital</h3>
-              <p class="results-hospital-distance">Dr. Nimal Fernando</p>
-              <p class="results-hospital-speciality">Cardiologist</p>
+              <h3 class="results-hospital-name">{{ doctor.clinic || 'Clinic not available' }}</h3>
+              <p class="results-hospital-distance">{{ doctor.fullName }}</p>
+              <p class="results-hospital-speciality">{{ doctor.mainSpecialization }}</p>
               <div class="results-date-chip">
                 <mat-icon>event_available</mat-icon>
-                <span>Apr 25, Apr 27, Apr 30</span>
+                <span>{{ dateQuery || 'Select date in next step' }}</span>
               </div>
             </div>
           </div>
-          <button class="results-book-button" type="button" routerLink="/appointments/booking">
+          <button class="results-book-button" type="button" (click)="bookDoctor(doctor)">
             Book Now
           </button>
         </article>

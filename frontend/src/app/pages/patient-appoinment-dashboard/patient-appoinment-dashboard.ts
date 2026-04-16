@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AppointmentApiService, AppointmentsPayload } from '../../services/appointment.service';
+import { DoctorSessionService } from '../../services/doctor-service/doctor-session.service';
 import { PatientAppoinmentDashboardService } from '../../services/patient-appoinment-dashboard.service';
 
 type CalendarDay = {
@@ -23,8 +24,9 @@ type CalendarDay = {
 export class PatientAppoinmentDashboard {
   private patientDashboardService = inject(PatientAppoinmentDashboardService);
   private appointmentApi = inject(AppointmentApiService);
+  private sessionService = inject(DoctorSessionService);
 
-  protected readonly patientId = 1;
+  protected readonly patientId = this.sessionService.getCurrentProfileId();
   protected readonly patientName = 'Sarah Williams';
   protected readonly profileTag = 'Patient Dashboard';
 
@@ -243,6 +245,12 @@ export class PatientAppoinmentDashboard {
   }
 
   private loadAppointments(): void {
+    if (!this.patientId) {
+      this.errorMessage.set('Patient session not found. Please log in again.');
+      this.loading.set(false);
+      return;
+    }
+
     this.patientDashboardService.getPatientAppoinments(this.patientId).subscribe({
       next: (appointments) => {
         this.appointments.set(appointments);

@@ -103,6 +103,41 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.message = '';
   }
 
+  // onLogin(): void {
+  //   this.message = '';
+
+  //   if (!this.email || !this.password) {
+  //     this.message = 'Enter your email and password.';
+  //     return;
+  //   }
+
+  //   this.authService.login({
+  //     email: this.email,
+  //     password: this.password,
+  //     role: this.selectedRole
+  //   }).subscribe({
+  //     next: (response) => {
+  //       if (response.role === 'DOCTOR' && response.doctor?.id) {
+  //         this.sessionService.setCurrentDoctor
+  //           (response.doctor.id,
+  //           response.doctor.email,
+  //           response.token,
+  //           response.doctor,
+  //           response.role,
+  //           response.userId);
+  //         this.router.navigate(['/doctors/dashboard']);
+  //         return;
+  //       }
+
+  //       this.sessionService.setAuthSession(response.email, response.role, response.token, response.userId);
+  //       this.router.navigate(['/']);
+  //     },
+  //     error: (err) => {
+  //       console.error('Login failed', err);
+  //       this.message = err?.error?.message || 'Login failed.';
+  //     }
+  //   });
+  // }
   onLogin(): void {
     this.message = '';
 
@@ -118,18 +153,32 @@ export class LoginComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: (response) => {
         if (response.role === 'DOCTOR' && response.doctor?.id) {
-          this.sessionService.setCurrentDoctor
-            (response.doctor.id,
+          this.sessionService.setCurrentDoctor(
+            response.doctor.id,
             response.doctor.email,
             response.token,
             response.doctor,
             response.role,
-            response.userId);
+            response.userId,
+            response.profileId ?? response.doctor.id
+          );
           this.router.navigate(['/doctors/dashboard']);
           return;
         }
 
-        this.sessionService.setAuthSession(response.email, response.role, response.token, response.userId);
+        this.sessionService.setAuthSession(
+          response.email,
+          response.role,
+          response.token,
+          response.userId,
+          response.profileId ?? undefined
+        );
+
+        if (response.role === 'PATIENT') {
+          this.router.navigate(['/patient-dashboard']);
+          return;
+        }
+
         this.router.navigate(['/']);
       },
       error: (err) => {
@@ -138,4 +187,5 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
     });
   }
+
 }

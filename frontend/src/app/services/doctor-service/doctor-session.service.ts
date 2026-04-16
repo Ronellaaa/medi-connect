@@ -7,12 +7,21 @@ const DOCTOR_TOKEN_KEY = 'currentDoctorToken';
 const DOCTOR_PROFILE_KEY = 'currentDoctorProfile';
 const AUTH_ROLE_KEY = 'currentAuthRole';
 const AUTH_USER_ID_KEY = 'currentAuthUserId';
+const AUTH_PROFILE_ID_KEY = 'currentAuthProfileId';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DoctorSessionService {
-  setCurrentDoctor(id: number, email: string, token?: string, doctor?: Doctor, role: string = 'DOCTOR', userId?: number): void {
+  setCurrentDoctor(
+    id: number,
+    email: string,
+    token?: string,
+    doctor?: Doctor,
+    role: string = 'DOCTOR',
+    userId?: number,
+    profileId?: number
+  ): void {
     localStorage.setItem(DOCTOR_ID_KEY, String(id));
     localStorage.setItem(DOCTOR_EMAIL_KEY, email);
     localStorage.setItem(AUTH_ROLE_KEY, role);
@@ -22,12 +31,15 @@ export class DoctorSessionService {
     if (userId != null) {
       localStorage.setItem(AUTH_USER_ID_KEY, String(userId));
     }
+    if (profileId != null) {
+      localStorage.setItem(AUTH_PROFILE_ID_KEY, String(profileId));
+    }
     if (doctor) {
       localStorage.setItem(DOCTOR_PROFILE_KEY, JSON.stringify(doctor));
     }
   }
 
-  setAuthSession(email: string, role: string, token?: string, userId?: number): void {
+  setAuthSession(email: string, role: string, token?: string, userId?: number, profileId?: number): void {
     localStorage.setItem(DOCTOR_EMAIL_KEY, email);
     localStorage.setItem(AUTH_ROLE_KEY, role);
     if (token) {
@@ -35,6 +47,9 @@ export class DoctorSessionService {
     }
     if (userId != null) {
       localStorage.setItem(AUTH_USER_ID_KEY, String(userId));
+    }
+    if (profileId != null) {
+      localStorage.setItem(AUTH_PROFILE_ID_KEY, String(profileId));
     }
   }
 
@@ -70,6 +85,16 @@ export class DoctorSessionService {
     return Number.isNaN(parsed) ? null : parsed;
   }
 
+  getCurrentProfileId(): number | null {
+    const value = localStorage.getItem(AUTH_PROFILE_ID_KEY);
+    if (!value) {
+      return null;
+    }
+
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+
   getCurrentDoctorProfile(): Doctor | null {
     const value = localStorage.getItem(DOCTOR_PROFILE_KEY);
     if (!value) {
@@ -95,5 +120,6 @@ export class DoctorSessionService {
     localStorage.removeItem(DOCTOR_PROFILE_KEY);
     localStorage.removeItem(AUTH_ROLE_KEY);
     localStorage.removeItem(AUTH_USER_ID_KEY);
+    localStorage.removeItem(AUTH_PROFILE_ID_KEY);
   }
 }

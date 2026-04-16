@@ -13,11 +13,11 @@
         <img class="booking-doctor-image" src="/doctor-watcher.png" alt="Doctor profile" />
       </div>
       <div class="booking-doctor-copy">
-        <h2 class="booking-doctor-name">Dr. John Smith</h2>
-        <p class="booking-doctor-role">Cardiologist</p>
+        <h2 class="booking-doctor-name">{{ selectedDoctorName || 'Doctor not selected' }}</h2>
+        <p class="booking-doctor-role">{{ selectedSpecialty || 'Specialty not available' }}</p>
         <div class="booking-doctor-hospital">
           <mat-icon>local_hospital</mat-icon>
-          <span>City General Hospital</span>
+          <span>{{ selectedHospital || 'Hospital not available' }}</span>
         </div>
       </div>
     </div>
@@ -37,8 +37,8 @@
               class="booking-form-input booking-form-input-date"
               type="date"
               name="booking-date"
+              
               [(ngModel)]="selectedDate"
-              value="2026-04-25"
             />
           </label>
         </article>
@@ -141,8 +141,6 @@
             />
           </label>
         </article>
-
-   
       </div>
 
       <label class="booking-terms">
@@ -150,23 +148,24 @@
         <span>I agree to the Terms and Conditions.</span>
       </label>
 
-      <button class="booking-confirm-button" type="button" [disabled]="isSubmitting" (click)="confirmBooking()">
-          {{ isSubmitting ? 'Booking...' : 'Confirm Booking' }}
-
+      <button
+        class="booking-confirm-button"
+        type="button"
+        [disabled]="isSubmitting"
+        (click)="confirmBooking()"
+      >
+        {{ isSubmitting ? 'Booking...' : 'Confirm Booking' }}
       </button>
     </form>
 
     <div class="booking-modal-backdrop" *ngIf="showSuccessModal">
-  <div class="booking-modal">
-    <h2 class="booking-modal-title">Appointment Confirmed</h2>
-    <p class="booking-modal-text">
-      {{ successModalText }}
-    </p>
-    <button class="booking-modal-button" type="button" (click)="closeSuccessModal()">
-      OK
-    </button>
-  </div>
-</div>
-
+      <div class="booking-modal">
+        <h2 class="booking-modal-title">Appointment Confirmed</h2>
+        <p class="booking-modal-text">
+          {{ successModalText }}
+        </p>
+        <button class="booking-modal-button" type="button" (click)="closeSuccessModal()">OK</button>
+      </div>
+    </div>
   </section>
 </main>

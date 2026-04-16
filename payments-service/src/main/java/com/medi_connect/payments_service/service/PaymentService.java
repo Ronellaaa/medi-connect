@@ -7,6 +7,8 @@ import com.medi_connect.payments_service.dto.PaymentResponse;
 import com.medi_connect.payments_service.model.Payment;
 import com.medi_connect.payments_service.model.PaymentStatus;
 import com.medi_connect.payments_service.repository.PaymentRepository;
+
+import java.util.HashMap;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -149,8 +151,8 @@ public class PaymentService {
             Map<String, String> sessionResponse = restTemplate.postForObject(
                 telemedicineUrl, sessionRequest, Map.class);
             
-            meetingUrl = sessionResponse.get("meetingUrl");
-            payment.setMeetingUrl(meetingUrl);
+//            meetingUrl = sessionResponse.get("meetingUrl");
+//            payment.setMeetingUrl(meetingUrl);
             paymentRepository.save(payment);
             
             log.info("Telemedicine session created: {}", meetingUrl);

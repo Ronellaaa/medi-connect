@@ -1,6 +1,7 @@
 package com.medi_connect.auth_service.service;
 
 import com.medi_connect.auth_service.client.DoctorServiceClient;
+import com.medi_connect.auth_service.client.PatientServiceClient;
 import com.medi_connect.auth_service.config.JwtService;
 import com.medi_connect.auth_service.dto.*;
 import com.medi_connect.auth_service.entity.AuthUser;
@@ -23,6 +24,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final DoctorServiceClient doctorServiceClient;
+    private final PatientServiceClient patientServiceClient;
 
     public AuthResponse register(RegisterRequest request) {
         if (authUserRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -30,8 +32,14 @@ public class AuthService {
         }
 
         DoctorProfileDto doctorProfile = null;
+        Long profileId = null;
+
         if (request.getRole() == UserRole.DOCTOR) {
             doctorProfile = doctorServiceClient.createDoctorProfile(request);
+            profileId = doctorProfile != null ? doctorProfile.getId() : null;
+        } else if (request.getRole() == UserRole.PATIENT) {
+            PatientProfileDto patientProfile = patientServiceClient.createPatientProfile(request);
+            profileId = patientProfile != null ? patientProfile.getId() : null;
         }
 
         AuthUser savedUser = authUserRepository.save(AuthUser.builder()
@@ -40,7 +48,7 @@ public class AuthService {
                 .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
-                .profileId(doctorProfile != null ? doctorProfile.getId() : null)
+                .profileId(profileId)
                 .build());
 
         return buildResponse(savedUser, doctorProfile);

@@ -16,7 +16,7 @@ import { gsap } from 'gsap';
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DashboardComponent1 implements OnInit, AfterViewInit, OnDestroy {
   
   dashboardData: DashboardSummary = {
     totalDoctors: 0,

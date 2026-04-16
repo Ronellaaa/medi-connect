@@ -494,6 +494,26 @@
     opacity: 0.78;
   }
 }
+.search-suggestions {
+  margin-top: 8px;
+  background: #ffffff;
+  border: 1px solid #d9e2ec;
+  border-radius: 12px;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.search-suggestion-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.search-suggestion-item:hover {
+  background: #f4f8fb;
+}
+
 
 @media (min-width: 1280px) {
   .appoinment-booking-grid {

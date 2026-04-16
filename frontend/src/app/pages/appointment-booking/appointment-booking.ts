@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppointmentApiService } from '../../services/appointment.service';
 import { NotificationService } from '../../services/notification.service';
+import { DoctorSessionService } from '../../services/doctor-service/doctor-session.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -15,24 +16,70 @@ import { CommonModule } from '@angular/common';
 export class AppointmentBooking {
   private appointmentApi = inject(AppointmentApiService);
   private notificationApi = inject(NotificationService);
+  private sessionService = inject(DoctorSessionService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   fullName = '';
   mobileNumber = '';
   age = 0;
   email = '';
-  selectedDate = '2026-04-25';
+  selectedDate = '';
   selectedTime = '10:00';
   showSuccessModal = false;
   successModalText = 'Please check your email for the appointment details.';
 
-  closeSuccessModal() {
-    this.showSuccessModal = false;
-    this.router.navigate(['/appointments']);
-  }
+  selectedDoctorId: number | null = null;
+  selectedDoctorName = '';
+  selectedSpecialty = '';
+  selectedHospital = '';
+  consultationFee = '';
+
   isSubmitting = false;
-  confirmBooking() {
+
+  constructor() {
+    this.route.queryParams.subscribe((params) => {
+      this.selectedDoctorId = params['doctorId'] ? Number(params['doctorId']) : null;
+      this.selectedDoctorName = params['doctorName'] ?? '';
+      this.selectedSpecialty = params['specialty'] ?? '';
+      this.selectedHospital = params['hospital'] ?? '';
+      this.selectedDate = params['date'] ?? '';
+      this.consultationFee = params['fee'] ?? '';
+    });
+  }
+
+  closeSuccessModal(): void {
+    this.showSuccessModal = false;
+    this.router.navigate(['/payments'], {
+      queryParams: {
+        appointmentId: this.latestAppointmentId,
+        patientId: this.sessionService.getCurrentProfileId(),
+        doctorId: this.selectedDoctorId,
+      },
+    });
+  }
+
+  private latestAppointmentId = '';
+
+  confirmBooking(): void {
     if (this.isSubmitting) {
+      return;
+    }
+
+    const patientId = this.sessionService.getCurrentProfileId();
+
+    if (!patientId) {
+      alert('Please log in again as a patient.');
+      return;
+    }
+
+    if (!this.selectedDoctorId) {
+      alert('Doctor information is missing.');
+      return;
+    }
+
+    if (!this.selectedDate || !this.selectedTime) {
+      alert('Please select date and time.');
       return;
     }
 
@@ -42,7 +89,8 @@ export class AppointmentBooking {
       alert('Please enter a valid age!');
       return;
     }
-    if (this.mobileNumber.length != 10 || this.mobileNumber == null) {
+
+    if (!this.mobileNumber || this.mobileNumber.length !== 10) {
       alert('Please enter a valid mobile number!');
       return;
     }
@@ -53,6 +101,7 @@ export class AppointmentBooking {
       alert('Please enter your name!');
       return;
     }
+
     if (this.email.trim() === '' || !this.email.includes('@')) {
       alert('Please enter a valid email address!');
       return;
@@ -62,42 +111,42 @@ export class AppointmentBooking {
 
     const appointmentPayload = {
       id: '',
-      patientId: 1,
+      patientId,
       patientName: this.fullName,
       patientphoneNumber: this.mobileNumber,
       patientAge: this.age,
-      doctorId: 101,
-      doctorName: 'Dr. John Smith',
-      specialty: 'Cardiologist',
+      doctorId: this.selectedDoctorId,
+      doctorName: this.selectedDoctorName,
+      specialty: this.selectedSpecialty,
       appointmentDate,
     };
 
     this.appointmentApi.createAppointment(appointmentPayload).subscribe({
       next: (response) => {
+        this.latestAppointmentId = response.id;
         this.showSuccessModal = true;
-        this.successModalText = 'Please check your email for the appointment details.';
+        this.successModalText = 'Appointment confirmed. Continue to payment.';
 
         const notificationPayload = {
           appointmentId: response.id,
           patientName: this.fullName,
-          doctorName: 'Dr. John Smith',
+          doctorName: this.selectedDoctorName,
           patientPhone: formattedPhone,
           patientEmail: this.email,
           appointmentDate,
         };
-        console.log('Appointment created successfully', response);
+
         this.notificationApi.sendAppointmentConfirmation(notificationPayload).subscribe({
           next: () => {
             this.isSubmitting = false;
           },
           error: () => {
-            this.successModalText = 'Appointment confirmed. The email notice could not be verified from the app, so please check your inbox or spam folder.';
             this.isSubmitting = false;
           },
         });
       },
       error: (error) => {
-         this.isSubmitting = false;
+        this.isSubmitting = false;
         console.error('Error creating appointment', error);
       },
     });

@@ -1,6 +1,10 @@
+logging:
+  pattern:
+    console: "${CONSOLE_LOG_PATTERN:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %cyan(%msg%n)}"
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/payment_db
+    url: jdbc:postgresql://localhost:5435/payment_db
     username: postgres
     password: "babibuba" # Use your actual PostgreSQL password
     driver-class-name: org.postgresql.Driver
@@ -32,7 +36,7 @@ payhere:
 
 appointment:
   service:
-    url: http://localhost:8081
+    url: http://localhost:8083
 
 telemedicine:
   service:

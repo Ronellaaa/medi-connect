@@ -8,7 +8,7 @@ import { DoctorAppoinmentDashboard } from './pages/doctor-appoinment-dashboard/d
 import { PatientAppoinmentDashboard } from './pages/patient-appoinment-dashboard/patient-appoinment-dashboard';
 
 //doctor
-import { DashboardComponent } from './pages/doctors/dashboard/dashboard';
+import { DashboardComponent1 } from './pages/doctors/dashboard/dashboard';
 import { DoctorLanding } from './pages/doctors/landing/landing';
 import { DoctorProfileComponent } from './pages/doctors/profile/profile';
 import { DoctorAppointmentsPageComponent } from './pages/doctors/appointments/appointments';
@@ -28,7 +28,7 @@ import { DashboardComponent } from './pages/patients/dashboard/dashboard.compone
 import { ProfileComponent } from './pages/patients/profile/profile.component';
 import { ReportsComponent } from './pages/patients/reports/reports.component';
 import { PrescriptionsComponent } from './pages/patients/prescriptions/prescriptions.component';
-import { Appoinments } from './pages/appoinments/appoinments';
+
 
 import { AdminDashboardComponent } from './pages/admin/dashboard/dashboard.component';
 import { PatientsComponent } from './pages/admin/patients/manage-patients.component';
@@ -38,11 +38,13 @@ import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'appointments',
-    pathMatch: 'full',
-  },
+  // {
+  //   path: '',
+  //   redirectTo: 'appointments',
+  //   pathMatch: 'full',
+  // },
+  { path: '', 
+    component: Home },
   {
     path: 'appointments',
     component: Appoinments,
@@ -68,29 +70,27 @@ export const routes: Routes = [
     redirectTo: 'appointments',
     pathMatch: 'full',
   },
-  { path: '', component: Home },
+
   { path: 'login', component: LoginComponent },
   { path: 'register', component: Register },
   { path: 'dashboard', redirectTo: 'doctors/dashboard', pathMatch: 'full' },
   { path: 'doctors', redirectTo: 'doctors/dashboard', pathMatch: 'full' },
   { path: 'doctors/dashboard', component: DoctorLanding },
-  { path: 'doctors/insights', component: DashboardComponent },
+  { path: 'doctors/insights', component: DashboardComponent1 },
   { path: 'doctors/profile', component: DoctorProfileComponent },
   { path: 'doctors/appointments', component: DoctorAppointmentsPageComponent },
   { path: 'doctors/availability', component: DoctorAvailabilityPageComponent },
   { path: 'doctors/prescription', component: DoctorPrescriptionPageComponent },
   { path: 'doctors/reports', component: DoctorReportsPageComponent },
   { path: 'doctors/team', component: DoctorsComponent },
-  
-  { path: '', pathMatch: 'full', redirectTo: 'payments' },
+
+  // { path: '', pathMatch: 'full', redirectTo: 'payments' },
   { path: 'payments', component: Payments },
   { path: 'payment/success', component: Payments, data: { state: 'success' } },
   { path: 'payment/cancel', component: Payments, data: { state: 'cancel' } },
-  { path: '**', redirectTo: 'payments' }
+
+  { path: '**', redirectTo: 'home' },
   
-   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
   { path: 'patients', redirectTo: 'patient/dashboard', pathMatch: 'full' },
   { path: 'admin', redirectTo: 'admin/dashboard', pathMatch: 'full' },
 
@@ -107,6 +107,9 @@ export const routes: Routes = [
   { path: 'admin/stats', component: StatsComponent, canActivate: [AuthGuard, AdminGuard] },
 
 //  { path: '**', redirectTo: 'login' }
+
+
+ 
 
 ];
 

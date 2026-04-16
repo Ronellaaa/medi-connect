@@ -1,10 +1,6 @@
 <main class="appoinments-booking-page">
   <div class="appoinments-doctor-watch" aria-hidden="true">
-    <img
-      class="appoinments-doctor-image"
-      src="/doctor-watcher.png"
-      alt=""
-    />
+    <img class="appoinments-doctor-image" src="/doctor-watcher.png" alt="" />
   </div>
   <section class="appoinments-hero-card">
     <div class="appoinments-hero-banner">
@@ -12,7 +8,7 @@
         <p class="appoinment-hero-label">Channel Your Doctor</p>
         <h1 class="appoinment-hero-title">Book an Appointment</h1>
         <p class="appoinment-hero-description">
-         Connect with trusted specialists, explore your options, and secure your appointment in
+          Connect with trusted specialists, explore your options, and secure your appointment in
           just a few clicks.
         </p>
       </div>
@@ -21,17 +17,17 @@
         <div class="appoinments-stack-motion">
           <div class="stack-card stack-card-left">
             <div class="stack-glow">
-              <img class="stack-image" src="/stack-2.png" alt="">
+              <img class="stack-image" src="/stack-2.png" alt="" />
             </div>
           </div>
           <div class="stack-card stack-card-center">
             <div class="stack-glow">
-               <img class="stack-image" src="/stack-1.png" alt="">
+              <img class="stack-image" src="/stack-1.png" alt="" />
             </div>
           </div>
           <div class="stack-card stack-card-right">
             <div class="stack-glow">
-              <img class="stack-image" src="/stack-3.png" alt="">
+              <img class="stack-image" src="/stack-3.png" alt="" />
             </div>
           </div>
         </div>
@@ -83,8 +79,28 @@
               <span class="field-prefix">
                 <mat-icon>search</mat-icon>
               </span>
-              <input class="booking-input" type="search" placeholder="Search doctor" />
+              <input
+                class="booking-input"
+                type="search"
+                placeholder="Search doctor"
+                [(ngModel)]="doctor"
+                name="doctor"
+                (input)="onDoctorInput()"
+                (blur)="hideSuggestions()"
+              />
             </label>
+            <div
+              class="search-suggestions"
+              *ngIf="showDoctorSuggestions && filteredDoctorNames.length"
+            >
+              <div
+                class="search-suggestion-item"
+                *ngFor="let name of filteredDoctorNames"
+                (click)="selectDoctor(name)"
+              >
+                {{ name }}
+              </div>
+            </div>
           </div>
         </article>
 
@@ -98,8 +114,28 @@
               <span class="field-prefix">
                 <mat-icon>search</mat-icon>
               </span>
-              <input class="booking-input" type="search" placeholder="Select speciality" />
+              <input
+                class="booking-input"
+                type="search"
+                placeholder="Select speciality"
+                [(ngModel)]="specialty"
+                name="specialty"
+                (input)="onSpecialtyInput()"
+                (blur)="hideSuggestions()"
+              />
             </label>
+            <div
+              class="search-suggestions"
+              *ngIf="showSpecialtySuggestions && filteredSpecialties.length"
+            >
+              <div
+                class="search-suggestion-item"
+                *ngFor="let item of filteredSpecialties"
+                (click)="selectSpecialty(item)"
+              >
+                {{ item }}
+              </div>
+            </div>
           </div>
         </article>
 
@@ -113,7 +149,27 @@
               <span class="field-prefix">
                 <mat-icon>search</mat-icon>
               </span>
-              <input class="booking-input" type="search" placeholder="Choose hospital" />
+              <input
+                class="booking-input"
+                type="search"
+                placeholder="Choose hospital"
+                [(ngModel)]="hospital"
+                name="hospital"
+                (input)="onHospitalInput()"
+                (blur)="hideSuggestions()"
+              />
+              <div
+                class="search-suggestions"
+                *ngIf="showHospitalSuggestions && filteredHospitals.length"
+              >
+                <div
+                  class="search-suggestion-item"
+                  *ngFor="let item of filteredHospitals"
+                  (click)="selectHospital(item)"
+                >
+                  {{ item }}
+                </div>
+              </div>
             </label>
           </div>
         </article>
@@ -128,14 +184,19 @@
               <span class="field-prefix">
                 <mat-icon>search</mat-icon>
               </span>
-              <input class="booking-input booking-input-date" type="date" />
+              <input
+                class="booking-input booking-input-date"
+                type="date"
+                [(ngModel)]="date"
+                name="date"
+              />
               <span class="field-suffix">📅</span>
             </label>
           </div>
         </article>
       </div>
 
-      <button class="appoinment-search-button" type="button" routerLink="/appointments/results">
+      <button class="appoinment-search-button" type="button" (click)="searchAppointments()">
         Search
       </button>
     </div>

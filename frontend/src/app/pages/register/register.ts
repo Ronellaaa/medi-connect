@@ -50,10 +50,10 @@ export class Register implements OnInit, OnDestroy {
     availability: '',
     languages: '',
     bio: '',
-    password: ''
+    password: '',
   };
 
- slides: SlideItem[] = [
+  slides: SlideItem[] = [
     {
       bg: '#transparent',
       title: 'Best Doctors',
@@ -92,7 +92,7 @@ export class Register implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private sessionService: DoctorSessionService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -128,6 +128,46 @@ export class Register implements OnInit, OnDestroy {
     this.message = '';
   }
 
+  // submit(): void {
+  //   this.message = '';
+
+  //   if (!this.form.fullName || !this.form.email || !this.form.password) {
+  //     this.message = 'Full name, email, and password are required.';
+  //     return;
+  //   }
+
+  //   this.isSubmitting = true;
+  //   this.form.role = this.selectedRole;
+
+  //   this.authService.register(this.form).subscribe({
+  //     next: (response) => {
+  //       if (response.role === 'DOCTOR' && response.doctor?.id) {
+  //         this.sessionService.setCurrentDoctor
+  //           (response.doctor.id,
+  //            response.doctor.email,
+  //            response.token,
+  //            response.doctor,
+  //            response.role,
+  //            response.userId);
+  //         this.message = 'Signup complete. Redirecting...';
+  //         this.isSubmitting = false;
+  //         this.router.navigate(['/doctors/dashboard']);
+  //         return;
+  //       }
+
+  //       this.sessionService.setAuthSession(response.email, response.role, response.token, response.userId);
+  //       this.message = 'Signup complete. Redirecting...';
+  //       this.isSubmitting = false;
+  //       this.router.navigate(['/']);
+  //     },
+  //     error: (err) => {
+  //       console.error('Signup failed', err);
+  //       this.message = err?.error?.message || 'Could not create doctor account.';
+  //       this.isSubmitting = false;
+  //     }
+  //   });
+  // }
+
   submit(): void {
     this.message = '';
 
@@ -142,29 +182,44 @@ export class Register implements OnInit, OnDestroy {
     this.authService.register(this.form).subscribe({
       next: (response) => {
         if (response.role === 'DOCTOR' && response.doctor?.id) {
-          this.sessionService.setCurrentDoctor
-            (response.doctor.id,
-             response.doctor.email,
-             response.token,
-             response.doctor,
-             response.role,
-             response.userId);
+          this.sessionService.setCurrentDoctor(
+            response.doctor.id,
+            response.doctor.email,
+            response.token,
+            response.doctor,
+            response.role,
+            response.userId,
+            response.profileId ?? response.doctor.id
+          );
           this.message = 'Signup complete. Redirecting...';
           this.isSubmitting = false;
           this.router.navigate(['/doctors/dashboard']);
           return;
         }
 
-        this.sessionService.setAuthSession(response.email, response.role, response.token, response.userId);
+        this.sessionService.setAuthSession(
+          response.email,
+          response.role,
+          response.token,
+          response.userId,
+          response.profileId ?? undefined
+        );
+
         this.message = 'Signup complete. Redirecting...';
         this.isSubmitting = false;
+
+        if (response.role === 'PATIENT') {
+          this.router.navigate(['/patient-dashboard']);
+          return;
+        }
+
         this.router.navigate(['/']);
       },
       error: (err) => {
         console.error('Signup failed', err);
-        this.message = err?.error?.message || 'Could not create doctor account.';
+        this.message = err?.error?.message || 'Could not create account.';
         this.isSubmitting = false;
-      }
+      },
     });
   }
 }
