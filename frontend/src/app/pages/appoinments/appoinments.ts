@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
   selector: 'app-appoinments',
   imports: [MatIconModule, RouterLink],
   templateUrl: './appoinments.html',
-  styleUrl: './appoinments.css',
+  styleUrls: ['./appoinments.css'],
 })
 export class Appoinments {
   

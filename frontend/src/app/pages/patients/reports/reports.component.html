@@ -1,0 +1,86 @@
+<div class="reports-container">
+  <div class="reports-header">
+    <div>
+      <h1>Medical Reports</h1>
+      <p>Upload and manage your medical documents</p>
+    </div>
+    <button class="btn-upload" (click)="showUploadModal = true">
+      <span>+</span> Upload New Report
+    </button>
+  </div>
+
+  <div class="reports-grid" *ngIf="!isLoading">
+    <div class="report-card" *ngFor="let report of reports">
+      <div class="report-card-header">
+        <div class="report-type">
+          <span class="type-icon">📄</span>
+          <span>{{ report.fileType?.split('/')[1]?.toUpperCase() || 'PDF' }}</span>
+        </div>
+        <div class="report-actions">
+          <button class="action-btn" (click)="downloadReport(report.filePath)" title="Download">📥</button>
+          <button class="action-btn delete" (click)="deleteReport(report.id)" title="Delete">🗑️</button>
+        </div>
+      </div>
+      <div class="report-card-body">
+        <h3>{{ report.title }}</h3>
+        <p>{{ report.description || 'No description provided' }}</p>
+        <div class="report-meta">
+          <span>📅 {{ report.uploadedAt | date:'mediumDate' }}</span>
+          <span>📊 {{ (report.fileSize / 1024) | number:'1.0-0' }} KB</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="reports.length === 0">
+      <div class="empty-icon">📂</div>
+      <h3>No Reports Yet</h3>
+      <p>Upload your first medical report to get started</p>
+      <button class="btn-upload" (click)="showUploadModal = true">Upload Report</button>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-large"></div>
+    <p>Loading your reports...</p>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal" *ngIf="showUploadModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Upload Medical Report</h2>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" [(ngModel)]="uploadTitle" placeholder="e.g., Blood Test Report - March 2024">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="uploadDescription" rows="3" placeholder="Additional notes about this report"></textarea>
+        </div>
+        <div class="form-group">
+          <label>File *</label>
+          <div class="file-drop" (click)="fileInput.click()">
+            <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept=".pdf,.jpg,.png,.jpeg,.doc,.docx">
+            <div *ngIf="!selectedFile">
+              <span class="upload-icon">📁</span>
+              <p>Click to select file</p>
+              <small>PDF, JPG, PNG, DOC (Max 10MB)</small>
+            </div>
+            <div *ngIf="selectedFile">
+              <span class="file-icon">📄</span>
+              <p>{{ selectedFile.name }}</p>
+              <small>{{ (selectedFile.size / 1024) | number:'1.0-0' }} KB</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button class="btn-submit" (click)="uploadReport()" [disabled]="isLoading">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>

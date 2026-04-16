@@ -1,0 +1,87 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <div class="logo">
+      <span class="gradient-text">Medi</span>
+      <span>Connect Admin</span>
+    </div>
+    <div class="admin-nav">
+      <a routerLink="/admin/dashboard" class="active">Dashboard</a>
+      <a routerLink="/admin/patients">Patients</a>
+      <a routerLink="/admin/stats">Analytics</a>
+      <button class="btn-logout" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="welcome-section">
+      <h1>Admin Dashboard</h1>
+      <p>Overview of platform operations</p>
+    </div>
+
+    <div class="stats-grid" *ngIf="!isLoading">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <h3>{{ stats.totalPatients }}</h3>
+          <p>Total Patients</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <h3>{{ stats.activePatients }}</h3>
+          <p>Active Patients</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-info">
+          <h3>{{ stats.totalAppointments }}</h3>
+          <p>Appointments</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+          <h3>₹{{ stats.totalRevenue | number }}</h3>
+          <p>Total Revenue</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏦</div>
+        <div class="stat-info">
+          <h3>₹{{ stats.platformFees | number }}</h3>
+          <p>Platform Fees</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card recent-patients">
+        <div class="card-header">
+          <h3>Recent Patients</h3>
+          <a routerLink="/admin/patients">View All →</a>
+        </div>
+        <div class="card-body">
+          <table class="patients-table">
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Status</th><th>Joined</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let patient of recentPatients">
+                <td>{{ patient.firstName }} {{ patient.lastName }}</td>
+                <td>{{ patient.email }}</td>
+                <td>
+                  <span class="status-badge" [class.active]="patient.enabled" [class.inactive]="!patient.enabled">
+                    {{ patient.enabled ? 'Active' : 'Disabled' }}
+                  </span>
+                </td>
+                <td>{{ patient.createdAt | date:'shortDate' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

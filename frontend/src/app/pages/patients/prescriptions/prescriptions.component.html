@@ -1,0 +1,108 @@
+<div class="prescriptions-container">
+  <div class="prescriptions-header">
+    <div>
+      <h1>My Prescriptions</h1>
+      <p>View all your prescribed medications</p>
+    </div>
+  </div>
+
+  <div class="prescriptions-list" *ngIf="!isLoading">
+    <div class="prescription-card" *ngFor="let prescription of prescriptions" (click)="viewDetails(prescription)">
+      <div class="prescription-card-header">
+        <div class="doctor-info">
+          <div class="doctor-avatar">👨‍⚕️</div>
+          <div>
+            <h3>Dr. {{ prescription.doctorName }}</h3>
+            <p>Prescribed on {{ prescription.issuedAt | date:'mediumDate' }}</p>
+          </div>
+        </div>
+        <div class="status-badge" [class.expiring]="isExpiringSoon(prescription.validUntil)">
+          Valid until {{ prescription.validUntil | date:'mediumDate' }}
+        </div>
+      </div>
+      <div class="prescription-card-body">
+        <div class="diagnosis">
+          <strong>Diagnosis:</strong>
+          <p>{{ prescription.diagnosis }}</p>
+        </div>
+        <div class="medications">
+          <strong>Medications:</strong>
+          <div class="medication-list">
+            <div class="medication-item" *ngFor="let med of parseMedications(prescription.medications)">
+              <span class="med-name">{{ med.name }}</span>
+              <span class="med-dosage">{{ med.dosage }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="prescriptions.length === 0">
+      <div class="empty-icon">💊</div>
+      <h3>No Prescriptions Yet</h3>
+      <p>Your prescriptions will appear here after your consultations</p>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-large"></div>
+    <p>Loading your prescriptions...</p>
+  </div>
+
+  <!-- Prescription Details Modal -->
+  <div class="modal" *ngIf="selectedPrescription" (click)="closeModal()">
+    <div class="modal-content prescription-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Prescription Details</h2>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="prescription-details">
+          <div class="detail-section">
+            <h4>Doctor Information</h4>
+            <p><strong>Name:</strong> Dr. {{ selectedPrescription.doctorName }}</p>
+            <p><strong>Doctor ID:</strong> {{ selectedPrescription.doctorId }}</p>
+          </div>
+
+          <div class="detail-section">
+            <h4>Prescription Information</h4>
+            <p><strong>Issued Date:</strong> {{ selectedPrescription.issuedAt | date:'fullDate' }}</p>
+            <p><strong>Valid Until:</strong> {{ selectedPrescription.validUntil | date:'fullDate' }}</p>
+            <p><strong>Appointment ID:</strong> {{ selectedPrescription.appointmentId }}</p>
+          </div>
+
+          <div class="detail-section">
+            <h4>Diagnosis</h4>
+            <p>{{ selectedPrescription.diagnosis }}</p>
+          </div>
+
+          <div class="detail-section">
+            <h4>Medications</h4>
+            <table class="medications-table">
+              <thead>
+                <tr><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Duration</th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let med of parseMedicationsDetailed(selectedPrescription.medications)">
+                  <td>{{ med.name }}</td>
+                  <td>{{ med.dosage }}</td>
+                  <td>{{ med.frequency || 'As prescribed' }}</td>
+                  <td>{{ med.duration || 'As needed' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="detail-section" *ngIf="selectedPrescription.instructions">
+            <h4>Instructions</h4>
+            <p>{{ selectedPrescription.instructions }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-print" (click)="printPrescription()">🖨️ Print</button>
+        <button class="btn-close" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

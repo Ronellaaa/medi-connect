@@ -1,0 +1,86 @@
+<div class="stats-container">
+  <div class="stats-header">
+    <div>
+      <h1>Platform Analytics</h1>
+      <p>Detailed insights and statistics</p>
+    </div>
+    <button class="btn-refresh" (click)="loadStats()" [disabled]="isLoading">
+      🔄 Refresh
+    </button>
+  </div>
+
+  <div class="stats-grid" *ngIf="!isLoading">
+    <div class="stat-card large">
+      <div class="stat-title">Total Revenue</div>
+      <div class="stat-value large">₹{{ stats.totalRevenue | number }}</div>
+      <div class="stat-subtitle">Platform Fees: ₹{{ stats.platformFees | number }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-title">Patients</div>
+      <div class="stat-value">{{ stats.totalPatients }}</div>
+      <div class="stat-subtitle">Active: {{ stats.activePatients }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-title">Appointments</div>
+      <div class="stat-value">{{ stats.totalAppointments }}</div>
+      <div class="stat-subtitle">Completed: {{ stats.completedAppointments || 0 }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-title">Doctors</div>
+      <div class="stat-value">{{ stats.totalDoctors || 0 }}</div>
+      <div class="stat-subtitle">Active: {{ stats.activeDoctors || 0 }}</div>
+    </div>
+  </div>
+
+  <div class="charts-grid" *ngIf="!isLoading">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Patients by Month</h3>
+      </div>
+      <div class="chart-body">
+        <div class="bar-chart">
+          <div class="bar-item" *ngFor="let item of patientsByMonth">
+            <div class="bar-label">{{ item.month }}</div>
+            <div class="bar-container">
+              <div class="bar" [style.height.%]="(item.count / maxCount) * 100" [style.background]="getBarColor(item.month)"></div>
+            </div>
+            <div class="bar-value">{{ item.count }}</div>
+          </div>
+        </div>
+        <div class="empty-chart" *ngIf="patientsByMonth.length === 0">
+          <p>No data available</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Quick Stats</h3>
+      </div>
+      <div class="chart-body">
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <span class="quick-label">Completion Rate</span>
+            <span class="quick-value">{{ getCompletionRate() }}%</span>
+          </div>
+          <div class="quick-stat">
+            <span class="quick-label">Active Users</span>
+            <span class="quick-value">{{ ((stats.activePatients || 0) / (stats.totalPatients || 1) * 100) | number:'1.0-0' }}%</span>
+          </div>
+          <div class="quick-stat">
+            <span class="quick-label">Avg Consultation Fee</span>
+            <span class="quick-value">₹{{ getAvgFee() | number }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-large"></div>
+    <p>Loading analytics...</p>
+  </div>
+</div>
