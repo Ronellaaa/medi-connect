@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment_db
+    username: postgres
+    password: "babibuba" # Use your actual PostgreSQL password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+server:
+  port: 8085
+
+payhere:
+  merchantId: "1234717"
+  merchantSecret: "MzgxNDE3NTQ0NzM1MjE0NzYyNjMyNjI4NzE3NjA5NDE1OTg5ODcwOQ=="
+  appId: "4OVybzfSsCW4JH5Ex7FPDE3PR"
+  appSecret: "8n2zqkfzkLi8mz80cgK5r74p6nyiWIWYw8cL35m5AsAi"
+  baseUrl: https://sandbox.payhere.lk
+  returnUrl: http://localhost:4200/payment/success
+  cancelUrl: http://localhost:4200/payment/cancel
+  notifyUrl: https://keisha-pseudocollegiate-alison.ngrok-free.dev/api/payments/webhook/payhere
+
+appointment:
+  service:
+    url: http://localhost:8081
+
+telemedicine:
+  service:
+    url: http://localhost:3000
