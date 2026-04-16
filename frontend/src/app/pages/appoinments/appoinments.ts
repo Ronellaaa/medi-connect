@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-appoinments',
+  standalone: true,
   imports: [],
   templateUrl: './appoinments.html',
-  styleUrl: './appoinments.css',
+  styleUrls: ['./appoinments.css'],
 })
 export class Appoinments {}

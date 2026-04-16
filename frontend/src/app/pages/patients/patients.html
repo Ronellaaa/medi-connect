@@ -1,1 +1,289 @@
-<p>patients works!</p>
+<section class="space-y-6">
+  <div class="rounded-3xl bg-white p-8 shadow-xl">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm uppercase tracking-[0.3em] text-sky-600">Patient Services</p>
+        <h1 class="mt-2 text-3xl font-semibold text-slate-950">Beautiful care dashboard for your patients</h1>
+        <p class="mt-3 max-w-2xl text-slate-600">Track patients, appointments, and clinical status with a clean, responsive service page.</p>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2 lg:auto-cols-min lg:grid-flow-col">
+        <button class="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Refresh list</button>
+        <button class="rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500">Add patient</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-6 xl:grid-cols-[2fr_1fr]">
+    <div class="space-y-6">
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <p class="text-sm font-medium text-slate-500">Total patients</p>
+          <p class="mt-3 text-3xl font-semibold text-slate-950">{{ totalPatients }}</p>
+        </div>
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <p class="text-sm font-medium text-slate-500">Upcoming appointments</p>
+          <p class="mt-3 text-3xl font-semibold text-slate-950">{{ activeAppointments }}</p>
+        </div>
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <p class="text-sm font-medium text-slate-500">Search patients</p>
+          <p class="mt-3 text-3xl font-semibold text-slate-950">Quick access</p>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-950">Patient list</h2>
+            <p class="mt-1 text-sm text-slate-500">Search, review, and manage patient details.</p>
+          </div>
+          <div class="w-full max-w-sm">
+            <input
+              [(ngModel)]="searchQuery"
+              type="search"
+              placeholder="Search by name, condition, or status"
+              class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+            />
+          </div>
+        </div>
+
+        <div class="mt-6 overflow-hidden rounded-3xl border border-slate-200">
+          <table class="min-w-full text-left text-sm text-slate-700">
+            <thead class="bg-slate-50 text-slate-500">
+              <tr>
+                <th class="px-4 py-3">Patient</th>
+                <th class="px-4 py-3">Condition</th>
+                <th class="px-4 py-3">Next appointment</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+              <tr *ngFor="let patient of filteredPatients" class="hover:bg-slate-50">
+                <td class="px-4 py-4">
+                  <button type="button" (click)="selectPatient(patient)" class="text-left text-sm font-medium text-slate-900 hover:text-sky-600">
+                    {{ patient.name }}
+                  </button>
+                  <p class="mt-1 text-xs text-slate-500">{{ patient.phone }}</p>
+                </td>
+                <td class="px-4 py-4 text-slate-600">{{ patient.condition }}</td>
+                <td class="px-4 py-4 text-slate-600">{{ patient.nextAppointment }}</td>
+                <td class="px-4 py-4">
+                  <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                    [ngClass]="{
+                      'bg-emerald-100 text-emerald-700': patient.status === 'Active',
+                      'bg-amber-100 text-amber-700': patient.status === 'Pending',
+                      'bg-slate-100 text-slate-700': patient.status === 'Completed'
+                    }"
+                  >
+                    {{ patient.status }}
+                  </span>
+                </td>
+                <td class="px-4 py-4">
+                  <button
+                    type="button"
+                    class="rounded-full bg-slate-950 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
+                    (click)="removePatient(patient)"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="filteredPatients.length === 0" class="border-t border-slate-200 px-4 py-8 text-center text-sm text-slate-500">
+            No patients found. Try a different search or add a new patient.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-950">Patient details</h2>
+            <p class="mt-1 text-sm text-slate-500">Select a patient to view the full summary.</p>
+          </div>
+        </div>
+
+        <div *ngIf="selectedPatient; else emptyDetail" class="mt-6 space-y-6">
+          <div class="rounded-3xl bg-slate-50 p-5">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-sm text-slate-500">Name</p>
+                <p class="mt-2 text-xl font-semibold text-slate-950">{{ selectedPatient.name }}</p>
+              </div>
+              <span class="rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600">{{ selectedPatient.gender }}</span>
+            </div>
+            <div class="mt-5 grid gap-4 sm:grid-cols-2">
+              <div>
+                <p class="text-sm text-slate-500">Email</p>
+                <p class="mt-1 text-sm text-slate-900">{{ selectedPatient.email }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500">Phone</p>
+                <p class="mt-1 text-sm text-slate-900">{{ selectedPatient.phone }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+              <p class="text-sm text-slate-500">Next appointment</p>
+              <p class="mt-2 text-base font-semibold text-slate-950">{{ selectedPatient.nextAppointment }}</p>
+            </div>
+            <div class="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+              <p class="text-sm text-slate-500">Condition</p>
+              <p class="mt-2 text-base font-semibold text-slate-950">{{ selectedPatient.condition }}</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="text-sm text-slate-600">Update patient status</div>
+            <div class="flex flex-wrap gap-2">
+              <button
+                type="button"
+                class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                (click)="updateStatus(selectedPatient!, 'Active')"
+              >
+                Active
+              </button>
+              <button
+                type="button"
+                class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                (click)="updateStatus(selectedPatient!, 'Pending')"
+              >
+                Pending
+              </button>
+              <button
+                type="button"
+                class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                (click)="updateStatus(selectedPatient!, 'Completed')"
+              >
+                Completed
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #emptyDetail>
+          <div class="rounded-3xl border border-dashed border-slate-200 p-8 text-center text-slate-500">
+            Select a row to inspect a patient or add a new one.
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <h2 class="text-lg font-semibold text-slate-950">Add new patient</h2>
+        <p class="mt-2 text-sm text-slate-500">Use the form below to create a new patient record for service management.</p>
+
+        <form class="mt-6 space-y-5" (ngSubmit)="addPatient()">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="space-y-2 text-sm text-slate-700">
+              <span>Name</span>
+              <input
+                [(ngModel)]="newPatient.name"
+                name="patientName"
+                type="text"
+                class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                placeholder="Patient name"
+              />
+            </label>
+            <label class="space-y-2 text-sm text-slate-700">
+              <span>Age</span>
+              <input
+                [(ngModel)]="newPatient.age"
+                name="patientAge"
+                type="number"
+                min="0"
+                class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              />
+            </label>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="space-y-2 text-sm text-slate-700">
+              <span>Contact phone</span>
+              <input
+                [(ngModel)]="newPatient.phone"
+                name="patientPhone"
+                type="tel"
+                class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                placeholder="Phone number"
+              />
+            </label>
+            <label class="space-y-2 text-sm text-slate-700">
+              <span>Email address</span>
+              <input
+                [(ngModel)]="newPatient.email"
+                name="patientEmail"
+                type="email"
+                class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                placeholder="Email address"
+              />
+            </label>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="space-y-2 text-sm text-slate-700">
+              <span>Condition</span>
+              <input
+                [(ngModel)]="newPatient.condition"
+                name="patientCondition"
+                type="text"
+                class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                placeholder="Reason for visit"
+              />
+            </label>
+            <label class="space-y-2 text-sm text-slate-700">
+              <span>Appointment</span>
+              <input
+                [(ngModel)]="newPatient.nextAppointment"
+                name="patientNextAppointment"
+                type="text"
+                class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                placeholder="e.g. 2026-05-23 11:00 AM"
+              />
+            </label>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="space-y-2 text-sm text-slate-700">
+              <span>Gender</span>
+              <select
+                [(ngModel)]="newPatient.gender"
+                name="patientGender"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              >
+                <option>Female</option>
+                <option>Male</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label class="space-y-2 text-sm text-slate-700">
+              <span>Status</span>
+              <select
+                [(ngModel)]="newPatient.status"
+                name="patientStatus"
+                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+              >
+                <option>Pending</option>
+                <option>Active</option>
+                <option>Completed</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              type="submit"
+              class="rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-500"
+            >
+              Create patient record
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,124 @@
+<div class="patients-container">
+  <div class="patients-header">
+    <div>
+      <h1>Patient Management</h1>
+      <p>Manage all registered patients</p>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      (input)="filterPatients()"
+      placeholder="Search by name or email..."
+      class="search-input"
+    >
+  </div>
+
+  <div class="patients-table-container" *ngIf="!isLoading">
+    <table class="patients-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let patient of filteredPatients">
+          <td>#{{ patient.id }}</td>
+          <td>
+            <div class="patient-name">
+              <div class="patient-avatar">{{ patient.firstName[0] }}{{ patient.lastName[0] }}</div>
+              {{ patient.firstName }} {{ patient.lastName }}
+            </div>
+          </td>
+          <td>{{ patient.email }}</td>
+          <td>{{ patient.phoneNumber }}</td>
+          <td>
+            <span class="status-badge" [class.active]="patient.enabled" [class.inactive]="!patient.enabled">
+              {{ patient.enabled ? 'Active' : 'Disabled' }}
+            </span>
+          </td>
+          <td class="actions">
+            <button class="btn-view" (click)="viewPatient(patient)">View</button>
+            <button class="btn-toggle" (click)="togglePatientStatus(patient)">
+              {{ patient.enabled ? 'Disable' : 'Enable' }}
+            </button>
+            <button class="btn-delete" (click)="deletePatient(patient)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty-state" *ngIf="filteredPatients.length === 0">
+      <div class="empty-icon">👥</div>
+      <h3>No Patients Found</h3>
+      <p>Try adjusting your search</p>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-large"></div>
+    <p>Loading patients...</p>
+  </div>
+
+  <!-- Patient Details Modal -->
+  <div class="modal" *ngIf="selectedPatient" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Patient Details</h2>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="patient-details">
+          <div class="detail-row">
+            <span class="label">Full Name:</span>
+            <span>{{ selectedPatient.firstName }} {{ selectedPatient.lastName }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Email:</span>
+            <span>{{ selectedPatient.email }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Phone:</span>
+            <span>{{ selectedPatient.phoneNumber }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Date of Birth:</span>
+            <span>{{ selectedPatient.dateOfBirth | date }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Gender:</span>
+            <span>{{ selectedPatient.gender }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Blood Group:</span>
+            <span>{{ selectedPatient.bloodGroup || 'Not specified' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Address:</span>
+            <span>{{ selectedPatient.address || 'Not specified' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Emergency Contact:</span>
+            <span>{{ selectedPatient.emergencyContact || 'Not specified' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Status:</span>
+            <span class="status-badge" [class.active]="selectedPatient.enabled" [class.inactive]="!selectedPatient.enabled">
+              {{ selectedPatient.enabled ? 'Active' : 'Disabled' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close-modal" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

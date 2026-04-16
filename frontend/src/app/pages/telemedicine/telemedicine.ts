@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-telemedicine',
+  standalone: true,
   imports: [],
   templateUrl: './telemedicine.html',
-  styleUrl: './telemedicine.css',
+  styleUrls: ['./telemedicine.css'],
 })
 export class Telemedicine {}
