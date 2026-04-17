@@ -36,7 +36,7 @@ payhere:
 
 appointment:
   service:
-    url: http://localhost:8083
+    url: http://localhost:8088
 
 telemedicine:
   service:

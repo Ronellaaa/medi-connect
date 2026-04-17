@@ -153,19 +153,39 @@ public class PaymentService {
         Payment completed = paymentRepository.save(payment);
         log.info("Payment completed: {}", paymentId);
 
-            String meetingUrl = null;
+        // 🔥🔥🔥 ADD CONSOLE LOGS FOR DEBUGGING 🔥🔥🔥
+        System.out.println("\n═══════════════════════════════════════════════════");
+        System.out.println("🔥 PAYMENT COMPLETED - CREATING TELEMEDICINE SESSION");
+        System.out.println("═══════════════════════════════════════════════════");
+
+
+        String meetingUrl = null;
         try {
-            String telemedicineUrl = telemedicineServiceUrl + "/api/sessions/create";
+            String telemedicineUrl = telemedicineServiceUrl + "/api/telemedicine/sessions";
+
+            System.out.println("🌐 Calling URL: " + telemedicineUrl);
+            System.out.println("📦 Payment ID: " + payment.getId());
+            System.out.println("📦 Appointment ID: " + payment.getAppointmentId());
             
             Map<String, String> sessionRequest = Map.of(
             "paymentId", payment.getId(),
             "appointmentId", payment.getAppointmentId()
             );
+
+            System.out.println("📤 Request Body: " + sessionRequest);
             
             Map<String, String> sessionResponse = restTemplate.postForObject(
                 telemedicineUrl, sessionRequest, Map.class);
+
+            System.out.println("📥 Response received: " + sessionResponse);
             
-//            meetingUrl = sessionResponse.get("meetingUrl");
+            if (sessionResponse != null) {
+                meetingUrl = sessionResponse.get("meetingUrl");
+                System.out.println("✅ Meeting URL extracted: " + meetingUrl);
+            } else {
+                System.out.println("❌ Response was NULL!");
+            }
+        
 //            payment.setMeetingUrl(meetingUrl);
             paymentRepository.save(payment);
             
