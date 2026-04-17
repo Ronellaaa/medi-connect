@@ -81,9 +81,17 @@
 .patient-dashboard-label,
 .patient-dashboard-calendar-header p,
 .patient-dashboard-appointment-copy p,
-.patient-dashboard-appointment-time span {
+.patient-dashboard-appointment-time span,
+.patient-dashboard-payment-details span {
   margin: 0;
   color: rgba(27, 32, 98, 0.68);
+}
+
+.patient-dashboard-payment-details {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 0.86rem;
 }
 
 .patient-dashboard-profile-button,

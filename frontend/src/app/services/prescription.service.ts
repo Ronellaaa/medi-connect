@@ -11,4 +11,6 @@ export class PrescriptionService {
   getMyPrescriptions(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/my-prescriptions`);
   }
+
+  
 }

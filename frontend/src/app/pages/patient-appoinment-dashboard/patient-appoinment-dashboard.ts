@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AppointmentApiService, AppointmentsPayload } from '../../services/appointment.service';
 import { DoctorSessionService } from '../../services/doctor-service/doctor-session.service';
 import { PatientAppoinmentDashboardService } from '../../services/patient-appoinment-dashboard.service';
+import { PatientService } from '../../services/patient.service';
 
 type CalendarDay = {
   dateNumber: number;
@@ -17,7 +17,7 @@ type CalendarDay = {
 
 @Component({
   selector: 'app-patient-appoinment-dashboard',
-  imports: [CommonModule, FormsModule, MatIconModule, RouterLink],
+  imports: [CommonModule, MatIconModule, RouterLink],
   templateUrl: './patient-appoinment-dashboard.html',
   styleUrl: './patient-appoinment-dashboard.css',
 })
@@ -25,9 +25,10 @@ export class PatientAppoinmentDashboard {
   private patientDashboardService = inject(PatientAppoinmentDashboardService);
   private appointmentApi = inject(AppointmentApiService);
   private sessionService = inject(DoctorSessionService);
+  private patientService = inject(PatientService);
 
   protected readonly patientId = this.sessionService.getCurrentProfileId();
-  protected readonly patientName = 'Sarah Williams';
+  protected patientName = 'Patient';
   protected readonly profileTag = 'Patient Dashboard';
 
   protected readonly loading = signal(true);
@@ -36,15 +37,9 @@ export class PatientAppoinmentDashboard {
   protected readonly selectedDate = signal('');
   protected readonly calendarCursor = signal(new Date());
   protected readonly cancelPending = signal(false);
-  protected readonly reschedulePending = signal(false);
 
   protected showCancelModal = false;
-  protected showRescheduleModal = false;
   protected appointmentToCancel: AppointmentsPayload | null = null;
-  protected appointmentToReschedule: AppointmentsPayload | null = null;
-  protected rescheduleDate = '';
-  protected rescheduleTime = '';
-  protected rescheduleErrorMessage = '';
 
   protected readonly highlightedDates = computed(() => {
     return Array.from(
@@ -107,6 +102,7 @@ export class PatientAppoinmentDashboard {
   });
 
   constructor() {
+    this.loadPatientProfile();
     this.loadAppointments();
   }
 
@@ -137,6 +133,26 @@ export class PatientAppoinmentDashboard {
       hour: 'numeric',
       minute: '2-digit',
     });
+  }
+
+  protected formatAmount(amount?: number): string {
+    if (amount == null) {
+      return 'Pending';
+    }
+
+    return new Intl.NumberFormat('en-LK', {
+      style: 'currency',
+      currency: 'LKR',
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
+
+  protected openMeeting(appointment: AppointmentsPayload): void {
+    if (appointment.status !== 'CONFIRMED' || !appointment.meetingUrl) {
+      return;
+    }
+
+    window.open(appointment.meetingUrl, '_blank', 'noopener,noreferrer');
   }
 
   protected formatSelectedDayLabel(): string {
@@ -193,61 +209,6 @@ export class PatientAppoinmentDashboard {
     });
   }
 
-  protected openRescheduleModal(appointment: AppointmentsPayload): void {
-    const [datePart, timePartWithSeconds = '00:00:00'] = appointment.appointmentDate.split('T');
-    this.appointmentToReschedule = appointment;
-    this.rescheduleDate = datePart;
-    this.rescheduleTime = timePartWithSeconds.slice(0, 5);
-    this.rescheduleErrorMessage = '';
-    this.showRescheduleModal = true;
-  }
-
-  protected closeRescheduleModal(): void {
-    this.showRescheduleModal = false;
-    this.appointmentToReschedule = null;
-    this.rescheduleDate = '';
-    this.rescheduleTime = '';
-    this.rescheduleErrorMessage = '';
-    this.reschedulePending.set(false);
-  }
-
-  protected confirmRescheduleAppointment(): void {
-    if (!this.appointmentToReschedule || this.reschedulePending()) {
-      return;
-    }
-
-    if (!this.rescheduleDate || !this.rescheduleTime) {
-      this.rescheduleErrorMessage = 'Please choose both a date and time.';
-      return;
-    }
-
-    const updatedDateTime = `${this.rescheduleDate}T${this.rescheduleTime}:00`;
-    this.reschedulePending.set(true);
-    this.rescheduleErrorMessage = '';
-
-    this.appointmentApi
-      .updateAppointment(this.appointmentToReschedule.id ?? '', {
-        appointmentDate: updatedDateTime,
-      })
-      .subscribe({
-        next: (updatedAppointment: AppointmentsPayload) => {
-          this.appointments.update((appointments) =>
-            appointments.map((appointment) =>
-              appointment.id === updatedAppointment.id ? updatedAppointment : appointment,
-            ),
-          );
-          this.selectedDate.set(updatedAppointment.appointmentDate.slice(0, 10));
-          this.syncCalendarCursor(updatedAppointment.appointmentDate.slice(0, 10));
-          this.closeRescheduleModal();
-        },
-        error: (error: unknown) => {
-          console.error('Error rescheduling appointment', error);
-          this.rescheduleErrorMessage = 'Unable to reschedule right now. Please try again.';
-          this.reschedulePending.set(false);
-        },
-      });
-  }
-
   private loadAppointments(): void {
     if (!this.patientId) {
       this.errorMessage.set('Patient session not found. Please log in again.');
@@ -258,6 +219,9 @@ export class PatientAppoinmentDashboard {
     this.patientDashboardService.getPatientAppoinments(this.patientId).subscribe({
       next: (appointments) => {
         this.appointments.set(appointments);
+        if (appointments[0]?.patientName) {
+          this.patientName = appointments[0].patientName;
+        }
         const firstDate = appointments[0]?.appointmentDate.slice(0, 10) ?? '';
         this.selectedDate.set(firstDate);
         this.syncCalendarCursor(firstDate);
@@ -266,6 +230,23 @@ export class PatientAppoinmentDashboard {
       error: () => {
         this.errorMessage.set('Unable to load patient appointments right now.');
         this.loading.set(false);
+      },
+    });
+  }
+
+  private loadPatientProfile(): void {
+    this.patientService.getProfile().subscribe({
+      next: (profile) => {
+        const firstName = profile?.firstName ?? '';
+        const lastName = profile?.lastName ?? '';
+        const fullName = `${firstName} ${lastName}`.trim();
+
+        if (fullName) {
+          this.patientName = fullName;
+        }
+      },
+      error: () => {
+        // Fall back to appointment patientName when profile fetch is unavailable.
       },
     });
   }

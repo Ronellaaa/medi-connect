@@ -137,6 +137,11 @@
                 >
                   {{ appointment.status || 'PENDING' }}
                 </span>
+                <div class="patient-dashboard-payment-details">
+                  <span>Payment: {{ appointment.paymentStatus || 'PENDING' }}</span>
+                  <span *ngIf="appointment.paymentAmount != null">Amount: {{ formatAmount(appointment.paymentAmount) }}</span>
+                  <span *ngIf="appointment.paymentId">Payment ID: {{ appointment.paymentId }}</span>
+                </div>
               </div>
             </div>
 
@@ -146,11 +151,15 @@
             </div>
 
             <div class="patient-dashboard-appointment-actions">
-              <button class="patient-dashboard-join" type="button" [disabled]="appointment.status !== 'CONFIRMED'">Join</button>
-              <button class="patient-dashboard-cancel" type="button" (click)="openCancelModal(appointment)">Cancel</button>
-              <button class="patient-dashboard-reschedule" type="button" (click)="openRescheduleModal(appointment)">
-                Reschedule
+              <button
+                class="patient-dashboard-join"
+                type="button"
+                [disabled]="appointment.status !== 'CONFIRMED' || !appointment.meetingUrl"
+                (click)="openMeeting(appointment)"
+              >
+                Join
               </button>
+              <button class="patient-dashboard-cancel" type="button" (click)="openCancelModal(appointment)">Cancel</button>
             </div>
           </article>
         </div>
@@ -182,44 +191,6 @@
           [disabled]="cancelPending()"
         >
           {{ cancelPending() ? 'Cancelling...' : 'Yes, Cancel' }}
-        </button>
-      </div>
-    </section>
-  </div>
-
-  <div class="patient-dashboard-modal-backdrop" *ngIf="showRescheduleModal">
-    <section class="patient-dashboard-modal">
-      <div class="patient-dashboard-modal-copy">
-        <p class="patient-dashboard-modal-label">Reschedule Appointment</p>
-        <h3>Choose a new date and time</h3>
-        <p *ngIf="appointmentToReschedule">
-          Update your appointment with {{ appointmentToReschedule.doctorName }}.
-        </p>
-      </div>
-
-      <div class="patient-dashboard-modal-form">
-        <label class="patient-dashboard-modal-field">
-          <span>New Date</span>
-          <input type="date" [(ngModel)]="rescheduleDate" />
-        </label>
-
-        <label class="patient-dashboard-modal-field">
-          <span>New Time</span>
-          <input type="time" [(ngModel)]="rescheduleTime" />
-        </label>
-      </div>
-
-      <p class="patient-dashboard-modal-error" *ngIf="rescheduleErrorMessage">{{ rescheduleErrorMessage }}</p>
-
-      <div class="patient-dashboard-modal-actions">
-        <button class="patient-dashboard-modal-secondary" type="button" (click)="closeRescheduleModal()">Back</button>
-        <button
-          class="patient-dashboard-modal-primary"
-          type="button"
-          (click)="confirmRescheduleAppointment()"
-          [disabled]="reschedulePending()"
-        >
-          {{ reschedulePending() ? 'Saving...' : 'Save Changes' }}
         </button>
       </div>
     </section>

@@ -134,6 +134,7 @@ export class AppointmentBooking {
     const appointmentPayload = {
       patientId,
       patientName: this.fullName,
+      patientEmail: this.email,
       patientphoneNumber: this.mobileNumber,
       patientAge: this.age,
       doctorId: this.selectedDoctorId,

@@ -49,7 +49,7 @@ interface IssuedPrescription {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './prescription.html',
-  styleUrl: './prescription.css'
+  styleUrls: ['./prescription.css']
 })
 export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
   @ViewChild('issuedStripScroller') issuedStripScroller?: ElementRef<HTMLDivElement>;
@@ -133,22 +133,50 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     private sessionService: DoctorSessionService
   ) {}
 
+  // ngOnInit(): void {
+  //   this.doctorId = this.sessionService.getCurrentDoctorId();
+  // console.log('doctorId from session:', this.doctorId);
+  // console.log('token from session:', this.sessionService.getToken());
+  //   if (this.doctorId) {
+  //     this.doctorService.getDoctorById(this.doctorId).subscribe({
+  //       next: (doctor) => {
+  //         this.diaryForm.doctorName = doctor.fullName || '';
+  //       },
+  //       error: (err) => {
+  //         console.error('Failed to load doctor name', err);
+  //       }
+  //     });
+  //   }
+
+  //   this.loadIssuedPrescriptions();
+  // }
   ngOnInit(): void {
-    this.doctorId = this.sessionService.getCurrentDoctorId();
+  const role = this.sessionService.getCurrentRole();
 
-    if (this.doctorId) {
-      this.doctorService.getDoctorById(this.doctorId).subscribe({
-        next: (doctor) => {
-          this.diaryForm.doctorName = doctor.fullName || '';
-        },
-        error: (err) => {
-          console.error('Failed to load doctor name', err);
-        }
-      });
-    }
-
-    this.loadIssuedPrescriptions();
+  if (role !== 'DOCTOR') {
+    this.validationMessage = 'Only doctors can access prescriptions.';
+    this.issuedLoadMessage = 'Access denied.';
+    return;
   }
+
+  this.doctorId = this.sessionService.getCurrentDoctorId();
+
+  console.log('doctorId from session:', this.doctorId);
+  console.log('token from session:', this.sessionService.getToken());
+
+  if (this.doctorId) {
+    this.doctorService.getDoctorById(this.doctorId).subscribe({
+      next: (doctor) => {
+        this.diaryForm.doctorName = doctor.fullName || '';
+      },
+      error: (err) => {
+        console.error('Failed to load doctor name', err);
+      }
+    });
+  }
+
+  this.loadIssuedPrescriptions();
+}
 
   ngAfterViewInit(): void {
     queueMicrotask(() => this.updateIssuedScrollState());
@@ -210,34 +238,42 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     }, 650);
   }
 
-  confirmIssue(): void {
-    if (!this.doctorId) {
-      this.validationMessage = 'Doctor record is required before issuing a prescription.';
-      this.showConfirmModal = false;
-      return;
-    }
+ confirmIssue(): void {
+  const role = this.sessionService.getCurrentRole();
 
-    const payload = this.buildPrescriptionPayload();
-    const request$ = this.isEditingIssued && this.selectedPrescriptionId
-      ? this.prescriptionService.updatePrescription(this.selectedPrescriptionId, payload)
-      : this.prescriptionService.createPrescription(payload);
-
-    request$.subscribe({
-      next: () => {
-        this.showConfirmModal = false;
-        this.validationMessage = '';
-        this.resetDiaryForm();
-        this.loadIssuedPrescriptions();
-      },
-      error: (err) => {
-        console.error('Failed to save prescription', err);
-        this.validationMessage = this.isEditingIssued
-          ? 'Could not update prescription in doctor-service.'
-          : 'Could not issue prescription to doctor-service.';
-        this.showConfirmModal = false;
-      }
-    });
+  if (role !== 'DOCTOR') {
+    this.validationMessage = 'Only doctors can issue prescriptions.';
+    this.showConfirmModal = false;
+    return;
   }
+
+  if (!this.doctorId) {
+    this.validationMessage = 'Doctor record is required before issuing a prescription.';
+    this.showConfirmModal = false;
+    return;
+  }
+
+  const payload = this.buildPrescriptionPayload();
+  const request$ = this.isEditingIssued && this.selectedPrescriptionId
+    ? this.prescriptionService.updatePrescription(this.selectedPrescriptionId, payload)
+    : this.prescriptionService.createPrescription(payload);
+
+  request$.subscribe({
+    next: () => {
+      this.showConfirmModal = false;
+      this.validationMessage = '';
+      this.resetDiaryForm();
+      this.loadIssuedPrescriptions();
+    },
+    error: (err) => {
+      console.error('Failed to save prescription', err);
+      this.validationMessage = this.isEditingIssued
+        ? 'Could not update prescription in doctor-service.'
+        : 'Could not issue prescription to doctor-service.';
+      this.showConfirmModal = false;
+    }
+  });
+}
 
   cancelConfirm(): void {
     this.showConfirmModal = false;
@@ -329,38 +365,48 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     return hasBasicFields && hasOneMedicine;
   }
 
-  private loadIssuedPrescriptions(): void {
-    this.issuedLoadMessage = '';
+ private loadIssuedPrescriptions(): void {
+  this.issuedLoadMessage = '';
 
-    const obs = this.doctorId
-      ? this.prescriptionService.getPrescriptionsByDoctor(this.doctorId)
-      : this.prescriptionService.getAllPrescriptions();
+  const role = this.sessionService.getCurrentRole();
 
-    obs.subscribe({
-      next: (records) => {
-        this.issuedPrescriptions = records.length
-          ? records.map((item) => ({
-              idText: item.id ? `RX-${item.id}` : 'RX',
-              patientName: `Patient #${item.patientId}`,
-              diagnosis: this.displayDiagnosis(item),
-              title: this.displayTitle(item),
-              issuedDate: item.issuedDate || 'No date',
-              notePreview: this.notePreview(item.instructions),
-              raw: item
-            }))
-          : [];
-        queueMicrotask(() => this.updateIssuedScrollState());
-      },
-      error: (err) => {
-        console.error('Failed to load issued prescriptions', err);
-        this.issuedPrescriptions = [];
-        this.issuedLoadMessage = err?.status === 401 || err?.status === 403
-          ? 'Issued prescriptions could not load because the doctor session is not authorized.'
-          : 'Issued prescriptions could not be loaded from doctor-service.';
-        this.updateIssuedScrollState();
-      }
-    });
+  if (role !== 'DOCTOR') {
+    this.issuedPrescriptions = [];
+    this.issuedLoadMessage = 'Only doctors can view prescriptions.';
+    return;
   }
+
+  if (!this.doctorId) {
+    this.issuedPrescriptions = [];
+    this.issuedLoadMessage = 'Doctor session not found.';
+    return;
+  }
+
+  this.prescriptionService.getPrescriptionsByDoctor(this.doctorId).subscribe({
+    next: (records) => {
+      this.issuedPrescriptions = records.length
+        ? records.map((item) => ({
+            idText: item.id ? `RX-${item.id}` : 'RX',
+            patientName: `Patient #${item.patientId}`,
+            diagnosis: this.displayDiagnosis(item),
+            title: this.displayTitle(item),
+            issuedDate: item.issuedDate || 'No date',
+            notePreview: this.notePreview(item.instructions),
+            raw: item
+          }))
+        : [];
+      queueMicrotask(() => this.updateIssuedScrollState());
+    },
+    error: (err) => {
+      console.error('Failed to load issued prescriptions', err);
+      this.issuedPrescriptions = [];
+      this.issuedLoadMessage = err?.status === 401 || err?.status === 403
+        ? 'Issued prescriptions could not load because the doctor session is not authorized.'
+        : 'Issued prescriptions could not be loaded from doctor-service.';
+      this.updateIssuedScrollState();
+    }
+  });
+}
 
   private firstMedicine(value: string): string {
     if (!value) {

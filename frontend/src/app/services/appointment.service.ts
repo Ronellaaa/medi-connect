@@ -8,6 +8,7 @@ export interface AppointmentsPayload {
   id?: string;
   patientId: number;
   patientName: string;
+  patientEmail?: string;
   patientphoneNumber: string;
   patientAge: number;
   doctorId: number;
@@ -15,6 +16,11 @@ export interface AppointmentsPayload {
   specialty: string;
   appointmentDate: string;
   status?: string;
+  paymentStatus?: string;
+  paymentId?: string;
+  paymentAmount?: number;
+  paidAt?: string;
+  meetingUrl?: string;
 }
 
 @Injectable({
