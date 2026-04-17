@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AppointmentApiService } from '../../services/appointment.service';
-import { NotificationService } from '../../services/notification.service';
 import { DoctorSessionService } from '../../services/doctor-service/doctor-session.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -24,7 +23,6 @@ interface PatientProfile {
 })
 export class AppointmentBooking {
   private appointmentApi = inject(AppointmentApiService);
-  private notificationApi = inject(NotificationService);
   private sessionService = inject(DoctorSessionService);
   private patientService = inject(PatientService);
   private route = inject(ActivatedRoute);
@@ -35,7 +33,6 @@ export class AppointmentBooking {
   age = 0;
   email = '';
   selectedDate = '';
-  selectedTime = '10:00';
   showSuccessModal = false;
   successModalText = 'Please check your email for the appointment details.';
 
@@ -67,6 +64,7 @@ export class AppointmentBooking {
         appointmentId: this.latestAppointmentId,
         patientId: this.sessionService.getCurrentProfileId(),
         doctorId: this.selectedDoctorId,
+        consultationFee: this.consultationFee || '',
       },
     });
   }
@@ -104,12 +102,12 @@ export class AppointmentBooking {
       return;
     }
 
-    if (!this.selectedDate || !this.selectedTime) {
-      alert('Please select date and time.');
+    if (!this.selectedDate) {
+      alert('Appointment date is missing.');
       return;
     }
 
-    const appointmentDate = `${this.selectedDate}T${this.selectedTime}:00`;
+    const appointmentDate = `${this.selectedDate}T00:00:00`;
 
     if (this.age < 0 || this.age == null) {
       alert('Please enter a valid age!');
@@ -120,8 +118,6 @@ export class AppointmentBooking {
       alert('Please enter a valid mobile number!');
       return;
     }
-
-    const formattedPhone = `+94${this.mobileNumber.substring(1)}`;
 
     if (this.fullName.trim() === '') {
       alert('Please enter your name!');
@@ -151,28 +147,12 @@ export class AppointmentBooking {
         this.latestAppointmentId = response.id ?? '';
         this.showSuccessModal = true;
         this.successModalText = 'Appointment confirmed. Continue to payment.';
-
-        const notificationPayload = {
-          appointmentId: response.id ?? '',
-          patientName: this.fullName,
-          doctorName: this.selectedDoctorName,
-          patientPhone: formattedPhone,
-          patientEmail: this.email,
-          appointmentDate,
-        };
-
-        this.notificationApi.sendAppointmentConfirmation(notificationPayload).subscribe({
-          next: () => {
-            this.isSubmitting = false;
-          },
-          error: () => {
-            this.isSubmitting = false;
-          },
-        });
+        this.isSubmitting = false;
       },
       error: (error) => {
         this.isSubmitting = false;
         console.error('Error creating appointment', error);
+         alert('Booking failed');
       },
     });
   }

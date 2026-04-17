@@ -209,17 +209,11 @@ export class Appoinments implements OnInit {
       );
     }
 
-    const selectedDay = this.toDayOfWeek(this.date);
     return new Set(
       this.availabilityRecords
-        .filter((record) => record.dayOfWeek?.toUpperCase() === selectedDay)
+        .filter((record) => record.availabilityDate === this.date)
         .map((record) => record.doctor?.id)
         .filter((id): id is number => !!id),
     );
-  }
-
-  private toDayOfWeek(value: string): string {
-    const date = new Date(`${value}T00:00:00`);
-    return date.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
   }
 }

@@ -49,8 +49,8 @@ public class AvailabilityService {
     public Optional<Availability> updateAvailability(Long id, Availability updatedAvailability) {
         return availabilityRepository.findById(id).map(existing -> {
 
-            if (updatedAvailability.getDayOfWeek() != null) {
-                existing.setDayOfWeek(updatedAvailability.getDayOfWeek());
+            if (updatedAvailability.getAvailabilityDate() != null) {
+                existing.setAvailabilityDate(updatedAvailability.getAvailabilityDate());
             }
             if (updatedAvailability.getStartTime() != null) {
                 existing.setStartTime(updatedAvailability.getStartTime());
@@ -135,7 +135,7 @@ public class AvailabilityService {
     private AvailabilityDto toDto(Availability availability) {
         return AvailabilityDto.builder()
                 .id(availability.getId())
-                .dayOfWeek(availability.getDayOfWeek())
+                .availabilityDate(availability.getAvailabilityDate() != null ? availability.getAvailabilityDate().toString() : null)
                 .startTime(formatTime(availability.getStartTime()))
                 .endTime(formatTime(availability.getEndTime()))
                 .hospitalOrClinic(availability.getHospitalOrClinic())

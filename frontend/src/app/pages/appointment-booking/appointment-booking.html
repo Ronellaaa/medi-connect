@@ -27,7 +27,7 @@
         <article class="booking-field-card">
           <div class="booking-field-card-header">
             <mat-icon>calendar_month</mat-icon>
-            <h3 class="booking-field-card-title">Choose Date</h3>
+            <h3 class="booking-field-card-title">Appointment Date</h3>
           </div>
           <label class="booking-form-field">
             <span class="booking-form-prefix">
@@ -37,27 +37,8 @@
               class="booking-form-input booking-form-input-date"
               type="date"
               name="booking-date"
-              
-              [(ngModel)]="selectedDate"
-            />
-          </label>
-        </article>
-
-        <article class="booking-field-card">
-          <div class="booking-field-card-header">
-            <mat-icon>schedule</mat-icon>
-            <h3 class="booking-field-card-title">Choose Time</h3>
-          </div>
-          <label class="booking-form-field">
-            <span class="booking-form-prefix">
-              <mat-icon>schedule</mat-icon>
-            </span>
-            <input
-              class="booking-form-input"
-              type="time"
-              name="booking-time"
-              [(ngModel)]="selectedTime"
-              value="10:00"
+              [ngModel]="selectedDate"
+              readonly
             />
           </label>
         </article>
@@ -138,6 +119,25 @@
               name="email"
               [(ngModel)]="email"
               placeholder="Enter your email"
+            />
+          </label>
+        </article>
+
+        <article class="booking-field-card">
+          <div class="booking-field-card-header">
+            <mat-icon>payments</mat-icon>
+            <h3 class="booking-field-card-title">Consultation Fee</h3>
+          </div>
+          <label class="booking-form-field">
+            <span class="booking-form-prefix">
+              <mat-icon>currency_rupee</mat-icon>
+            </span>
+            <input
+              class="booking-form-input"
+              type="text"
+              name="consultationFee"
+              [ngModel]="consultationFee ? 'LKR ' + consultationFee : 'Not available'"
+              readonly
             />
           </label>
         </article>

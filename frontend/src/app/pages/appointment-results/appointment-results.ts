@@ -63,6 +63,7 @@ export class AppointmentResults {
         clinic: this.hospitalQuery || '',
         bio: '',
       };
+      this.loadDoctorDetails(this.doctorIdQuery);
       this.loadDoctorAvailability(this.doctorIdQuery);
       return;
     }
@@ -101,6 +102,18 @@ export class AppointmentResults {
     });
   }
 
+  private loadDoctorDetails(doctorId: number): void {
+    this.doctorService.getDoctorById(doctorId).subscribe({
+      next: (doctor) => {
+        this.selectedDoctor = doctor;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        // Keep the query-param fallback doctor data if the details request fails.
+      },
+    });
+  }
+
   private loadDoctorAvailability(doctorId: number): void {
     this.availabilityService.getAvailabilityByDoctor(doctorId).pipe(timeout(8000)).subscribe({
       next: (records) => {
@@ -117,34 +130,46 @@ export class AppointmentResults {
   }
 
   private filterAvailability(records: AvailabilityRecord[]): AvailabilityRecord[] {
-    const dayFilter = this.dateQuery ? this.toDayOfWeek(this.dateQuery) : '';
-
     return records.filter((record) => {
-      const matchesDay = !dayFilter || record.dayOfWeek?.toUpperCase() === dayFilter;
+      const matchesDate = !this.dateQuery || record.availabilityDate === this.dateQuery;
 
-      return record.available && matchesDay;
+      return record.available && matchesDate;
     });
   }
 
-  private toDayOfWeek(value: string): string {
-    const date = new Date(`${value}T00:00:00`);
-    return date.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
-  }
-
-  bookDoctor(doctor: Doctor): void {
+  bookDoctor(doctor: Doctor, slot: AvailabilityRecord): void {
     this.router.navigate(['/appointments/booking'], {
       queryParams: {
         doctorId: doctor.id,
         doctorName: doctor.fullName,
         specialty: doctor.mainSpecialization,
         hospital: doctor.clinic ?? '',
-        date: this.dateQuery || '',
+        date: slot.availabilityDate || this.dateQuery || '',
         fee: doctor.consultationFee ?? '',
       },
     });
   }
 
   formatAvailability(record: AvailabilityRecord): string {
-    return `${record.dayOfWeek} · ${record.startTime.slice(0, 5)} - ${record.endTime.slice(0, 5)}`;
+    const dateLabel = this.formatDate(record.availabilityDate);
+    return `${dateLabel} · ${record.startTime.slice(0, 5)} - ${record.endTime.slice(0, 5)}`;
+  }
+
+  private formatDate(value?: string): string {
+    if (!value) {
+      return 'Date not set';
+    }
+
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   }
 }

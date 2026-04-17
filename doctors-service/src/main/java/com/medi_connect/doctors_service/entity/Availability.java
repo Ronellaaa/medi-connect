@@ -3,6 +3,7 @@ package com.medi_connect.doctors_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
@@ -18,7 +19,7 @@ public class Availability {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String dayOfWeek;
+    private LocalDate availabilityDate;
 
     private LocalTime startTime;
 
@@ -34,4 +35,3 @@ public class Availability {
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 }
-

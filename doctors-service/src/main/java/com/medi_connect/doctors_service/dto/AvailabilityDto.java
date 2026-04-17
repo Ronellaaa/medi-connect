@@ -13,7 +13,7 @@ import lombok.Setter;
 @Builder
 public class AvailabilityDto {
     private Long id;
-    private String dayOfWeek;
+    private String availabilityDate;
     private String startTime;
     private String endTime;
     private String hospitalOrClinic;

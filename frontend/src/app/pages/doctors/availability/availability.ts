@@ -66,7 +66,7 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
   selectedSlot: any = null;
 
   formData: any = {
-    dayOfWeek: '',
+    availabilityDate: '',
     startTime: '',
     endTime: '',
     hospitalOrClinic: '',
@@ -113,7 +113,7 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
 
         this.slots = records.map((item, index) => ({
           id: item.id!,
-          day: item.dayOfWeek || 'Day not set',
+          day: this.formatDate(item.availabilityDate) || 'Date not set',
           detail: `${this.formatTime(item.startTime)} - ${this.formatTime(item.endTime)}`,
           status: this.getStatus(item),
           tone: this.getTone(item),
@@ -172,7 +172,7 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
     this.isEditMode = false;
     this.currentRecordId = null;
     this.formData = {
-      dayOfWeek: '',
+      availabilityDate: '',
       startTime: '',
       endTime: '',
       hospitalOrClinic: '',
@@ -213,8 +213,8 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (!this.formData.dayOfWeek || !this.formData.startTime || !this.formData.endTime) {
-      this.statusMessage = 'Day, start time, and end time are required.';
+    if (!this.formData.availabilityDate || !this.formData.startTime || !this.formData.endTime) {
+      this.statusMessage = 'Date, start time, and end time are required.';
       return;
     }
 
@@ -445,6 +445,24 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
 
   private formatTime(value: string): string {
     return value ? value.slice(0, 5) : 'N/A';
+  }
+
+  private formatDate(value?: string): string {
+    if (!value) {
+      return '';
+    }
+
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   }
 
   private getShortType(type: string): string {

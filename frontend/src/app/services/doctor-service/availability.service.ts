@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface AvailabilityRecord {
   id?: number;
-  dayOfWeek: string;
+  availabilityDate: string;
   startTime: string;
   endTime: string;
   hospitalOrClinic: string;

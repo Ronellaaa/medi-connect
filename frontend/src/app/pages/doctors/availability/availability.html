@@ -24,7 +24,7 @@
       <div class="sidebar-note">
         <p>Availability</p>
         <strong>
-          Shape your weekly slots beautifully and keep each consultation window easy to review.
+          Shape your calendar slots beautifully and keep each consultation window easy to review.
         </strong>
       </div>
     </aside>
@@ -44,9 +44,9 @@
 
       <section class="availability-hero" #heroSection>
         <div class="availability-copy">
-          <span class="hero-tag">Weekly rhythm</span>
+          <span class="hero-tag">Calendar rhythm</span>
           <h3>
-            Save your clinic slots on the left and preview them as interactive pocket cards on the
+            Save your clinic dates on the left and preview them as interactive pocket cards on the
             right.
           </h3>
           <p>
@@ -94,17 +94,8 @@
             <div class="form-grid-medical">
               <div class="form-card wide">
                 <div class="field-group">
-                  <label>Day of week</label>
-                  <select [(ngModel)]="formData.dayOfWeek" name="dayOfWeek">
-                    <option value="">Select day</option>
-                    <option>Monday</option>
-                    <option>Tuesday</option>
-                    <option>Wednesday</option>
-                    <option>Thursday</option>
-                    <option>Friday</option>
-                    <option>Saturday</option>
-                    <option>Sunday</option>
-                  </select>
+                  <label>Available date</label>
+                  <input type="date" [(ngModel)]="formData.availabilityDate" name="availabilityDate" />
                 </div>
               </div>
 
