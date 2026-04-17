@@ -1,13 +1,18 @@
 package com.medi_connect.patients_service.Secutity;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
-import java.util.*;
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Component
@@ -16,20 +21,13 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    // =========================
-    // SIGNING KEY
-    // =========================
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(java.util.Base64.getEncoder().encodeToString(secret.getBytes()));
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // =========================
-    // GENERATE TOKEN (FIXED)
-    // =========================
     public String generateToken(UserDetails userDetails) {
-
         Map<String, Object> claims = new HashMap<>();
-
         String role = userDetails.getAuthorities()
                 .iterator()
                 .next()
@@ -41,44 +39,28 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // =========================
-    // EXTRACT USERNAME
-    // =========================
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // =========================
-    // EXTRACT ROLE
-    // =========================
     public String extractRole(String token) {
-        Claims claims = extractAllClaims(token);
-        return claims.get("role", String.class);
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
-    // =========================
-    // EXTRACT EXPIRATION
-    // =========================
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // =========================
-    // GENERIC CLAIM EXTRACTOR
-    // =========================
     public <T> T extractClaim(String token, Function<Claims, T> resolver) {
         Claims claims = extractAllClaims(token);
         return resolver.apply(claims);
     }
 
-    // =========================
-    // PARSE TOKEN
-    // =========================
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -87,9 +69,6 @@ public class JwtUtil {
                 .getBody();
     }
 
-    // =========================
-    // VALIDATION
-    // =========================
     public Boolean validateToken(String token) {
         try {
             Claims claims = extractAllClaims(token);

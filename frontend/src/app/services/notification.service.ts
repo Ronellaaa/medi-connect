@@ -15,7 +15,7 @@ export interface appoinmentNotificationPayload{
   providedIn: 'root'
 })
 export class NotificationService {
-  private apiUrl = 'http://localhost:8085/api/notification';
+  private apiUrl = 'http://localhost:8086/api/notification';
 
   private http = inject(HttpClient);
 

@@ -33,8 +33,14 @@ public class RegisterRequest {
     private Integer experienceYears;
     private String license;
     private String clinic;
-    private String consultationFee;
+    private Double consultationFee;
     private String availability;
     private String languages;
     private String bio;
+
+    private String dateOfBirth;
+    private String gender;
+    private String bloodGroup;
+    private String address;
+    private String emergencyContact;
 }

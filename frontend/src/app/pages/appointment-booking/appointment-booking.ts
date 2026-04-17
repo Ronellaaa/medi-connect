@@ -6,6 +6,15 @@ import { NotificationService } from '../../services/notification.service';
 import { DoctorSessionService } from '../../services/doctor-service/doctor-session.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { PatientService } from '../../services/patient.service';
+
+interface PatientProfile {
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  email?: string;
+  dateOfBirth?: string;
+}
 
 @Component({
   selector: 'app-appointment-booking',
@@ -17,6 +26,7 @@ export class AppointmentBooking {
   private appointmentApi = inject(AppointmentApiService);
   private notificationApi = inject(NotificationService);
   private sessionService = inject(DoctorSessionService);
+  private patientService = inject(PatientService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -46,6 +56,8 @@ export class AppointmentBooking {
       this.selectedDate = params['date'] ?? '';
       this.consultationFee = params['fee'] ?? '';
     });
+
+    this.loadPatientProfile();
   }
 
   closeSuccessModal(): void {
@@ -60,6 +72,20 @@ export class AppointmentBooking {
   }
 
   private latestAppointmentId = '';
+
+  private loadPatientProfile(): void {
+    this.patientService.getProfile().subscribe({
+      next: (profile: PatientProfile) => {
+        this.fullName = `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim();
+        this.mobileNumber = profile.phoneNumber ?? '';
+        this.email = profile.email ?? '';
+        this.age = this.calculateAge(profile.dateOfBirth);
+      },
+      error: (error) => {
+        console.error('Error loading patient profile for appointment', error);
+      },
+    });
+  }
 
   confirmBooking(): void {
     if (this.isSubmitting) {
@@ -110,7 +136,6 @@ export class AppointmentBooking {
     this.isSubmitting = true;
 
     const appointmentPayload = {
-      id: '',
       patientId,
       patientName: this.fullName,
       patientphoneNumber: this.mobileNumber,
@@ -123,12 +148,12 @@ export class AppointmentBooking {
 
     this.appointmentApi.createAppointment(appointmentPayload).subscribe({
       next: (response) => {
-        this.latestAppointmentId = response.id;
+        this.latestAppointmentId = response.id ?? '';
         this.showSuccessModal = true;
         this.successModalText = 'Appointment confirmed. Continue to payment.';
 
         const notificationPayload = {
-          appointmentId: response.id,
+          appointmentId: response.id ?? '',
           patientName: this.fullName,
           doctorName: this.selectedDoctorName,
           patientPhone: formattedPhone,
@@ -150,5 +175,28 @@ export class AppointmentBooking {
         console.error('Error creating appointment', error);
       },
     });
+  }
+
+  private calculateAge(dateOfBirth?: string): number {
+    if (!dateOfBirth) {
+      return 0;
+    }
+
+    const birthDate = new Date(dateOfBirth);
+    if (Number.isNaN(birthDate.getTime())) {
+      return 0;
+    }
+
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthOffset = today.getMonth() - birthDate.getMonth();
+    const beforeBirthday =
+      monthOffset < 0 || (monthOffset === 0 && today.getDate() < birthDate.getDate());
+
+    if (beforeBirthday) {
+      age -= 1;
+    }
+
+    return Math.max(age, 0);
   }
 }

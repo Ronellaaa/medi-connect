@@ -4,3 +4,10 @@
 node_modules/
 .env
 npm-debug.log
+
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr

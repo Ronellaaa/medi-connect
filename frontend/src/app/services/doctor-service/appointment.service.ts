@@ -20,7 +20,7 @@ export interface AppointmentRecord {
   providedIn: 'root'
 })
 export class AppointmentService {
-  private apiUrl = '/doctor-api/appointments';
+  private apiUrl = 'http://localhost:8083/api/appointments';
 
   constructor(private http: HttpClient) {}
 

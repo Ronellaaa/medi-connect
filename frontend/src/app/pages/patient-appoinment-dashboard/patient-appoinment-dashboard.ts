@@ -152,7 +152,7 @@ export class PatientAppoinmentDashboard {
   }
 
   protected trackByAppointmentId(_index: number, appointment: AppointmentsPayload): string {
-    return appointment.id;
+    return appointment.id ?? `${appointment.patientId}-${appointment.doctorId}-${appointment.appointmentDate}`;
   }
 
   protected openCancelModal(appointment: AppointmentsPayload): void {
@@ -172,6 +172,10 @@ export class PatientAppoinmentDashboard {
     }
 
     const appointmentId = this.appointmentToCancel.id;
+    if (!appointmentId) {
+      this.cancelPending.set(false);
+      return;
+    }
     this.cancelPending.set(true);
 
     this.appointmentApi.cancelAppointment(appointmentId).subscribe({
@@ -222,7 +226,7 @@ export class PatientAppoinmentDashboard {
     this.rescheduleErrorMessage = '';
 
     this.appointmentApi
-      .updateAppointment(this.appointmentToReschedule.id, {
+      .updateAppointment(this.appointmentToReschedule.id ?? '', {
         appointmentDate: updatedDateTime,
       })
       .subscribe({

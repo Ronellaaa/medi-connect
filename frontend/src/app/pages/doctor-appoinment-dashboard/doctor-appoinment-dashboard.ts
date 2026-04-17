@@ -151,7 +151,7 @@ export class DoctorAppoinmentDashboard {
   }
 
   protected trackByAppointmentId(_index: number, appointment: AppointmentsPayload): string {
-    return appointment.id;
+    return appointment.id ?? `${appointment.patientId}-${appointment.doctorId}-${appointment.appointmentDate}`;
   }
 
   private loadAppointments(): void {

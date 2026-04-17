@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 
 export interface AppointmentsPayload {
-  id: string;
+  id?: string;
   patientId: number;
   patientName: string;
   patientphoneNumber: string;
@@ -24,7 +24,7 @@ export interface AppointmentsPayload {
 export class AppointmentApiService{
 
   private http = inject(HttpClient);
-  private apiUrl ='http://localhost:8083/api/appointments';
+  private apiUrl ='http://localhost:8088/api/appointments';
 
   createAppointment(appointment: AppointmentsPayload) {
   return this.http.post<AppointmentsPayload>(this.apiUrl, appointment);

@@ -163,7 +163,7 @@ export class DoctorsComponent implements OnInit, AfterViewInit {
       experienceYears: 0,
       license: '',
       clinic: '',
-      consultationFee: '',
+      consultationFee: 0,
       availability: '',
       languages: '',
       bio: ''

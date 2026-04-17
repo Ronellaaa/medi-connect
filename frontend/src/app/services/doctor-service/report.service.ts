@@ -20,7 +20,7 @@ export interface ReportRecord {
   providedIn: 'root'
 })
 export class ReportDataService {
-  private apiUrl = '/doctor-api/reports';
+  private apiUrl = 'http://localhost:8083/api/reports';
 
   constructor(private http: HttpClient) {}
 

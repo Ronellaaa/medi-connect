@@ -35,23 +35,55 @@ export class Register implements OnInit, OnDestroy {
 
   private autoRotateId: any;
 
-  form: RegisterRequest = {
-    fullName: '',
-    email: '',
-    phone: '',
-    role: 'DOCTOR',
-    mainSpecialization: '',
-    additionalSpecialization: '',
-    qualifications: '',
-    experienceYears: 0,
-    license: '',
-    clinic: '',
-    consultationFee: '',
-    availability: '',
-    languages: '',
-    bio: '',
-    password: '',
-  };
+  // form: RegisterRequest = {
+  //   fullName: '',
+  //   email: '',
+  //   phone: '',
+  //   role: 'DOCTOR',
+  //   mainSpecialization: '',
+  //   additionalSpecialization: '',
+  //   qualifications: '',
+  //   experienceYears: 0,
+  //   license: '',
+  //   clinic: '',
+  //   consultationFee: '',
+  //   availability: '',
+  //   languages: '',
+  //   bio: '',
+  //   password: '',
+
+
+  // };
+
+form: RegisterRequest = {
+
+  fullName: '',
+  email: '',
+  phone: '',
+  role: 'DOCTOR',
+
+  // doctor fields
+  mainSpecialization: '',
+  additionalSpecialization: '',
+  qualifications: '',
+  experienceYears: 0,
+  license: '',
+  clinic: '',
+  consultationFee: 0,
+  availability: '',
+  languages: '',
+  bio: '',
+
+  // patient fields
+  dateOfBirth: '',
+  gender: '',
+  bloodGroup: '',
+  address: '',
+  emergencyContact: '',
+
+  password: '',
+
+}
 
   slides: SlideItem[] = [
     {
@@ -189,7 +221,7 @@ export class Register implements OnInit, OnDestroy {
             response.doctor,
             response.role,
             response.userId,
-            response.profileId ?? response.doctor.id
+            response.profileId ?? response.doctor.id,
           );
           this.message = 'Signup complete. Redirecting...';
           this.isSubmitting = false;
@@ -202,14 +234,14 @@ export class Register implements OnInit, OnDestroy {
           response.role,
           response.token,
           response.userId,
-          response.profileId ?? undefined
+          response.profileId ?? undefined,
         );
 
         this.message = 'Signup complete. Redirecting...';
         this.isSubmitting = false;
 
         if (response.role === 'PATIENT') {
-          this.router.navigate(['/patient-dashboard']);
+          this.router.navigate(['/patient/dashboard']);
           return;
         }
 

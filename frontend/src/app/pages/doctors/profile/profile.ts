@@ -108,6 +108,7 @@ export class DoctorProfileComponent implements OnInit {
     this.isSaving = true;
 
     const years = Number.parseInt(this.draftProfile.experience, 10);
+    const consultationFee = Number.parseFloat(this.draftProfile.consultationFee);
 
     const payload: Partial<Doctor> = {
       fullName: this.draftProfile.fullName.trim(),
@@ -119,7 +120,7 @@ export class DoctorProfileComponent implements OnInit {
       experienceYears: Number.isNaN(years) ? 0 : years,
       license: this.draftProfile.license.trim(),
       clinic: this.draftProfile.clinic.trim(),
-      consultationFee: this.draftProfile.consultationFee.trim(),
+      consultationFee: Number.isNaN(consultationFee) ? 0 : consultationFee,
       availability: this.draftProfile.availability.trim(),
       languages: this.draftProfile.languages.trim(),
       bio: this.draftProfile.bio.trim()
@@ -259,7 +260,8 @@ export class DoctorProfileComponent implements OnInit {
       license: doctor.license || '',
       clinic: doctor.clinic || '',
       experience: doctor.experienceYears ? `${doctor.experienceYears}` : '',
-      consultationFee: doctor.consultationFee || '',
+      consultationFee:
+        doctor.consultationFee != null ? `${doctor.consultationFee}` : '',
       bio: doctor.bio || '',
       qualification: doctor.qualifications || '',
       languages: doctor.languages || '',

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DoctorService } from '../../../services/doctor-service/doctor.service';
 import { DoctorSessionService } from '../../../services/doctor-service/doctor-session.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import {
   DashboardService,
   DashboardSummary,
@@ -118,6 +119,7 @@ export class DoctorLanding implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private doctorService: DoctorService,
     private sessionService: DoctorSessionService,
+    private authService: AuthService,
     private dashboardService: DashboardService,
     private appointmentService: AppointmentService,
   ) {}
@@ -199,6 +201,11 @@ export class DoctorLanding implements OnInit, AfterViewInit, OnDestroy {
     video.volume = 0;
   }
 
+  logout(): void {
+    this.sessionService.clear();
+    this.authService.logout();
+  }
+
   private loadDoctorIdentity(): void {
     const cachedDoctor = this.sessionService.getCurrentDoctorProfile();
     if (cachedDoctor) {
@@ -264,7 +271,11 @@ export class DoctorLanding implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadAppointments(): void {
-    this.appointmentService.getAllAppointments().subscribe({
+    const request$ = this.doctorId
+      ? this.appointmentService.getAppointmentsByDoctor(this.doctorId)
+      : this.appointmentService.getAllAppointments();
+
+    request$.subscribe({
       next: (appointments) => {
         const today = new Date().toISOString().slice(0, 10);
         this.todayCases = appointments.filter((item) => item.appointmentDate === today).length;

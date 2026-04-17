@@ -110,10 +110,10 @@
         </div>
         <div class="results-doctor-meta">
           <h2 class="results-doctor-name">
-            {{ filteredDoctors[0]?.fullName || 'Select a doctor' }}
+            {{ selectedDoctor?.fullName || 'Select a doctor' }}
           </h2>
           <p class="results-doctor-speciality">
-            {{ filteredDoctors[0]?.mainSpecialization || 'Search results will appear here' }}
+            {{ selectedDoctor?.mainSpecialization || 'Search results will appear here' }}
           </p>
           <div class="results-doctor-rating" aria-label="5 star rating">
             <mat-icon>star</mat-icon>
@@ -131,33 +131,48 @@
       <section class="results-list">
         <div *ngIf="loading" class="results-hospital-card">
           <div class="results-hospital-copy">
-            <h3 class="results-hospital-name">Loading doctors...</h3>
+            <h3 class="results-hospital-name">Loading availability...</h3>
           </div>
         </div>
 
-        <div *ngIf="!loading && filteredDoctors.length === 0" class="results-hospital-card">
+        <div *ngIf="!loading && loadError" class="results-hospital-card">
           <div class="results-hospital-copy">
-            <h3 class="results-hospital-name">No matching doctors found.</h3>
-            <p class="results-hospital-speciality">Try changing doctor, specialty, or hospital.</p>
+            <h3 class="results-hospital-name">{{ loadError }}</h3>
           </div>
         </div>
 
-        <article class="results-hospital-card" *ngFor="let doctor of filteredDoctors">
+        <div
+          *ngIf="!loading && !loadError && doctorAvailability.length === 0"
+          class="results-hospital-card"
+        >
+          <div class="results-hospital-copy">
+            <h3 class="results-hospital-name">No availability found for this doctor.</h3>
+            <p class="results-hospital-speciality">Try another date or doctor.</p>
+          </div>
+        </div>
+
+        <article class="results-hospital-card" *ngFor="let slot of doctorAvailability">
           <div class="results-hospital-main">
             <div class="results-hospital-icon">
               <mat-icon>apartment</mat-icon>
             </div>
             <div class="results-hospital-copy">
-              <h3 class="results-hospital-name">{{ doctor.clinic || 'Clinic not available' }}</h3>
-              <p class="results-hospital-distance">{{ doctor.fullName }}</p>
-              <p class="results-hospital-speciality">{{ doctor.mainSpecialization }}</p>
+              <h3 class="results-hospital-name">
+                {{ slot.hospitalOrClinic || selectedDoctor?.clinic || 'Clinic not available' }}
+              </h3>
+              <p class="results-hospital-distance">{{ selectedDoctor?.fullName }}</p>
+              <p class="results-hospital-speciality">{{ selectedDoctor?.mainSpecialization }}</p>
+              <p class="results-hospital-speciality">
+                Consultation Fee:
+                {{ selectedDoctor?.consultationFee ? 'LKR ' + selectedDoctor?.consultationFee : 'Not available' }}
+              </p>
               <div class="results-date-chip">
                 <mat-icon>event_available</mat-icon>
-                <span>{{ dateQuery || 'Select date in next step' }}</span>
+                <span>{{ formatAvailability(slot) }}</span>
               </div>
             </div>
           </div>
-          <button class="results-book-button" type="button" (click)="bookDoctor(doctor)">
+          <button class="results-book-button" type="button" (click)="bookDoctor(selectedDoctor!)">
             Book Now
           </button>
         </article>

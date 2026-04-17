@@ -102,7 +102,11 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
   }
 
   loadAvailability(): void {
-    this.availabilityService.getAllAvailability().subscribe({
+    const request$ = this.doctorId
+      ? this.availabilityService.getAvailabilityByDoctor(this.doctorId)
+      : this.availabilityService.getAllAvailability();
+
+    request$.subscribe({
       next: (records) => {
         this.rawRecords = records;
         this.stats = this.buildStats(records);

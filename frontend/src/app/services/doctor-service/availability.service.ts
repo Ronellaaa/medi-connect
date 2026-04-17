@@ -17,10 +17,10 @@ export interface AvailabilityRecord {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AvailabilityDataService {
-  private apiUrl = '/doctor-api/availability';
+  private apiUrl = 'http://localhost:8083/api/availability';
 
   constructor(private http: HttpClient) {}
 
@@ -30,6 +30,10 @@ export class AvailabilityDataService {
 
   getAvailabilityById(id: number): Observable<AvailabilityRecord> {
     return this.http.get<AvailabilityRecord>(`${this.apiUrl}/${id}`);
+  }
+
+  getAvailabilityByDoctor(doctorId: number): Observable<AvailabilityRecord[]> {
+    return this.http.get<AvailabilityRecord[]>(`${this.apiUrl}/doctor/${doctorId}`);
   }
 
   createAvailability(payload: any): Observable<AvailabilityRecord> {

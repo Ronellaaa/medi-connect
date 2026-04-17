@@ -2,7 +2,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PatientService } from '../../../services/patient.service';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import { ReportService } from '../../../services/report.service';
 import { PrescriptionService } from '../../../services/prescription.service';
 

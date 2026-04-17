@@ -13,7 +13,7 @@ export interface Doctor {
   experienceYears: number;
   license?: string;
   clinic?: string;
-  consultationFee?: string;
+  consultationFee?: number;
   availability?: string;
   languages?: string;
   bio: string;
@@ -23,7 +23,7 @@ export interface Doctor {
   providedIn: 'root'
 })
 export class DoctorService {
-  private apiUrl = '/doctor-api/doctors';
+  private apiUrl = 'http://localhost:8083/api/doctors';
 
   constructor(private http: HttpClient) {}
 

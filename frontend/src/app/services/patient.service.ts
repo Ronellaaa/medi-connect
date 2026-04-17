@@ -16,7 +16,7 @@ export interface Patient {
 
 @Injectable({ providedIn: 'root' })
 export class PatientService {
-  private apiUrl = 'http://localhost:8081/api/patients';
+  private apiUrl = 'http://localhost:8082/api/patients';
   private patients = signal<Patient[]>([]);
   private nextId = 1;
 

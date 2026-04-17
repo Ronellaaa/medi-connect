@@ -1,15 +1,22 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { DoctorSessionService } from '../services/doctor-service/doctor-session.service';
 
 @Injectable({ providedIn: 'root' })
 export class AdminGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private sessionService: DoctorSessionService,
+    private router: Router
+  ) {}
 
   canActivate(): boolean {
-    if (this.authService.isLoggedIn() && this.authService.isAdmin()) {
+    if (
+      this.sessionService.getToken() &&
+      this.sessionService.getCurrentRole() === 'ADMIN'
+    ) {
       return true;
     }
+
     this.router.navigate(['/patient/dashboard']);
     return false;
   }

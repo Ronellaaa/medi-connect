@@ -22,8 +22,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/doctors").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/doctors").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/doctors/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/doctors/by-email").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/availability").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/availability/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

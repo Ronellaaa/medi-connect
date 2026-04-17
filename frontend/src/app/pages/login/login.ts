@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private sessionService: DoctorSessionService,
-    private router: Router
+    private router: Router,
   ) {}
 
   slides: SlideItem[] = [
@@ -146,46 +146,47 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.authService.login({
-      email: this.email,
-      password: this.password,
-      role: this.selectedRole
-    }).subscribe({
-      next: (response) => {
-        if (response.role === 'DOCTOR' && response.doctor?.id) {
-          this.sessionService.setCurrentDoctor(
-            response.doctor.id,
-            response.doctor.email,
-            response.token,
-            response.doctor,
+    this.authService
+      .login({
+        email: this.email,
+        password: this.password,
+        role: this.selectedRole,
+      })
+      .subscribe({
+        next: (response) => {
+          if (response.role === 'DOCTOR' && response.doctor?.id) {
+            this.sessionService.setCurrentDoctor(
+              response.doctor.id,
+              response.doctor.email,
+              response.token,
+              response.doctor,
+              response.role,
+              response.userId,
+              response.profileId ?? response.doctor.id,
+            );
+            this.router.navigate(['/doctors/dashboard']);
+            return;
+          }
+
+          this.sessionService.setAuthSession(
+            response.email,
             response.role,
+            response.token,
             response.userId,
-            response.profileId ?? response.doctor.id
+            response.profileId ?? undefined,
           );
-          this.router.navigate(['/doctors/dashboard']);
-          return;
-        }
 
-        this.sessionService.setAuthSession(
-          response.email,
-          response.role,
-          response.token,
-          response.userId,
-          response.profileId ?? undefined
-        );
+          if (response.role === 'PATIENT') {
+            this.router.navigate(['/patient/dashboard']);
+            return;
+          }
 
-        if (response.role === 'PATIENT') {
-          this.router.navigate(['/patient-dashboard']);
-          return;
-        }
-
-        this.router.navigate(['/']);
-      },
-      error: (err) => {
-        console.error('Login failed', err);
-        this.message = err?.error?.message || 'Login failed.';
-      }
-    });
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          console.error('Login failed', err);
+          this.message = err?.error?.message || 'Login failed.';
+        },
+      });
   }
-
 }

@@ -1,5 +1,6 @@
 package com.medi_connect.doctors_service.controller;
 
+import com.medi_connect.doctors_service.dto.AvailabilityDto;
 import com.medi_connect.doctors_service.entity.Availability;
 import com.medi_connect.doctors_service.service.AvailabilityService;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,12 @@ public class AvailabilityController {
  }
 
  @GetMapping
-    public List<Availability> getAllAvailability(){
+    public List<AvailabilityDto> getAllAvailability(){
      return availabilityService.getAllAvailability();
  }
 
  @GetMapping("/doctor/{doctorId}")
- public List<Availability> getAvailabilityByDoctor(@PathVariable Long doctorId) {
+ public List<AvailabilityDto> getAvailabilityByDoctor(@PathVariable Long doctorId) {
      return availabilityService.getAvailabilityByDoctorId(doctorId);
  }
 

@@ -18,7 +18,7 @@ public class DoctorDto {
     private Integer experienceYears;
     private String license;
     private String clinic;
-    private String consultationFee;
+    private Double consultationFee;
     private String availability;
     private String languages;
     private String bio;

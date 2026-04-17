@@ -13,6 +13,31 @@
     linear-gradient(135deg, #050c38 0%, #11164c 48%, #1b2062 100%);
 }
 
+.appoinments-back-button {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(252, 203, 240, 0.16);
+  border-radius: 999px;
+  background: rgba(5, 12, 56, 0.55);
+  color: #fccbf0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+}
+
+.appoinments-back-button mat-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  font-size: 1.1rem;
+}
+
 .appoinments-hero-card {
   position: relative;
   z-index: 3;

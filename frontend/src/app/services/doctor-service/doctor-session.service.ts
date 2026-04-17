@@ -55,12 +55,12 @@ export class DoctorSessionService {
 
   getCurrentDoctorId(): number | null {
     const value = localStorage.getItem(DOCTOR_ID_KEY);
-    if (!value) {
-      return null;
+    if (value) {
+      const parsed = Number(value);
+      return Number.isNaN(parsed) ? null : parsed;
     }
 
-    const parsed = Number(value);
-    return Number.isNaN(parsed) ? null : parsed;
+    return this.getCurrentProfileId();
   }
 
   getCurrentDoctorEmail(): string | null {
@@ -121,5 +121,7 @@ export class DoctorSessionService {
     localStorage.removeItem(AUTH_ROLE_KEY);
     localStorage.removeItem(AUTH_USER_ID_KEY);
     localStorage.removeItem(AUTH_PROFILE_ID_KEY);
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
   }
 }

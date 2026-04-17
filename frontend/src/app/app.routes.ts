@@ -65,6 +65,7 @@ export const routes: Routes = [
     path: 'patient-dashboard',
     component: PatientAppoinmentDashboard,
   },
+  
   {
     path: 'appoinments',
     redirectTo: 'appointments',
@@ -89,22 +90,47 @@ export const routes: Routes = [
   { path: 'payment/success', component: Payments, data: { state: 'success' } },
   { path: 'payment/cancel', component: Payments, data: { state: 'cancel' } },
 
-  { path: '**', redirectTo: 'home' },
+  // { path: '**', redirectTo: '' },
   
-  { path: 'patients', redirectTo: 'patient/dashboard', pathMatch: 'full' },
-  { path: 'admin', redirectTo: 'admin/dashboard', pathMatch: 'full' },
+  // { path: 'patients', redirectTo: 'patient/dashboard', pathMatch: 'full' },
+  // { path: 'admin', redirectTo: 'admin/dashboard', pathMatch: 'full' },
 
   // Patient
-  { path: 'patient/dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'patient/profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  { path: 'patient/reports', component: ReportsComponent, canActivate: [AuthGuard] },
-  { path: 'patient/prescriptions', component: PrescriptionsComponent, canActivate: [AuthGuard] },
-  { path: 'patient/appointments', component: Appoinments, canActivate: [AuthGuard] },
+
+{ path: 'patient-dashboard', redirectTo: 'patient/dashboard', pathMatch: 'full' },
+{ path: 'patients', redirectTo: 'patient/dashboard', pathMatch: 'full' },
+{ path: 'admin', redirectTo: 'admin/dashboard', pathMatch: 'full' },
+
+{ path: 'patient/dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+{ path: 'patient/profile', component: ProfileComponent, canActivate: [AuthGuard] },
+{ path: 'patient/reports', component: ReportsComponent, canActivate: [AuthGuard] },
+{ path: 'patient/prescriptions', component: PrescriptionsComponent, canActivate: [AuthGuard] },
+{ path: 'patient/appointments', component: Appoinments, canActivate: [AuthGuard] },
+
+{ path: 'admin/dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard, AdminGuard] },
+{ path: 'admin/patients', component: PatientsComponent, canActivate: [AuthGuard, AdminGuard] },
+{ path: 'admin/stats', component: StatsComponent, canActivate: [AuthGuard, AdminGuard] },
+
+{ path: '**', redirectTo: '' },
+
+
+
+
+
+
+  //   { path: 'patient/dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  // { path: 'patient/profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  // { path: 'patient/reports', component: ReportsComponent, canActivate: [AuthGuard] },
+  // { path: 'patient/prescriptions', component: PrescriptionsComponent, canActivate: [AuthGuard] },
+  // { path: 'patient/appointments', component: Appoinments, canActivate: [AuthGuard] },
+
 
   // Admin
-  { path: 'admin/dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'admin/patients', component: PatientsComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'admin/stats', component: StatsComponent, canActivate: [AuthGuard, AdminGuard] },
+  // { path: 'admin/dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard, AdminGuard] },
+  // { path: 'admin/patients', component: PatientsComponent, canActivate: [AuthGuard, AdminGuard] },
+  // { path: 'admin/stats', component: StatsComponent, canActivate: [AuthGuard, AdminGuard] },
+
+
 
 //  { path: '**', redirectTo: 'login' }
 

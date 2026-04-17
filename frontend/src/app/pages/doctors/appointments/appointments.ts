@@ -54,7 +54,11 @@ export class DoctorAppointmentsPageComponent implements OnInit {
   }
 
   loadAppointments(): void {
-    this.appointmentService.getAllAppointments().subscribe({
+    const request$ = this.doctorId
+      ? this.appointmentService.getAppointmentsByDoctor(this.doctorId)
+      : this.appointmentService.getAllAppointments();
+
+    request$.subscribe({
       next: (records) => {
         this.stats = this.buildStats(records);
         this.appointments = records.map((item) => ({

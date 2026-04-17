@@ -18,7 +18,7 @@ export interface DashboardSummary {
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = '/doctor-api/dashboard';
+  private apiUrl = 'http://localhost:8083/api/dashboard';
 
   constructor(private http: HttpClient) {}
 

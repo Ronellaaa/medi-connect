@@ -1,5 +1,6 @@
 package com.medi_connect.doctors_service.service;
 
+import com.medi_connect.doctors_service.dto.AvailabilityDto;
 import com.medi_connect.doctors_service.entity.Appointment;
 import com.medi_connect.doctors_service.entity.Availability;
 import com.medi_connect.doctors_service.entity.Doctor;
@@ -8,6 +9,7 @@ import com.medi_connect.doctors_service.repository.AvailabilityRepository;
 import com.medi_connect.doctors_service.repository.DoctorRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -36,12 +38,12 @@ public class AvailabilityService {
         return availabilityRepository.save(availability);
     }
 
-    public List<Availability> getAllAvailability() {
-        return availabilityRepository.findAll();
+    public List<AvailabilityDto> getAllAvailability() {
+        return availabilityRepository.findAll().stream().map(this::toDto).toList();
     }
 
-    public List<Availability> getAvailabilityByDoctorId(Long doctorId) {
-        return availabilityRepository.findByDoctorId(doctorId);
+    public List<AvailabilityDto> getAvailabilityByDoctorId(Long doctorId) {
+        return availabilityRepository.findByDoctorId(doctorId).stream().map(this::toDto).toList();
     }
 
     public Optional<Availability> updateAvailability(Long id, Availability updatedAvailability) {
@@ -128,5 +130,25 @@ public class AvailabilityService {
         suggestion.put("message", "Suggested to add more slots on " + bestDay + " during " + bestTimeSlot);
 
         return suggestion;
+    }
+
+    private AvailabilityDto toDto(Availability availability) {
+        return AvailabilityDto.builder()
+                .id(availability.getId())
+                .dayOfWeek(availability.getDayOfWeek())
+                .startTime(formatTime(availability.getStartTime()))
+                .endTime(formatTime(availability.getEndTime()))
+                .hospitalOrClinic(availability.getHospitalOrClinic())
+                .consultationType(availability.getConsultationType())
+                .available(Boolean.TRUE.equals(availability.getAvailable()))
+                .doctor(AvailabilityDto.DoctorSummary.builder()
+                        .id(availability.getDoctor() != null ? availability.getDoctor().getId() : null)
+                        .fullName(availability.getDoctor() != null ? availability.getDoctor().getFullName() : null)
+                        .build())
+                .build();
+    }
+
+    private String formatTime(LocalTime value) {
+        return value != null ? value.toString() : "";
     }
 }

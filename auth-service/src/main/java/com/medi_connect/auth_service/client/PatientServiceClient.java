@@ -35,6 +35,11 @@ public class PatientServiceClient {
                         .firstName(nameParts[0])
                         .lastName(nameParts[1])
                         .phoneNumber(request.getPhone())
+                        .dateOfBirth(request.getDateOfBirth())
+                        .gender(request.getGender())
+                        .bloodGroup(request.getBloodGroup())
+                        .address(request.getAddress())
+                        .emergencyContact(request.getEmergencyContact())
                         .build())
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (req, res) -> {
@@ -72,6 +77,11 @@ public class PatientServiceClient {
         private String firstName;
         private String lastName;
         private String phoneNumber;
+        private String dateOfBirth;
+        private String gender;
+        private String bloodGroup;
+        private String address;
+        private String emergencyContact;
     }
 
 

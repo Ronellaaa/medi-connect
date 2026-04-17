@@ -20,7 +20,7 @@ export interface PrescriptionRecord {
   providedIn: 'root'
 })
 export class PrescriptionDataService {
-  private apiUrl = '/doctor-api/prescriptions';
+  private apiUrl = 'http://localhost:8083/api/prescriptions';
 
   constructor(private http: HttpClient) {}
 
@@ -37,6 +37,7 @@ export class PrescriptionDataService {
       payload.doctor = { id: payload.doctorId };
       delete payload.doctorId;
     }
+
     return this.http.post<PrescriptionRecord>(this.apiUrl, payload);
   }
 
@@ -45,6 +46,7 @@ export class PrescriptionDataService {
       payload.doctor = { id: payload.doctorId };
       delete payload.doctorId;
     }
+
     return this.http.patch<PrescriptionRecord>(`${this.apiUrl}/${id}`, payload);
   }
 

@@ -1,6 +1,5 @@
 @import "tailwindcss";
-
-/* Color Palette from design */
+/* 
 :root {
   --primary-purple: #6700A3;
   --primary-dark-blue: #1B2062;
@@ -117,4 +116,4 @@ main {
 
 .footer-fade {
   background: radial-gradient(circle at top, rgba(103, 0, 163, 0.18), transparent 35%);
-}
+} */

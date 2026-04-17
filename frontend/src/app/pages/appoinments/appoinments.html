@@ -1,4 +1,9 @@
 <main class="appoinments-booking-page">
+  <button class="appoinments-back-button" type="button" (click)="goBackToDashboard()">
+    <mat-icon>arrow_back</mat-icon>
+    <span>Back</span>
+  </button>
+
   <div class="appoinments-doctor-watch" aria-hidden="true">
     <img class="appoinments-doctor-image" src="/doctor-watcher.png" alt="" />
   </div>
@@ -68,13 +73,17 @@
     </div>
 
     <div class="appoinments-booking-panel">
+      <p class="appoinment-hero-description" *ngIf="patientDisplayName">
+        Booking as {{ patientDisplayName }}
+      </p>
+
       <div class="appoinment-booking-grid">
         <article class="appoinment-booking-card">
           <div class="booking-icon">
             <mat-icon>medical_services</mat-icon>
           </div>
           <div class="appoinment-booking-content">
-            <h2 class="doctor-booking-title booking-title">Doctor</h2>
+            <h2 class="doctor-booking-title booking-title">Available Doctor</h2>
             <label class="booking-field">
               <span class="field-prefix">
                 <mat-icon>search</mat-icon>
@@ -82,23 +91,24 @@
               <input
                 class="booking-input"
                 type="search"
+                [(ngModel)]="doctorSearch"
+                name="doctorSearch"
                 placeholder="Search doctor"
-                [(ngModel)]="doctor"
-                name="doctor"
-                (input)="onDoctorInput()"
-                (blur)="hideSuggestions()"
+                (ngModelChange)="onDoctorSearchChange()"
+                (focus)="onDoctorFocus()"
+                (blur)="hideDoctorSuggestions()"
               />
             </label>
             <div
               class="search-suggestions"
-              *ngIf="showDoctorSuggestions && filteredDoctorNames.length"
+              *ngIf="showDoctorSuggestions && filteredDoctorOptions.length"
             >
               <div
                 class="search-suggestion-item"
-                *ngFor="let name of filteredDoctorNames"
-                (click)="selectDoctor(name)"
+                *ngFor="let item of filteredDoctorOptions"
+                (mousedown)="selectDoctor(item)"
               >
-                {{ name }}
+                {{ item.fullName }} - {{ item.mainSpecialization }}
               </div>
             </div>
           </div>
@@ -112,30 +122,20 @@
             <h2 class="booking-title">Speciality</h2>
             <label class="booking-field">
               <span class="field-prefix">
-                <mat-icon>search</mat-icon>
+                <mat-icon>arrow_drop_down_circle</mat-icon>
               </span>
-              <input
+              <select
                 class="booking-input"
-                type="search"
-                placeholder="Select speciality"
                 [(ngModel)]="specialty"
                 name="specialty"
-                (input)="onSpecialtyInput()"
-                (blur)="hideSuggestions()"
-              />
-            </label>
-            <div
-              class="search-suggestions"
-              *ngIf="showSpecialtySuggestions && filteredSpecialties.length"
-            >
-              <div
-                class="search-suggestion-item"
-                *ngFor="let item of filteredSpecialties"
-                (click)="selectSpecialty(item)"
+                (ngModelChange)="onSpecialtyChange()"
               >
-                {{ item }}
-              </div>
-            </div>
+                <option value="">All specialties</option>
+                <option *ngFor="let item of filteredSpecialties" [value]="item">
+                  {{ item }}
+                </option>
+              </select>
+            </label>
           </div>
         </article>
 
@@ -147,29 +147,19 @@
             <h2 class="booking-title">Hospital</h2>
             <label class="booking-field">
               <span class="field-prefix">
-                <mat-icon>search</mat-icon>
+                <mat-icon>arrow_drop_down_circle</mat-icon>
               </span>
-              <input
+              <select
                 class="booking-input"
-                type="search"
-                placeholder="Choose hospital"
                 [(ngModel)]="hospital"
                 name="hospital"
-                (input)="onHospitalInput()"
-                (blur)="hideSuggestions()"
-              />
-              <div
-                class="search-suggestions"
-                *ngIf="showHospitalSuggestions && filteredHospitals.length"
+                (ngModelChange)="onHospitalChange()"
               >
-                <div
-                  class="search-suggestion-item"
-                  *ngFor="let item of filteredHospitals"
-                  (click)="selectHospital(item)"
-                >
+                <option value="">All hospitals</option>
+                <option *ngFor="let item of filteredHospitals" [value]="item">
                   {{ item }}
-                </div>
-              </div>
+                </option>
+              </select>
             </label>
           </div>
         </article>
@@ -189,6 +179,7 @@
                 type="date"
                 [(ngModel)]="date"
                 name="date"
+                (ngModelChange)="onDateChange()"
               />
               <span class="field-suffix">📅</span>
             </label>
@@ -197,7 +188,7 @@
       </div>
 
       <button class="appoinment-search-button" type="button" (click)="searchAppointments()">
-        Search
+        {{ loadingDoctors || loadingAvailability ? 'Loading...' : 'Search' }}
       </button>
     </div>
   </section>
