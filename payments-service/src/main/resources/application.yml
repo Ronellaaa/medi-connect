@@ -30,7 +30,7 @@ payhere:
   appId: "4OVybzfSsCW4JH5Ex7FPDE3PR"
   appSecret: "8n2zqkfzkLi8mz80cgK5r74p6nyiWIWYw8cL35m5AsAi"
   baseUrl: https://sandbox.payhere.lk
-  returnUrl: http://localhost:4200/payment/success
+  returnUrl: http://localhost:4200/appointments/patient-dashboard
   cancelUrl: http://localhost:4200/payment/cancel
   notifyUrl: https://keisha-pseudocollegiate-alison.ngrok-free.dev/api/payments/webhook/payhere
 

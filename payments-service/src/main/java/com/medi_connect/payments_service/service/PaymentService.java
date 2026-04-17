@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import org.springframework.web.client.RestTemplate; 
 import org.springframework.beans.factory.annotation.Value; 
 import java.util.Map;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,7 @@ public class PaymentService {
             throw new RuntimeException("Payment already initiated for this appointment");
         }*/
 
-        String patientId = request.getPatientId();
+        /*String patientId = request.getPatientId();
         String doctorId = request.getDoctorId();
         
         if (patientId == null || patientId.isBlank() || doctorId == null || doctorId.isBlank()) {
@@ -61,7 +62,20 @@ public class PaymentService {
                 log.error("Failed to fetch IDs: {}", e.getMessage());
                 throw new RuntimeException("Could not retrieve appointment details");
             }
+        }*/
+
+            
+        // ✅ SIMPLE VALIDATION - No service call needed!
+        if (request.getPatientId() == null || request.getPatientId().isBlank()) {
+            throw new RuntimeException("Patient ID is required");
         }
+        if (request.getDoctorId() == null || request.getDoctorId().isBlank()) {
+            throw new RuntimeException("Doctor ID is required");
+        }
+        if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Valid payment amount is required");
+        }
+
 
         Optional<Payment> completedPayment = paymentRepository.findByAppointmentIdAndStatus(request.getAppointmentId(), PaymentStatus.COMPLETED);
         if (completedPayment.isPresent()) {
@@ -75,8 +89,8 @@ public class PaymentService {
 
         Payment payment = Payment.builder()
                 .appointmentId(request.getAppointmentId())
-                .patientId(patientId)
-                .doctorId(doctorId)
+                .patientId(request.getPatientId())
+                .doctorId(request.getDoctorId())
                 .amount(request.getAmount())
                 .status(PaymentStatus.PENDING)
                 .build();
@@ -98,7 +112,7 @@ public class PaymentService {
                 .country(request.getCountry())
                 .items(resolveItemsDescription(request))
                 .custom1(request.getAppointmentId())
-                .custom2(patientId)
+                .custom2(request.getPatientId())
                 .build()
         );
 

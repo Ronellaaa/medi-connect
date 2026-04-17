@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http'; //For making HTTP requests to the backend
-import { Component, inject, ChangeDetectorRef, OnInit   } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router'; //For accessing route parameters and navigation
 
@@ -42,20 +42,35 @@ export class Payments implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
-    this.catchAppointmentId();
+    this.captureQueryParams();
   }
 
-   private catchAppointmentId(): void {
-     // Way 1: Check query params (?appointmentId=xxx)
-    this.route.queryParams.subscribe(params => {
+  private captureQueryParams(): void {
+    // Way 1: Check query params (?appointmentId=xxx)
+    this.route.queryParams.subscribe((params) => {
       if (params['appointmentId']) {
         this.form.appointmentId = params['appointmentId'];
-        console.log('✅ Caught appointmentId from query params:', this.form.appointmentId);
+        console.log('✅ Caught appointmentId:', this.form.appointmentId);
+      }
+
+      if (params['patientId']) {
+        this.form.patientId = params['patientId'];
+        console.log('✅ Caught patientId:', this.form.patientId);
+      }
+
+      if (params['doctorId']) {
+        this.form.doctorId = params['doctorId'];
+        console.log('✅ Caught doctorId:', this.form.doctorId);
+      }
+
+      if (params['consultationFee']) {
+        this.form.amount = Number(params['consultationFee']);
+        console.log('✅ Caught consultationFee:', this.form.amount);
       }
     });
 
     // Way 2: Check path params (/payment/:appointmentId)
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       if (params['appointmentId']) {
         this.form.appointmentId = params['appointmentId'];
         console.log('✅ Caught appointmentId from path params:', this.form.appointmentId);
@@ -63,22 +78,23 @@ export class Payments implements OnInit {
     });
   }
 
-  
-
   protected readonly apiUrl = 'http://localhost:8085/api/payments/initiate';
-  protected readonly routeState = this.route.snapshot.data['state'] as 'success' | 'cancel' | undefined;
+  protected readonly routeState = this.route.snapshot.data['state'] as
+    | 'success'
+    | 'cancel'
+    | undefined;
 
   protected isSubmitting = false;
   protected errorMessage = '';
   protected successMessage = this.resolveSuccessMessage();
   /*new code*/
-  protected isPaymentCompleted = false; 
+  protected isPaymentCompleted = false;
 
   protected form: PaymentFormModel = {
     appointmentId: '',
     patientId: '',
     doctorId: '',
-    amount: 2500,
+    amount: 0,
     firstName: '',
     lastName: '',
     email: '',
@@ -86,12 +102,12 @@ export class Payments implements OnInit {
     address: '',
     city: '',
     country: '',
-    description: ''
+    description: '',
   };
 
   protected submitPayment(): void {
     /*--*/
-    if (this.isPaymentCompleted) {  
+    if (this.isPaymentCompleted) {
       return;
     }
     /* --*/
@@ -111,7 +127,7 @@ export class Payments implements OnInit {
           ?? 'Unable to initiate payment. Check that the payments service is running and your request details are valid.';
       }*/
 
-        error: (error) => {
+      error: (error) => {
         this.isSubmitting = false;
 
         console.log('=== ERROR DEBUG ===');
@@ -119,35 +135,42 @@ export class Payments implements OnInit {
         console.log('error.error:', error?.error);
         console.log('error.message:', error?.message);
         console.log('error.status:', error?.status);
-        
+
         /*const errorMsg = error?.error?.message || '';*/
 
         /*---*/
-        const errorMsg = error?.error?.message 
-          || error?.error?.error 
-          || error?.message 
-          || error?.statusText
-          || 'Unknown error';
-  
-  console.log('Extracted message:', errorMsg);
+        const errorMsg =
+          error?.error?.message ||
+          error?.error?.error ||
+          error?.message ||
+          error?.statusText ||
+          'Unknown error';
+
+        console.log('Extracted message:', errorMsg);
         /*--*/
-        
+
         if (errorMsg.includes('already completed')) {
-          this.errorMessage = 'Payment has already been completed for this appointment. No further payment is required.';
+          this.errorMessage =
+            'Payment has already been completed for this appointment. No further payment is required.';
           this.isPaymentCompleted = true;
-          console.log('✅ Error message set:', this.errorMessage);  
-          console.log('✅ isPaymentCompleted:', this.isPaymentCompleted);  
+          console.log('✅ Error message set:', this.errorMessage);
+          console.log('✅ isPaymentCompleted:', this.isPaymentCompleted);
         } else {
-          this.errorMessage = errorMsg || 'Unable to initiate payment. Please check your details and try again.';
+          this.errorMessage =
+            errorMsg || 'Unable to initiate payment. Please check your details and try again.';
         }
 
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
   private redirectToPayHere(response: PaymentResponse): void {
-    if (!response.checkoutUrl || !response.checkoutFormFields || Object.keys(response.checkoutFormFields).length === 0) {
+    if (
+      !response.checkoutUrl ||
+      !response.checkoutFormFields ||
+      Object.keys(response.checkoutFormFields).length === 0
+    ) {
       this.errorMessage = 'The backend did not return a valid PayHere checkout payload.';
       return;
     }

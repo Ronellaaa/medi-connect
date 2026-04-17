@@ -57,7 +57,7 @@ export class AppointmentBooking {
     this.loadPatientProfile();
   }
 
-  closeSuccessModal(): void {
+  /*closeSuccessModal(): void {
     this.showSuccessModal = false;
     this.router.navigate(['/payments'], {
       queryParams: {
@@ -67,7 +67,7 @@ export class AppointmentBooking {
         consultationFee: this.consultationFee || '',
       },
     });
-  }
+  }*/
 
   private latestAppointmentId = '';
 
@@ -145,14 +145,23 @@ export class AppointmentBooking {
     this.appointmentApi.createAppointment(appointmentPayload).subscribe({
       next: (response) => {
         this.latestAppointmentId = response.id ?? '';
-        this.showSuccessModal = true;
-        this.successModalText = 'Appointment confirmed. Continue to payment.';
+        //this.showSuccessModal = true;
+        //this.successModalText = 'Appointment confirmed. Continue to payment.';
         this.isSubmitting = false;
+
+        this.router.navigate(['/payments'], {
+          queryParams: {
+            appointmentId: this.latestAppointmentId,
+            patientId: patientId,
+            doctorId: this.selectedDoctorId,
+            consultationFee: this.consultationFee,
+          },
+        });
       },
       error: (error) => {
         this.isSubmitting = false;
         console.error('Error creating appointment', error);
-         alert('Booking failed');
+        alert('Booking failed');
       },
     });
   }
