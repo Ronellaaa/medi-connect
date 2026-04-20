@@ -23,6 +23,7 @@ public class Appointment {
     private String patientphoneNumber;
     private Integer patientAge;
     private Long doctorId;
+    private String doctorEmail;
     private String doctorName;
     private String specialty;
     private LocalDateTime appointmentDate;

@@ -32,7 +32,8 @@ payhere:
   baseUrl: https://sandbox.payhere.lk
   returnUrl: http://localhost:4200/appointments/patient-dashboard
   cancelUrl: http://localhost:4200/payment/cancel
-  notifyUrl: https://keisha-pseudocollegiate-alison.ngrok-free.dev/api/payments/webhook/payhere
+#  notifyUrl: https://keisha-pseudocollegiate-alison.ngrok-free.dev/api/payments/webhook/payhere
+  notifyUrl: https://exclude-mutable-levitator.ngrok-free.dev/api/payments/webhook/payhere
 
 appointment:
   service:

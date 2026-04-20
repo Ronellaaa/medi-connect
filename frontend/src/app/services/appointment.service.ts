@@ -12,6 +12,7 @@ export interface AppointmentsPayload {
   patientphoneNumber: string;
   patientAge: number;
   doctorId: number;
+  doctorEmail?: string;
   doctorName: string;
   specialty: string;
   appointmentDate: string;

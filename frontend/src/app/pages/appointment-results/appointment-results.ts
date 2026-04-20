@@ -24,6 +24,7 @@ export class AppointmentResults {
 
   doctorIdQuery: number | null = null;
   doctorQuery = '';
+  doctorEmailQuery = '';
   specialtyQuery = '';
   hospitalQuery = '';
   dateQuery = '';
@@ -37,6 +38,7 @@ export class AppointmentResults {
     this.route.queryParams.subscribe((params) => {
       this.doctorIdQuery = params['doctorId'] ? Number(params['doctorId']) : null;
       this.doctorQuery = params['doctor'] ?? '';
+      this.doctorEmailQuery = params['doctorEmail'] ?? '';
       this.specialtyQuery = params['specialty'] ?? '';
       this.hospitalQuery = params['hospital'] ?? '';
       this.dateQuery = params['date'] ?? '';
@@ -54,7 +56,7 @@ export class AppointmentResults {
       this.selectedDoctor = {
         id: this.doctorIdQuery,
         fullName: this.doctorQuery || 'Selected doctor',
-        email: '',
+        email: this.doctorEmailQuery||'',
         phone: '',
         mainSpecialization: this.specialtyQuery || '',
         additionalSpecialization: '',
@@ -75,6 +77,9 @@ export class AppointmentResults {
             const matchesDoctor =
               !this.doctorQuery ||
               doctor.fullName.toLowerCase().includes(this.doctorQuery.toLowerCase());
+            const matchesDoctorEmail =
+              !this.doctorEmailQuery ||
+              doctor.email.toLowerCase().includes(this.doctorEmailQuery.toLowerCase());
             const matchesSpecialty =
               !this.specialtyQuery ||
               doctor.mainSpecialization.toLowerCase().includes(this.specialtyQuery.toLowerCase());
@@ -142,6 +147,7 @@ export class AppointmentResults {
       queryParams: {
         doctorId: doctor.id,
         doctorName: doctor.fullName,
+        doctorEmail: doctor.email ?? '',
         specialty: doctor.mainSpecialization,
         hospital: doctor.clinic ?? '',
         date: slot.availabilityDate || this.dateQuery || '',

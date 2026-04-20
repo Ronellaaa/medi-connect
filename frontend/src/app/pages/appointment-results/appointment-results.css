@@ -318,6 +318,11 @@
   font-weight: 600;
   color: rgba(27, 32, 98, 0.7);
 }
+.results-hospital-email {
+  margin: 8px 0 0;
+  font-size: 0.98rem;
+  color: rgba(98, 27, 87, 0.7);
+}
 
 .results-hospital-speciality {
   margin: 6px 0 0;

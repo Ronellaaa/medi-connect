@@ -35,6 +35,7 @@ public class NotificationController {
                 request.get("doctorName"),
                 request.get("patientPhone"),
                 request.get("patientEmail"),
+                request.get("doctorEmail"),
                 request.get("appointmentDate")
 
         );
@@ -48,6 +49,7 @@ public class NotificationController {
                 request.get("doctorName"),
                 request.get("patientPhone"),
                 request.get("patientEmail"),
+                request.get("doctorEmail"),
                 request.get("appointmentDate")
 
         );

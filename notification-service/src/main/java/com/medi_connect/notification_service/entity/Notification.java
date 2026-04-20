@@ -22,8 +22,10 @@ public class Notification {
 
     private Long recipientId;
     private String recipientName;
+
     private String recipientPhoneNumber;
     private String recipientEmail;
+
 
     private String type; //SMS / Email
     private String message;

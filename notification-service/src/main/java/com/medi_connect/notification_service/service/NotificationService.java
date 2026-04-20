@@ -74,17 +74,28 @@ public class NotificationService {
             String doctorName,
             String patientPhone,
             String patientEmail,
+            String doctorEmail,
             String appointmentDate
     ) {
-        String subject = "Appointment confirmation - MediConnect";
+
 
         LocalDateTime dateTime = LocalDateTime.parse(appointmentDate);
         String formattedDate = dateTime.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
         String formattedTime = dateTime.format(DateTimeFormatter.ofPattern("hh:mm a"));
 
-        String message = "Dear " + patientName + ",\n\nYour appointment with " + doctorName +" has been confirmed on "+ formattedDate+
+        String patientSubject = "Appointment Confirmation on "+formattedDate+" at "+formattedTime+" - MediConnect";
+        String doctorSubject = "New Paid Appointment on "+formattedDate+" at "+formattedTime+" - MediConnect";
+
+        String patientMessage = "Dear " + patientName + ",\n\nYour appointment with Dr " + doctorName +" has been confirmed on "+ formattedDate+
                 " at " + formattedTime + ".\n\n"+ "Thank you for using MediConnect!\n\n" +
                 "Best regards,\nMediConnect Team";
+        String doctorMessage =
+                "Dear " + doctorName + ",\n\n" +
+                        patientName+"'s payment was successful and the appointment is now confirmed.\n\n" +
+                        "Patient: " + patientName + "\n" +
+                        "Date: " + formattedDate + "\n" +
+                        "Time: " + formattedTime + "\n\n" +
+                        "Best regards,\nMediConnect Team";
 
 
 
@@ -94,18 +105,23 @@ public class NotificationService {
 
 
 
-        boolean emailSent = sendEmail(patientEmail, subject, message);
+        boolean patientEmailSent = patientEmail != null && !patientEmail.isBlank() && sendEmail(patientEmail, patientSubject, patientMessage);
+        boolean doctorEmailSent =  doctorEmail != null && !doctorEmail.isBlank() &&  sendEmail(doctorEmail, doctorSubject, doctorMessage);
         boolean smsSent = sendSms(patientPhone, smsMessage);
 
         String status;
-        if (emailSent && smsSent) {
+        if (patientEmailSent && doctorEmailSent && smsSent) {
             status = "SENT";
-        } else if (emailSent || smsSent) {
+        } else if (doctorEmailSent && patientEmailSent|| smsSent) {
             status = "PARTIAL";
         } else {
             status = "FAILED";
         }
-        saveNotification(appointmentId,patientEmail, patientPhone, patientName, "APPOINTMENT_CONFIRMATION", subject, message,status);
+        saveNotification(appointmentId,patientEmail, patientPhone, patientName, "APPOINTMENT_CONFIRMATION", patientSubject, patientMessage,status);
+        if (doctorEmail != null && !doctorEmail.isBlank()) {
+            saveNotification(appointmentId, doctorEmail, null, doctorName,
+                    "APPOINTMENT_CONFIRMATION_DOCTOR", doctorSubject, doctorMessage, status);
+        }
 
     }
 
@@ -115,40 +131,55 @@ public class NotificationService {
             String doctorName,
             String patientPhone,
             String patientEmail,
+            String doctorEmail,
             String appointmentDate
 
     ) {
-        String subject = "Appointment Cancelled - MediConnect";
 
 
         LocalDateTime dateTime = LocalDateTime.parse(appointmentDate);
         String formattedDate = dateTime.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
         String formattedTime = dateTime.format(DateTimeFormatter.ofPattern("hh:mm a"));
 
-        String message = "Dear " + patientName + ",\n\n" +
-                "Your appointment with " + doctorName +
+        String patientSubject = "Appointment Cancellation on "+formattedDate+" at "+formattedTime+" - MediConnect";
+        String doctorSubject = "Appointment Cancellation on "+formattedDate+" at "+formattedTime+" - MediConnect";
+
+
+        String patientMessage = "Dear " + patientName + ",\n\n" +
+                "Your appointment with Dr " + doctorName +
                 "has been cancelled on "+ formattedDate+" at " + formattedTime + ".\n\n"+ "Please book a new appointment if needed.\n\n" +
                 "Best regards,\nMediConnect Team";
 
         String smsMessage = "MediConnect: Your appointment with " +
                 doctorName + " on " + appointmentDate + " has been cancelled.";
 
+        String doctorMessage =
+                "Dear " + doctorName + ",\n\n" +
+                        "The appointment with patient " + patientName + " scheduled for " +
+                        formattedDate + " at " + formattedTime + " has been cancelled.\n\n" +
+                        "Best regards,\nMediConnect Team";
 
-        boolean emailSent = sendEmail(patientEmail, subject, message);
+
+
+        boolean patientEmailSent = patientEmail != null && !patientEmail.isBlank() && sendEmail(patientEmail, patientSubject, patientMessage);
+        boolean doctorEmailSent = doctorEmail != null && !doctorEmail.isBlank() && sendEmail(doctorEmail, doctorSubject, doctorMessage);
         boolean smsSent = sendSms(patientPhone, smsMessage);
 
         String status;
 
-        if (emailSent && smsSent) {
+        if (patientEmailSent && doctorEmailSent && smsSent) {
             status = "SENT";
-        } else if (emailSent || smsSent) {
+        } else if ( patientEmailSent && doctorEmailSent || smsSent) {
             status = "PARTIAL";
         } else {
             status = "FAILED";
         }
 
-        saveNotification(appointmentId,patientEmail,patientPhone,patientName,"APPOINTMENT_CANCELLATION",subject,message,status);
-
+        saveNotification(appointmentId,patientEmail,patientPhone,patientName,"APPOINTMENT_CANCELLATION",patientSubject,patientMessage,status);
+        if (doctorEmail != null && !doctorEmail.isBlank()) {
+            saveNotification(appointmentId, doctorEmail, null, doctorName,
+                    "APPOINTMENT_CONFIRMATION_DOCTOR", doctorSubject, doctorMessage, status);
+        }
     }
 
     private void saveNotification(

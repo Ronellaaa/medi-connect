@@ -3,8 +3,10 @@ package com.medi_connect.appointment_service.service;
 import com.medi_connect.appointment_service.dto.PaymentStatusUpdateRequest;
 import com.medi_connect.appointment_service.entity.Appointment;
 import com.medi_connect.appointment_service.repository.AppointmentRepository;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,8 +34,9 @@ public class AppointmentService {
     public List<Appointment> getAllAppointmentsByDoctor(Long doctorId) {
         return appointmentRepository.findByDoctorId(doctorId);
     }
-    public List<Appointment>findAppoinmentByPatientId(UUID appoinmentId,Long patientId ){
-        return appointmentRepository.findAppoinmentByPatientId(appoinmentId,patientId);
+
+    public List<Appointment> findAppoinmentByPatientId(UUID appoinmentId, Long patientId) {
+        return appointmentRepository.findAppoinmentByPatientId(appoinmentId, patientId);
     }
 
     public List<Appointment> getAllByStatus(String status) {
@@ -83,6 +86,9 @@ public class AppointmentService {
     public Appointment updatePaymentStatus(UUID appointmentId, PaymentStatusUpdateRequest request) {
         Appointment appointment = getAppointmentById(appointmentId);
 
+        System.out.println(request.getMeetingUrl());
+        System.out.println(request.getStatus());
+
         appointment.setPaymentStatus(request.getStatus());
         appointment.setPaymentId(request.getPaymentId());
         appointment.setPaymentAmount(request.getAmount());
@@ -92,12 +98,26 @@ public class AppointmentService {
             appointment.setMeetingUrl(request.getMeetingUrl());
         }
 
+
         if ("PAID".equalsIgnoreCase(request.getStatus())) {
             appointment.setStatus("CONFIRMED");
             sendAppointmentConfirmation(appointment);
         }
 
+        if ("FAILED".equalsIgnoreCase(request.getStatus())) {
+            appointment.setStatus("CANCELED");
+            sendAppointmentCancellation(appointment);
+        }
+        if ("PENDING".equalsIgnoreCase(request.getStatus())) {
+            appointment.setStatus("PENDING");
+        }
+
+        System.out.println(request.getStatus());
+
         return appointmentRepository.save(appointment);
+
+
+
     }
 
     public void deleteAppointment(UUID appointmentId) {
@@ -114,11 +134,33 @@ public class AppointmentService {
         payload.put("appointmentId", appointment.getId().toString());
         payload.put("patientName", appointment.getPatientName());
         payload.put("doctorName", appointment.getDoctorName());
+        payload.put("doctorEmail", appointment.getDoctorEmail());
         payload.put("patientPhone", appointment.getPatientphoneNumber());
         payload.put("patientEmail", appointment.getPatientEmail());
         payload.put("appointmentDate", appointment.getAppointmentDate().toString());
 
         restTemplate.postForObject(notifyUrl, payload, String.class);
+    }
+
+    public void sendAppointmentCancellation(Appointment appointment) {
+        if (appointment.getPatientEmail() == null || appointment.getPatientEmail().isBlank() || appointment.getDoctorEmail() == null || appointment.getDoctorEmail().isBlank()) {
+            System.out.println("Email not found!");
+            return;
+        }
+        String notifyUrl = notificationServiceUrl + "/api/notification/appointment-cancellation";
+
+        Map<String, String> payload = new HashMap<>();
+        payload.put("appointmentId", appointment.getId().toString());
+        payload.put("patientName", appointment.getPatientName());
+        payload.put("doctorName", appointment.getDoctorName());
+        payload.put("doctorEmail",appointment.getDoctorEmail());
+        payload.put("patientPhone", appointment.getPatientphoneNumber());
+        payload.put("patientEmail", appointment.getPatientEmail());
+        payload.put("appointmentDate", appointment.getAppointmentDate().toString());
+
+        restTemplate.postForObject(notifyUrl, payload, String.class);
+
+
     }
 
 

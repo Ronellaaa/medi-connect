@@ -55,7 +55,7 @@ export const routes: Routes = [
     component: AppointmentBooking,
   },
   {
-    path: 'doctor-dashboard',
+    path: 'appointments/doctor-dashboard',
     component: DoctorAppoinmentDashboard,
   },
   {

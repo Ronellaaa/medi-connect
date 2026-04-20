@@ -38,6 +38,7 @@ export class AppointmentBooking {
 
   selectedDoctorId: number | null = null;
   selectedDoctorName = '';
+  selectedDoctorEmail = '';
   selectedSpecialty = '';
   selectedHospital = '';
   consultationFee = '';
@@ -48,6 +49,7 @@ export class AppointmentBooking {
     this.route.queryParams.subscribe((params) => {
       this.selectedDoctorId = params['doctorId'] ? Number(params['doctorId']) : null;
       this.selectedDoctorName = params['doctorName'] ?? '';
+      this.selectedDoctorEmail = params['doctorEmail'] ?? '';
       this.selectedSpecialty = params['specialty'] ?? '';
       this.selectedHospital = params['hospital'] ?? '';
       this.selectedDate = params['date'] ?? '';
@@ -138,6 +140,7 @@ export class AppointmentBooking {
       patientphoneNumber: this.mobileNumber,
       patientAge: this.age,
       doctorId: this.selectedDoctorId,
+      doctorEmail: this.selectedDoctorEmail,
       doctorName: this.selectedDoctorName,
       specialty: this.selectedSpecialty,
       appointmentDate,
