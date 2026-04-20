@@ -1,5 +1,6 @@
 package com.medi_connect.doctors_service.service;
 
+import com.medi_connect.doctors_service.dto.AppointmentDto;
 import com.medi_connect.doctors_service.entity.Doctor;
 import com.medi_connect.doctors_service.entity.Prescription;
 import com.medi_connect.doctors_service.repository.DoctorRepository;
@@ -16,19 +17,50 @@ import java.util.Optional;
 public class PrescriptionService {
     private final PrescriptionRepository prescriptionRepository;
     private final DoctorRepository doctorRepository;
+    private final AppointmentClientService appointmentClientService;
+
+//    public Prescription createPrescription(Prescription prescription) {
+//        Long doctorId = prescription.getDoctor().getId();
+//                Doctor doctor = doctorRepository.findById(doctorId)
+//                        .orElseThrow(()-> new RuntimeException("Doctor not found"));
+//                prescription.setDoctor(doctor);
+//        if (prescription.getIssuedDate() == null) {
+//            prescription.setIssuedDate(LocalDate.now());
+//        }
+//
+//        return prescriptionRepository.save(prescription);
+//    }
 
     public Prescription createPrescription(Prescription prescription) {
         Long doctorId = prescription.getDoctor().getId();
-                Doctor doctor = doctorRepository.findById(doctorId)
-                        .orElseThrow(()-> new RuntimeException("Doctor not found"));
-                prescription.setDoctor(doctor);
+
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        prescription.setDoctor(doctor);
+
+        if (prescription.getAppointmentId() == null) {
+            throw new RuntimeException("Appointment ID is required");
+        }
+
+        AppointmentDto appointment = appointmentClientService.getAppointmentById(prescription.getAppointmentId());
+
+        if (appointment == null) {
+            throw new RuntimeException("Appointment not found");
+        }
+
+        if (!doctorId.equals(appointment.getDoctorId())) {
+            throw new RuntimeException("Appointment does not belong to this doctor");
+        }
+
+        prescription.setPatientId(appointment.getPatientId());
+
         if (prescription.getIssuedDate() == null) {
             prescription.setIssuedDate(LocalDate.now());
         }
 
         return prescriptionRepository.save(prescription);
     }
-
 
     public List<Prescription> getAllPrescriptions() {
         return prescriptionRepository.findAll();

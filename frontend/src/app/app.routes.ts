@@ -68,6 +68,7 @@ export const routes: Routes = [
     redirectTo: 'appointments',
     pathMatch: 'full',
   },
+    { path: 'doctors/prescription/:appointmentId', component: DoctorPrescriptionPageComponent },
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: Register },

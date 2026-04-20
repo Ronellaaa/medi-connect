@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 
 export interface PrescriptionRecord {
   id?: number;
-  patientId: number;
-  appointmentId?: number;
+  patientId?: number;
+  appointmentId?: string;
   diagnosis: string;
   medicines: string;
   instructions: string;
@@ -17,7 +17,7 @@ export interface PrescriptionRecord {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PrescriptionDataService {
   private apiUrl = 'http://localhost:8083/api/prescriptions';

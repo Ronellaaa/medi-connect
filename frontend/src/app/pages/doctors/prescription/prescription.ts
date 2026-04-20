@@ -1,9 +1,12 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { DoctorService } from '../../../services/doctor-service/doctor.service';
-import { PrescriptionDataService, PrescriptionRecord } from '../../../services/doctor-service/prescription.service';
+import {
+  PrescriptionDataService,
+  PrescriptionRecord,
+} from '../../../services/doctor-service/prescription.service';
 import { DoctorSessionService } from '../../../services/doctor-service/doctor-session.service';
 
 interface PrescriptionMedicine {
@@ -49,7 +52,7 @@ interface IssuedPrescription {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './prescription.html',
-  styleUrls: ['./prescription.css']
+  styleUrls: ['./prescription.css'],
 })
 export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
   @ViewChild('issuedStripScroller') issuedStripScroller?: ElementRef<HTMLDivElement>;
@@ -61,7 +64,7 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     { label: 'Availability', route: '/doctors/availability', icon: '⏱' },
     { label: 'Appointments', route: '/doctors/appointments', icon: '📅' },
     { label: 'Prescription', route: '/doctors/prescription', icon: '💊' },
-    { label: 'Reports', route: '/doctors/reports', icon: '📄' }
+    { label: 'Reports', route: '/doctors/reports', icon: '📄' },
   ];
 
   templates: PrescriptionTemplate[] = [
@@ -76,8 +79,8 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
       medicines: [
         { name: 'Paracetamol 500mg', dosage: '1 tablet 3 times daily', duration: '3 days' },
         { name: 'ORS / Fluids', dosage: 'Drink well', duration: 'As advised' },
-        { name: 'Rest', dosage: 'Home rest', duration: '2 - 3 days' }
-      ]
+        { name: 'Rest', dosage: 'Home rest', duration: '2 - 3 days' },
+      ],
     },
     {
       id: 2,
@@ -90,8 +93,8 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
       medicines: [
         { name: 'Cetirizine 10mg', dosage: '1 tablet at night', duration: '5 days' },
         { name: 'Steam Inhalation', dosage: 'Twice daily', duration: '5 days' },
-        { name: 'Warm Fluids', dosage: 'Drink warm water', duration: 'As advised' }
-      ]
+        { name: 'Warm Fluids', dosage: 'Drink warm water', duration: 'As advised' },
+      ],
     },
     {
       id: 3,
@@ -104,9 +107,9 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
       medicines: [
         { name: 'Omeprazole 20mg', dosage: 'Before breakfast', duration: '7 days' },
         { name: 'Antacid Syrup', dosage: '10ml when needed', duration: '5 days' },
-        { name: 'Diet Advice', dosage: 'Avoid spicy food', duration: 'As advised' }
-      ]
-    }
+        { name: 'Diet Advice', dosage: 'Avoid spicy food', duration: 'As advised' },
+      ],
+    },
   ];
 
   selectedTemplate: PrescriptionTemplate = this.templates[2];
@@ -125,13 +128,15 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
 
   diaryForm: DiaryForm = this.createEmptyDiaryForm();
 
-  private doctorId: number | null = null;
-
+private doctorId: number | null = null;
+selectedAppointmentId: string | null = null;
+private route = inject(ActivatedRoute);
   constructor(
     private prescriptionService: PrescriptionDataService,
     private doctorService: DoctorService,
-    private sessionService: DoctorSessionService
+    private sessionService: DoctorSessionService,
   ) {}
+
 
   // ngOnInit(): void {
   //   this.doctorId = this.sessionService.getCurrentDoctorId();
@@ -150,7 +155,44 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
 
   //   this.loadIssuedPrescriptions();
   // }
+
+
+
+
+  
+  // ngOnInit(): void {
+  //   const role = this.sessionService.getCurrentRole();
+
+  //   if (role !== 'DOCTOR') {
+  //     this.validationMessage = 'Only doctors can access prescriptions.';
+  //     this.issuedLoadMessage = 'Access denied.';
+  //     return;
+  //   }
+
+  //   this.doctorId = this.sessionService.getCurrentDoctorId();
+    
+
+  //   console.log('doctorId from session:', this.doctorId);
+  //   console.log('token from session:', this.sessionService.getToken());
+
+  //   if (this.doctorId) {
+  //     this.doctorService.getDoctorById(this.doctorId).subscribe({
+  //       next: (doctor) => {
+  //         this.diaryForm.doctorName = doctor.fullName || '';
+  //       },
+  //       error: (err) => {
+  //         console.error('Failed to load doctor name', err);
+  //       },
+  //     });
+  //   }
+
+  //   this.loadIssuedPrescriptions();
+  // }
+
   ngOnInit(): void {
+const appointmentId = this.route.snapshot.paramMap.get('appointmentId');
+this.selectedAppointmentId = appointmentId;
+
   const role = this.sessionService.getCurrentRole();
 
   if (role !== 'DOCTOR') {
@@ -162,7 +204,7 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
   this.doctorId = this.sessionService.getCurrentDoctorId();
 
   console.log('doctorId from session:', this.doctorId);
-  console.log('token from session:', this.sessionService.getToken());
+  console.log('selected appointment id:', this.selectedAppointmentId);
 
   if (this.doctorId) {
     this.doctorService.getDoctorById(this.doctorId).subscribe({
@@ -171,7 +213,7 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('Failed to load doctor name', err);
-      }
+      },
     });
   }
 
@@ -194,8 +236,8 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
       medicines: [
         { name: '', dosage: '', duration: '' },
         { name: '', dosage: '', duration: '' },
-        { name: '', dosage: '', duration: '' }
-      ]
+        { name: '', dosage: '', duration: '' },
+      ],
     };
   }
 
@@ -204,12 +246,15 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     this.selectedTemplate = this.templates[index];
   }
 
+selectAppointment(appointment: any): void {
+  this.selectedAppointmentId = appointment.id;
+}
+
+
   getCardPosition(index: number): string {
     if (index === this.activeTemplateIndex) return 'card-top';
 
-    const others = this.templates
-      .map((_, i) => i)
-      .filter(i => i !== this.activeTemplateIndex);
+    const others = this.templates.map((_, i) => i).filter((i) => i !== this.activeTemplateIndex);
 
     if (index === others[0]) return 'card-middle';
     return 'card-bottom';
@@ -219,14 +264,15 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     this.diaryForm.diagnosis = this.selectedTemplate.diagnosis;
     this.diaryForm.title = `${this.selectedTemplate.title} Prescription`;
     this.diaryForm.note = this.selectedTemplate.note;
-    this.diaryForm.medicines = this.selectedTemplate.medicines.map(med => ({ ...med }));
+    this.diaryForm.medicines = this.selectedTemplate.medicines.map((med) => ({ ...med }));
   }
 
   issuePrescription(): void {
     this.validationMessage = '';
 
     if (!this.isDiaryValid()) {
-      this.validationMessage = 'Please fill the required diary fields before issuing the prescription.';
+      this.validationMessage =
+        'Please fill the required diary fields before issuing the prescription.';
       return;
     }
 
@@ -238,42 +284,44 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     }, 650);
   }
 
- confirmIssue(): void {
-  const role = this.sessionService.getCurrentRole();
+  confirmIssue(): void {
+    const role = this.sessionService.getCurrentRole();
 
-  if (role !== 'DOCTOR') {
-    this.validationMessage = 'Only doctors can issue prescriptions.';
-    this.showConfirmModal = false;
-    return;
-  }
-
-  if (!this.doctorId) {
-    this.validationMessage = 'Doctor record is required before issuing a prescription.';
-    this.showConfirmModal = false;
-    return;
-  }
-
-  const payload = this.buildPrescriptionPayload();
-  const request$ = this.isEditingIssued && this.selectedPrescriptionId
-    ? this.prescriptionService.updatePrescription(this.selectedPrescriptionId, payload)
-    : this.prescriptionService.createPrescription(payload);
-
-  request$.subscribe({
-    next: () => {
+    if (role !== 'DOCTOR') {
+      this.validationMessage = 'Only doctors can issue prescriptions.';
       this.showConfirmModal = false;
-      this.validationMessage = '';
-      this.resetDiaryForm();
-      this.loadIssuedPrescriptions();
-    },
-    error: (err) => {
-      console.error('Failed to save prescription', err);
-      this.validationMessage = this.isEditingIssued
-        ? 'Could not update prescription in doctor-service.'
-        : 'Could not issue prescription to doctor-service.';
-      this.showConfirmModal = false;
+      return;
     }
-  });
-}
+
+    if (!this.doctorId) {
+      this.validationMessage = 'Doctor record is required before issuing a prescription.';
+      this.showConfirmModal = false;
+      return;
+    }
+
+    const payload = this.buildPrescriptionPayload();
+    console.log('FINAL PAYLOAD:', payload); // 👈 ADD HERE
+    const request$ =
+      this.isEditingIssued && this.selectedPrescriptionId
+        ? this.prescriptionService.updatePrescription(this.selectedPrescriptionId, payload)
+        : this.prescriptionService.createPrescription(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.showConfirmModal = false;
+        this.validationMessage = '';
+        this.resetDiaryForm();
+        this.loadIssuedPrescriptions();
+      },
+      error: (err) => {
+        console.error('Failed to save prescription', err);
+        this.validationMessage = this.isEditingIssued
+          ? 'Could not update prescription in doctor-service.'
+          : 'Could not issue prescription to doctor-service.';
+        this.showConfirmModal = false;
+      },
+    });
+  }
 
   cancelConfirm(): void {
     this.showConfirmModal = false;
@@ -299,7 +347,7 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
       doctorName: this.diaryForm.doctorName,
       issuedAt: item.raw.issuedDate || '',
       note: item.raw.instructions || '',
-      medicines: this.parseMedicines(item.raw.medicines)
+      medicines: this.parseMedicines(item.raw.medicines),
     };
   }
 
@@ -317,7 +365,7 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
       error: (err) => {
         console.error('Failed to delete prescription', err);
         this.validationMessage = 'Could not delete prescription.';
-      }
+      },
     });
   }
 
@@ -335,7 +383,7 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     const amount = Math.max(260, Math.floor(container.clientWidth * 0.65));
     container.scrollBy({
       left: direction === 'left' ? -amount : amount,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
 
     setTimeout(() => this.updateIssuedScrollState(), 280);
@@ -356,57 +404,55 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
       this.diaryForm.note.trim() !== '';
 
     const hasOneMedicine = this.diaryForm.medicines.some(
-      med =>
-        med.name.trim() !== '' &&
-        med.dosage.trim() !== '' &&
-        med.duration.trim() !== ''
+      (med) => med.name.trim() !== '' && med.dosage.trim() !== '' && med.duration.trim() !== '',
     );
 
     return hasBasicFields && hasOneMedicine;
   }
 
- private loadIssuedPrescriptions(): void {
-  this.issuedLoadMessage = '';
+  private loadIssuedPrescriptions(): void {
+    this.issuedLoadMessage = '';
 
-  const role = this.sessionService.getCurrentRole();
+    const role = this.sessionService.getCurrentRole();
 
-  if (role !== 'DOCTOR') {
-    this.issuedPrescriptions = [];
-    this.issuedLoadMessage = 'Only doctors can view prescriptions.';
-    return;
-  }
-
-  if (!this.doctorId) {
-    this.issuedPrescriptions = [];
-    this.issuedLoadMessage = 'Doctor session not found.';
-    return;
-  }
-
-  this.prescriptionService.getPrescriptionsByDoctor(this.doctorId).subscribe({
-    next: (records) => {
-      this.issuedPrescriptions = records.length
-        ? records.map((item) => ({
-            idText: item.id ? `RX-${item.id}` : 'RX',
-            patientName: `Patient #${item.patientId}`,
-            diagnosis: this.displayDiagnosis(item),
-            title: this.displayTitle(item),
-            issuedDate: item.issuedDate || 'No date',
-            notePreview: this.notePreview(item.instructions),
-            raw: item
-          }))
-        : [];
-      queueMicrotask(() => this.updateIssuedScrollState());
-    },
-    error: (err) => {
-      console.error('Failed to load issued prescriptions', err);
+    if (role !== 'DOCTOR') {
       this.issuedPrescriptions = [];
-      this.issuedLoadMessage = err?.status === 401 || err?.status === 403
-        ? 'Issued prescriptions could not load because the doctor session is not authorized.'
-        : 'Issued prescriptions could not be loaded from doctor-service.';
-      this.updateIssuedScrollState();
+      this.issuedLoadMessage = 'Only doctors can view prescriptions.';
+      return;
     }
-  });
-}
+
+    if (!this.doctorId) {
+      this.issuedPrescriptions = [];
+      this.issuedLoadMessage = 'Doctor session not found.';
+      return;
+    }
+
+    this.prescriptionService.getPrescriptionsByDoctor(this.doctorId).subscribe({
+      next: (records) => {
+        this.issuedPrescriptions = records.length
+          ? records.map((item) => ({
+              idText: item.id ? `RX-${item.id}` : 'RX',
+              patientName: `Patient #${item.patientId}`,
+              diagnosis: this.displayDiagnosis(item),
+              title: this.displayTitle(item),
+              issuedDate: item.issuedDate || 'No date',
+              notePreview: this.notePreview(item.instructions),
+              raw: item,
+            }))
+          : [];
+        queueMicrotask(() => this.updateIssuedScrollState());
+      },
+      error: (err) => {
+        console.error('Failed to load issued prescriptions', err);
+        this.issuedPrescriptions = [];
+        this.issuedLoadMessage =
+          err?.status === 401 || err?.status === 403
+            ? 'Issued prescriptions could not load because the doctor session is not authorized.'
+            : 'Issued prescriptions could not be loaded from doctor-service.';
+        this.updateIssuedScrollState();
+      },
+    });
+  }
 
   private firstMedicine(value: string): string {
     if (!value) {
@@ -467,23 +513,28 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     }
 
     this.canScrollIssuedLeft = container.scrollLeft > 8;
-    this.canScrollIssuedRight = container.scrollLeft + container.clientWidth < container.scrollWidth - 8;
+    this.canScrollIssuedRight =
+      container.scrollLeft + container.clientWidth < container.scrollWidth - 8;
   }
 
   private buildPrescriptionPayload(): PrescriptionRecord {
     return {
-      patientId: this.extractPatientId(this.diaryForm.patientName),
-      appointmentId: undefined,
+       patientId: undefined, // ❌ don't guess patient
+       appointmentId: this.selectedAppointmentId ?? undefined,
+
       diagnosis: this.diaryForm.diagnosis,
       medicines: this.diaryForm.medicines
         .filter((med) => med.name.trim() !== '')
         .map((med) => `${med.name} | ${med.dosage} | ${med.duration}`)
         .join(', '),
       instructions: this.diaryForm.note,
-      issuedDate: this.diaryForm.issuedAt || new Date().toISOString().slice(0, 10),
+      issuedDate:
+        this.diaryForm.issuedAt && /^\d{4}-\d{2}-\d{2}$/.test(this.diaryForm.issuedAt)
+          ? this.diaryForm.issuedAt
+          : new Date().toISOString().slice(0, 10),
       doctor: {
-        id: this.doctorId ?? undefined
-      }
+        id: this.doctorId ?? undefined,
+      },
     };
   }
 

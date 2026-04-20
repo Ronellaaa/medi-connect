@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+
 import { AppointmentsPayload } from '../../services/appointment.service';
 import { DoctorAppoinmentDashboardService } from '../../services/doctor-appoinment-dashboard.service';
+import { DoctorSessionService } from '../../services/doctor-service/doctor-session.service';
+import { DoctorService } from '../../services/doctor-service/doctor.service';
 
 type CalendarDay = {
   dateNumber: number;
@@ -13,6 +16,7 @@ type CalendarDay = {
   isActive: boolean;
 };
 
+
 @Component({
   selector: 'app-doctor-appoinment-dashboard',
   imports: [CommonModule, MatIconModule, RouterLink],
@@ -21,16 +25,21 @@ type CalendarDay = {
 })
 export class DoctorAppoinmentDashboard {
   private doctorAppoinmentDashboardService = inject(DoctorAppoinmentDashboardService);
-
-  protected readonly doctorId = 101;
-  protected readonly doctorName = 'Dr. John Smith';
-  protected readonly specialty = 'Cardiologist';
+  private sessionService = inject(DoctorSessionService);
+  private doctorService = inject(DoctorService);
+ 
+  protected readonly doctorId = this.sessionService.getCurrentDoctorId() ?? 0;
+  protected doctorName = 'Doctor';
+  protected specialty = '';
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
   protected readonly appointments = signal<AppointmentsPayload[]>([]);
   protected readonly selectedDate = signal('');
   protected readonly calendarCursor = signal(new Date());
+  private router = inject(Router);
+  
+
 
   protected readonly highlightedDates = computed(() => {
     return Array.from(
@@ -41,6 +50,15 @@ export class DoctorAppoinmentDashboard {
       ),
     );
   });
+
+
+  protected goToPrescription(appointment: AppointmentsPayload): void {
+  if (!appointment.id) {
+    return;
+  }
+
+  this.router.navigate(['/doctors/prescription', appointment.id]);
+}
 
   protected readonly calendarMonthLabel = computed(() => {
     return this.calendarCursor().toLocaleDateString('en-US', {
@@ -107,7 +125,25 @@ export class DoctorAppoinmentDashboard {
 
   constructor() {
     this.loadAppointments();
+     this.loadDoctorProfile();
+
   }
+
+  private loadDoctorProfile(): void {
+  if (!this.doctorId) {
+    return;
+  }
+
+  this.doctorService.getDoctorById(this.doctorId).subscribe({
+    next: (doctor) => {
+      this.doctorName = doctor.fullName || 'Doctor';
+      this.specialty = doctor.mainSpecialization || '';
+    },
+    error: (err) => {
+      console.error('Failed to load doctor profile', err);
+    },
+  });
+}
 
   protected selectDate(isoDate: string): void {
     this.selectedDate.set(isoDate);
