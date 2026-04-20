@@ -48,6 +48,10 @@ export class AppointmentApiService{
     return this.http.get<AppointmentsPayload[]>(`${this.apiUrl}/doctors/${doctorId}`);
   }
 
+  getAppointmentsByPatientId(patientId: number): Observable<AppointmentsPayload[]> {
+    return this.http.get<AppointmentsPayload[]>(`${this.apiUrl}/patient/${patientId}`);
+  }
+
   cancelAppointment(id: string) {
     return this.http.patch<AppointmentsPayload>(`${this.apiUrl}/status/${id}?status=CANCELLED`, {});
   }

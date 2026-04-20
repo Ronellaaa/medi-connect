@@ -47,6 +47,7 @@ public class SecurityConfig {
 
                         // INTERNAL (NO TOKEN)
                         .requestMatchers("/api/patients/internal/**").permitAll()
+                        .requestMatchers("/api/reports/internal/**").permitAll()
 
                         // PROTECTED
                         .requestMatchers("/api/patients/**").hasAnyRole("PATIENT", "ADMIN")

@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/reports")
 @CrossOrigin(origins = "*")
@@ -16,11 +18,12 @@ public class ReportController {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadReport(
+            @RequestParam("appointmentId") String appointmentId,
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("file") MultipartFile file) {
         try {
-            return ResponseEntity.ok(medicalReportService.uploadReport(title, description, file));
+            return ResponseEntity.ok(medicalReportService.uploadReport(appointmentId, title, description, file));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -29,6 +32,16 @@ public class ReportController {
     @GetMapping("/my-reports")
     public ResponseEntity<?> getMyReports() {
         return ResponseEntity.ok(medicalReportService.getMyReports());
+    }
+
+    @GetMapping("/internal/by-patient-ids")
+    public ResponseEntity<?> getReportsByPatientIds(@RequestParam List<Long> patientIds) {
+        return ResponseEntity.ok(medicalReportService.getReportsByPatientIds(patientIds));
+    }
+
+    @GetMapping("/internal/by-doctor/{doctorId}")
+    public ResponseEntity<?> getReportsByDoctorId(@PathVariable Long doctorId) {
+        return ResponseEntity.ok(medicalReportService.getReportsByDoctorId(doctorId));
     }
 
     @DeleteMapping("/{id}")

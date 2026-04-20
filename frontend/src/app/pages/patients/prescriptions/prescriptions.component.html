@@ -1,89 +1,160 @@
-<div class="prescriptions-container">
-  <div class="prescriptions-header">
-    <div>
-      <h1>My Prescriptions</h1>
-      <p>View all your prescribed medications</p>
-    </div>
-  </div>
+<div class="rx-page">
+  <div class="rx-container">
+    <div class="rx-header">
+      <div class="rx-header-content">
+        <span class="rx-tag">Medication Dashboard</span>
+        <h1>My Prescriptions</h1>
+        <p>Access all prescribed medications, diagnosis details, and consultation records in one place.</p>
+      </div>
 
-  <div class="prescriptions-list" *ngIf="!isLoading">
-    <div class="prescription-card" *ngFor="let prescription of prescriptions" (click)="viewDetails(prescription)">
-      <div class="prescription-card-header">
-        <div class="doctor-info">
-          <div class="doctor-avatar">👨‍⚕️</div>
-          <div>
-            <h3>Dr. {{ prescription.doctorName }}</h3>
-            <p>Prescribed on {{ prescription.issuedAt | date:'mediumDate' }}</p>
-          </div>
-        </div>
-        <div class="status-badge" [class.expiring]="isExpiringSoon(prescription.validUntil)">
-          Valid until {{ prescription.validUntil | date:'mediumDate' }}
+      <div class="rx-header-stats">
+        <button type="button" class="view-btn header-view-btn" (click)="loadPrescriptions()">
+          View My Prescriptions
+        </button>
+        <div class="stat-card">
+          <span>Total Records</span>
+          <strong>{{ prescriptions.length }}</strong>
         </div>
       </div>
-      <div class="prescription-card-body">
-        <div class="diagnosis">
-          <strong>Diagnosis:</strong>
-          <p>{{ prescription.diagnosis }}</p>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner-large"></div>
+      <p>Loading your prescriptions...</p>
+    </div>
+
+    <div class="empty-state error-state" *ngIf="!isLoading && errorMessage">
+      <div class="empty-icon">⚠️</div>
+      <h3>Could not load prescriptions</h3>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <div class="rx-body" *ngIf="!isLoading && !errorMessage">
+      <div class="rx-main">
+        <div class="section-head">
+          <div>
+            <h2>Prescription Records</h2>
+            <p>Select a prescription to view complete details</p>
+          </div>
         </div>
-        <div class="medications">
-          <strong>Medications:</strong>
-          <div class="medication-list">
-            <div class="medication-item" *ngFor="let med of parseMedications(prescription.medications)">
-              <span class="med-name">{{ med.name }}</span>
-              <span class="med-dosage">{{ med.dosage }}</span>
+
+        <div class="prescription-list" *ngIf="prescriptions.length > 0">
+          <div
+            class="prescription-card"
+            *ngFor="let prescription of prescriptions"
+            (click)="viewDetails(prescription)"
+          >
+            <div class="card-left">
+              <div class="doctor-avatar">👨‍⚕️</div>
+
+              <div class="card-info">
+                <div class="top-row">
+                  <h3>Dr. {{ prescription.doctor?.fullName || 'Doctor' }}</h3>
+                  <span class="issue-date">{{ prescription.issuedDate | date:'mediumDate' }}</span>
+                </div>
+
+                <div class="diagnosis-block">
+                  <span class="label">Diagnosis</span>
+                  <p>{{ prescription.diagnosis }}</p>
+                </div>
+
+                <div class="medication-row">
+                  <span
+                    class="med-chip"
+                    *ngFor="let med of parseMedications(prescription.medicines)"
+                  >
+                    <span class="med-name">{{ med.name }}</span>
+                    <span class="med-dose">{{ med.dosage }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-action">
+              <button type="button" class="view-btn">View</button>
             </div>
           </div>
         </div>
+
+        <div class="empty-state" *ngIf="prescriptions.length === 0">
+          <div class="empty-icon">💊</div>
+          <h3>No Prescriptions Yet</h3>
+          <p>Your prescriptions will appear here after your consultations</p>
+        </div>
+      </div>
+
+      <div class="rx-side">
+        <div class="side-card gradient-card">
+          <span class="side-label">Overview</span>
+          <h3>Prescription Summary</h3>
+          <p>Your current records are organized in the main panel for quick access.</p>
+
+          <div class="summary-grid">
+            <div class="summary-box">
+              <span>Total</span>
+              <strong>{{ prescriptions.length }}</strong>
+            </div>
+
+            <div class="summary-box">
+              <span>Status</span>
+              <strong>{{ prescriptions.length ? 'Active' : 'Empty' }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <h3>Quick Info</h3>
+          <p>
+            Open any prescription to view the doctor, medications, dosage, frequency,
+            duration, and additional instructions.
+          </p>
+        </div>
       </div>
     </div>
-
-    <div class="empty-state" *ngIf="prescriptions.length === 0">
-      <div class="empty-icon">💊</div>
-      <h3>No Prescriptions Yet</h3>
-      <p>Your prescriptions will appear here after your consultations</p>
-    </div>
   </div>
 
-  <div class="loading-state" *ngIf="isLoading">
-    <div class="spinner-large"></div>
-    <p>Loading your prescriptions...</p>
-  </div>
-
-  <!-- Prescription Details Modal -->
   <div class="modal" *ngIf="selectedPrescription" (click)="closeModal()">
     <div class="modal-content prescription-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>Prescription Details</h2>
+        <div>
+          <span class="modal-tag">Prescription Details</span>
+          <h2>Clinical Record</h2>
+        </div>
         <button class="close-btn" (click)="closeModal()">×</button>
       </div>
+
       <div class="modal-body">
         <div class="prescription-details">
-          <div class="detail-section">
+          <div class="detail-card">
             <h4>Doctor Information</h4>
-            <p><strong>Name:</strong> Dr. {{ selectedPrescription.doctorName }}</p>
-            <p><strong>Doctor ID:</strong> {{ selectedPrescription.doctorId }}</p>
+            <p><strong>Name:</strong> Dr. {{ selectedPrescription.doctor?.fullName || 'Doctor' }}</p>
+            <p><strong>Doctor ID:</strong> {{ selectedPrescription.doctor?.id }}</p>
           </div>
 
-          <div class="detail-section">
+          <div class="detail-card">
             <h4>Prescription Information</h4>
-            <p><strong>Issued Date:</strong> {{ selectedPrescription.issuedAt | date:'fullDate' }}</p>
-            <p><strong>Valid Until:</strong> {{ selectedPrescription.validUntil | date:'fullDate' }}</p>
+            <p><strong>Issued Date:</strong> {{ selectedPrescription.issuedDate | date:'fullDate' }}</p>
             <p><strong>Appointment ID:</strong> {{ selectedPrescription.appointmentId }}</p>
           </div>
 
-          <div class="detail-section">
+          <div class="detail-card full-width">
             <h4>Diagnosis</h4>
             <p>{{ selectedPrescription.diagnosis }}</p>
           </div>
 
-          <div class="detail-section">
+          <div class="detail-card full-width">
             <h4>Medications</h4>
             <table class="medications-table">
               <thead>
-                <tr><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Duration</th></tr>
+                <tr>
+                  <th>Medication</th>
+                  <th>Dosage</th>
+                  <th>Frequency</th>
+                  <th>Duration</th>
+                </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let med of parseMedicationsDetailed(selectedPrescription.medications)">
+                <tr *ngFor="let med of parseMedicationsDetailed(selectedPrescription.medicines)">
                   <td>{{ med.name }}</td>
                   <td>{{ med.dosage }}</td>
                   <td>{{ med.frequency || 'As prescribed' }}</td>
@@ -93,12 +164,13 @@
             </table>
           </div>
 
-          <div class="detail-section" *ngIf="selectedPrescription.instructions">
+          <div class="detail-card full-width" *ngIf="selectedPrescription.instructions">
             <h4>Instructions</h4>
             <p>{{ selectedPrescription.instructions }}</p>
           </div>
         </div>
       </div>
+
       <div class="modal-footer">
         <button class="btn-print" (click)="printPrescription()">🖨️ Print</button>
         <button class="btn-close" (click)="closeModal()">Close</button>

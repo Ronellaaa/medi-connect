@@ -1,15 +1,13 @@
-package com.medi_connect.patients_service.dto;
-
+package com.medi_connect.doctors_service.dto;
 
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data
 public class MedicalReportDto {
     private Long id;
     private Long patientId;
-    private Long doctorId;
-    private String appointmentId;
     private String patientName;
     private Integer patientAge;
     private String patientGender;

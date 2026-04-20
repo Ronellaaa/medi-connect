@@ -57,4 +57,7 @@ export class PrescriptionDataService {
   getPrescriptionsByDoctor(doctorId: number): Observable<PrescriptionRecord[]> {
     return this.http.get<PrescriptionRecord[]>(`${this.apiUrl}/doctor/${doctorId}`);
   }
+
+
+
 }

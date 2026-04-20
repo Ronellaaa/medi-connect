@@ -2,6 +2,8 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportService } from '../../../services/report.service';
+import { AppointmentApiService, AppointmentsPayload } from '../../../services/appointment.service';
+import { DoctorSessionService } from '../../../services/doctor-service/doctor-session.service';
 
 @Component({
   standalone: true,
@@ -16,12 +18,19 @@ export class ReportsComponent implements OnInit {
   selectedFile: File | null = null;
   uploadTitle = '';
   uploadDescription = '';
+  selectedAppointmentId = '';
+  appointments: AppointmentsPayload[] = [];
   showUploadModal = false;
 
-  constructor(private reportService: ReportService) {}
+  constructor(
+    private reportService: ReportService,
+    private appointmentApi: AppointmentApiService,
+    private sessionService: DoctorSessionService
+  ) {}
 
   ngOnInit(): void {
     this.loadReports();
+    this.loadAppointments();
   }
 
   loadReports(): void {
@@ -51,18 +60,24 @@ export class ReportsComponent implements OnInit {
   }
 
   uploadReport(): void {
-    if (!this.selectedFile || !this.uploadTitle) {
+    if (!this.selectedFile || !this.uploadTitle || !this.selectedAppointmentId) {
       this.showError('Please fill all required fields');
       return;
     }
 
     this.isLoading = true;
-    this.reportService.uploadReport(this.uploadTitle, this.uploadDescription, this.selectedFile).subscribe({
+    this.reportService.uploadReport(
+      this.selectedAppointmentId,
+      this.uploadTitle,
+      this.uploadDescription,
+      this.selectedFile
+    ).subscribe({
       next: () => {
         this.showSuccess('Report uploaded successfully');
         this.showUploadModal = false;
         this.uploadTitle = '';
         this.uploadDescription = '';
+        this.selectedAppointmentId = '';
         this.selectedFile = null;
         this.loadReports();
         this.isLoading = false;
@@ -94,6 +109,22 @@ export class ReportsComponent implements OnInit {
 
   closeModal(): void {
     this.showUploadModal = false;
+  }
+
+  private loadAppointments(): void {
+    const patientId = this.sessionService.getCurrentProfileId();
+    if (!patientId) {
+      return;
+    }
+
+    this.appointmentApi.getAppointmentsByPatientId(patientId).subscribe({
+      next: (appointments) => {
+        this.appointments = appointments;
+      },
+      error: () => {
+        this.appointments = [];
+      }
+    });
   }
 
   private showError(message: string): void {

@@ -11,4 +11,6 @@ import java.util.List;
 public interface MedicalReportRepository extends JpaRepository<MedicalReport, Long> {
     List<MedicalReport> findByPatient(Patient patient);
     List<MedicalReport> findByPatientId(Long patientId);
+    List<MedicalReport> findByPatientIdIn(List<Long> patientIds);
+    List<MedicalReport> findByDoctorId(Long doctorId);
 }

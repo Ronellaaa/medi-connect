@@ -1,10 +1,9 @@
 package com.medi_connect.doctors_service.service;
 
+import com.medi_connect.doctors_service.dto.AppointmentDto;
 import com.medi_connect.doctors_service.dto.AvailabilityDto;
-import com.medi_connect.doctors_service.entity.Appointment;
 import com.medi_connect.doctors_service.entity.Availability;
 import com.medi_connect.doctors_service.entity.Doctor;
-import com.medi_connect.doctors_service.repository.AppointmentRepository;
 import com.medi_connect.doctors_service.repository.AvailabilityRepository;
 import com.medi_connect.doctors_service.repository.DoctorRepository;
 import org.springframework.stereotype.Service;
@@ -17,14 +16,14 @@ public class AvailabilityService {
 
     private final AvailabilityRepository availabilityRepository;
     private final DoctorRepository doctorRepository;
-    private final AppointmentRepository appointmentRepository;
+    private final AppointmentClientService appointmentClientService;
 
     public AvailabilityService(AvailabilityRepository availabilityRepository,
                                DoctorRepository doctorRepository,
-                               AppointmentRepository appointmentRepository) {
+                               AppointmentClientService appointmentClientService) {
         this.availabilityRepository = availabilityRepository;
         this.doctorRepository = doctorRepository;
-        this.appointmentRepository = appointmentRepository;
+        this.appointmentClientService = appointmentClientService;
     }
 
     public Availability createAvailability(Availability availability) {
@@ -87,19 +86,19 @@ public class AvailabilityService {
     }
 
     public Map<String, String> getAvailabilitySuggestion(Long doctorId) {
-        List<Appointment> appointments = appointmentRepository.findByDoctorId(doctorId);
+        List<AppointmentDto> appointments = appointmentClientService.getAppointmentsByDoctorId(doctorId);
 
         Map<String, Integer> dayCount = new HashMap<>();
         Map<String, Integer> timeSlotCount = new HashMap<>();
 
-        for (Appointment appointment : appointments) {
+        for (AppointmentDto appointment : appointments) {
             if (appointment.getAppointmentDate() != null) {
                 String day = appointment.getAppointmentDate().getDayOfWeek().toString();
                 dayCount.put(day, dayCount.getOrDefault(day, 0) + 1);
             }
 
-            if (appointment.getAppointmentTime() != null) {
-                int hour = appointment.getAppointmentTime().getHour();
+            if (appointment.getAppointmentDate() != null) {
+                int hour = appointment.getAppointmentDate().getHour();
 
                 String slot;
                 if (hour < 12) {

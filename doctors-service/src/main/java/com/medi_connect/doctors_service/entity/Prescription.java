@@ -3,8 +3,6 @@ package com.medi_connect.doctors_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 
 @Entity
@@ -22,7 +20,8 @@ public class Prescription {
 
     private Long patientId;
 
-    private Long appointmentId;
+    @Column(name = "appointment_id", length = 64)
+    private String appointmentId;
 
     private String diagnosis;
 

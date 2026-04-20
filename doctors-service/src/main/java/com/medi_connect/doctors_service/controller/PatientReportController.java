@@ -1,5 +1,6 @@
 package com.medi_connect.doctors_service.controller;
 
+import com.medi_connect.doctors_service.dto.DoctorRelevantReportDto;
 import com.medi_connect.doctors_service.entity.PatientReport;
 import com.medi_connect.doctors_service.service.PatientReportService;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,11 @@ public class PatientReportController {
     @GetMapping
     public List<PatientReport> getAllReports() {
         return patientReportService.getAllReports();
+    }
+
+    @GetMapping("/relevant")
+    public List<DoctorRelevantReportDto> getRelevantReports() {
+        return patientReportService.getRelevantReportsForCurrentDoctor();
     }
 
     @GetMapping("/{id}")

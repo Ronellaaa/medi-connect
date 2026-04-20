@@ -30,7 +30,7 @@ export class DoctorAppointmentsPageComponent implements OnInit {
   ];
 
   appointments: {
-    id: number;
+    id: string;
     patient: string;
     reason: string;
     date: string;
@@ -63,10 +63,10 @@ export class DoctorAppointmentsPageComponent implements OnInit {
         this.stats = this.buildStats(records);
         this.appointments = records.map((item) => ({
           id: item.id!,
-          patient: `Patient #${item.patientId}`,
+          patient: item.patientName || `Patient #${item.patientId}`,
           reason: item.reason || 'Consultation',
-          date: item.appointmentDate || '',
-          time: this.formatTime(item.appointmentTime),
+          date: this.formatDate(item.appointmentDate),
+          time: this.formatTime(item.appointmentDate),
           status: this.getStatusLabel(item),
           urgency: item.urgencyLevel || 'LOW',
           tone: this.getTone(item),
@@ -79,21 +79,21 @@ export class DoctorAppointmentsPageComponent implements OnInit {
     });
   }
 
-  acceptAppointment(id: number): void {
+  acceptAppointment(id: string): void {
     this.appointmentService.acceptAppointment(id).subscribe({
       next: () => this.loadAppointments(),
       error: (err) => console.error('Failed to accept appointment', err)
     });
   }
 
-  rejectAppointment(id: number): void {
+  rejectAppointment(id: string): void {
     this.appointmentService.rejectAppointment(id).subscribe({
       next: () => this.loadAppointments(),
       error: (err) => console.error('Failed to reject appointment', err)
     });
   }
 
-  deleteAppointment(id: number): void {
+  deleteAppointment(id: string): void {
     if (confirm('Are you sure you want to delete this appointment?')) {
       this.appointmentService.deleteAppointment(id).subscribe({
         next: () => this.loadAppointments(),
@@ -106,28 +106,32 @@ export class DoctorAppointmentsPageComponent implements OnInit {
     const today = new Date().toISOString().slice(0, 10);
 
     return [
-      { label: 'Today appointments', value: String(appointments.filter((item) => item.appointmentDate === today).length) },
+      { label: 'Today appointments', value: String(appointments.filter((item) => (item.appointmentDate || '').slice(0, 10) === today).length) },
       { label: 'Pending approval', value: String(appointments.filter((item) => (item.status || '').toUpperCase() === 'PENDING').length) },
-      { label: 'Completed', value: String(appointments.filter((item) => (item.status || '').toUpperCase() === 'ACCEPTED').length) },
+      { label: 'Completed', value: String(appointments.filter((item) => (item.status || '').toUpperCase() === 'CONFIRMED').length) },
       { label: 'Urgent cases', value: String(appointments.filter((item) => (item.urgencyLevel || '').toUpperCase() === 'HIGH').length) }
     ];
   }
 
   private getStatusLabel(item: AppointmentRecord): string {
     const status = (item.status || '').toUpperCase();
-    if (status === 'ACCEPTED') return 'Accepted';
-    if (status === 'REJECTED') return 'Rejected';
+    if (status === 'CONFIRMED') return 'Accepted';
+    if (status === 'CANCELED') return 'Rejected';
     return 'Pending';
   }
 
   private getTone(item: AppointmentRecord): string {
     if ((item.urgencyLevel || '').toUpperCase() === 'HIGH') return 'pink';
-    if ((item.status || '').toUpperCase() === 'ACCEPTED') return 'green';
-    if ((item.status || '').toUpperCase() === 'REJECTED') return 'blue';
+    if ((item.status || '').toUpperCase() === 'CONFIRMED') return 'green';
+    if ((item.status || '').toUpperCase() === 'CANCELED') return 'blue';
     return 'orange';
   }
 
+  private formatDate(value: string): string {
+    return value ? value.slice(0, 10) : '';
+  }
+
   private formatTime(value: string): string {
-    return value ? value.slice(0, 5) : 'Not set';
+    return value ? value.slice(11, 16) : 'Not set';
   }
 }

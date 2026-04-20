@@ -1,7 +1,7 @@
 <main class="doctor-dashboard-page">
   <section class="doctor-dashboard-shell">
     <header class="doctor-dashboard-header">
-      <button class="doctor-dashboard-back" type="button" routerLink="/appointments/results">
+      <button class="doctor-dashboard-back" type="button" routerLink="/doctors/dashboard">
         <mat-icon>arrow_back</mat-icon>
         <span>Back</span>
       </button>
@@ -17,12 +17,14 @@
       <aside class="doctor-dashboard-sidebar">
         <article class="doctor-dashboard-profile-card">
           <div class="doctor-dashboard-profile-image">
-            <img src="/doctor-watcher.png" alt="Doctor profile" />
+             <div class="doctor-dashboard-profile-copy">
+            <h2><strong>{{ doctorName }}</strong></h2>
+            <p><strong>{{ specialty }}</strong></p>
           </div>
-          <div class="doctor-dashboard-profile-copy">
-            <h2>{{ doctorName }}</h2>
-            <p>{{ specialty }}</p>
+            <img src="/doctor-watcher1.png" alt="Doctor profile" />
+             
           </div>
+        
         </article>
 
         <article class="doctor-dashboard-mini-calendar">

@@ -5,6 +5,7 @@ import { PatientService } from '../../../services/patient.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ReportService } from '../../../services/report.service';
 import { PrescriptionService } from '../../../services/prescription.service';
+import { DoctorSessionService } from '../../../services/doctor-service/doctor-session.service';
 
 @Component({
   standalone: true,
@@ -15,11 +16,13 @@ import { PrescriptionService } from '../../../services/prescription.service';
 })
 export class DashboardComponent implements OnInit {
   patientData: any = null;
+
   stats = {
     totalReports: 0,
     totalPrescriptions: 0,
     upcomingAppointments: 0
   };
+
   recentReports: any[] = [];
   recentPrescriptions: any[] = [];
 
@@ -27,7 +30,8 @@ export class DashboardComponent implements OnInit {
     private patientService: PatientService,
     private authService: AuthService,
     private reportService: ReportService,
-    private prescriptionService: PrescriptionService
+    private prescriptionService: PrescriptionService,
+    private sessionService: DoctorSessionService
   ) {}
 
   ngOnInit(): void {
@@ -55,12 +59,21 @@ export class DashboardComponent implements OnInit {
       error: () => {}
     });
 
-    this.prescriptionService.getMyPrescriptions().subscribe({
+    const patientId = this.sessionService.getCurrentProfileId();
+
+    if (!patientId) {
+      console.error('Patient ID not found in session');
+      return;
+    }
+
+    this.prescriptionService.getPrescriptionsByPatient(patientId).subscribe({
       next: (prescriptions) => {
         this.recentPrescriptions = prescriptions.slice(0, 3);
         this.stats.totalPrescriptions = prescriptions.length;
       },
-      error: () => {}
+      error: () => {
+        console.error('Failed to load prescriptions');
+      }
     });
   }
 

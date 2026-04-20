@@ -39,7 +39,7 @@ public class PrescriptionService {
 
         prescription.setDoctor(doctor);
 
-        if (prescription.getAppointmentId() == null) {
+        if (prescription.getAppointmentId() == null || prescription.getAppointmentId().isBlank()) {
             throw new RuntimeException("Appointment ID is required");
         }
 

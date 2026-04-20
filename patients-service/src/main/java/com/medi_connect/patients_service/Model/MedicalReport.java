@@ -24,6 +24,12 @@ public class MedicalReport {
     @JsonIgnore
     private Patient patient;
 
+    @Column(name = "appointment_id")
+    private String appointmentId;
+
+    @Column(name = "doctor_id")
+    private Long doctorId;
+
     @Column(nullable = false)
     private String title;
 

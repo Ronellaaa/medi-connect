@@ -62,7 +62,7 @@ export class DoctorPrescriptionPageComponent implements OnInit, AfterViewInit {
     { label: 'Profile', route: '/doctors/profile', icon: '👤' },
     { label: 'Doctors', route: '/doctors/team', icon: '🩺' },
     { label: 'Availability', route: '/doctors/availability', icon: '⏱' },
-    { label: 'Appointments', route: '/doctors/appointments', icon: '📅' },
+    { label: 'Appointments', route: '/appointments/doctor-dashboard', icon: '📅' },
     { label: 'Prescription', route: '/doctors/prescription', icon: '💊' },
     { label: 'Reports', route: '/doctors/reports', icon: '📄' },
   ];

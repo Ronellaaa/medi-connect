@@ -53,6 +53,15 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
+          <label>Appointment *</label>
+          <select [(ngModel)]="selectedAppointmentId">
+            <option value="" disabled>Select appointment</option>
+            <option *ngFor="let appointment of appointments" [value]="appointment.id">
+              {{ appointment.doctorName }} - {{ appointment.appointmentDate | date:'medium' }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
           <label>Title *</label>
           <input type="text" [(ngModel)]="uploadTitle" placeholder="e.g., Blood Test Report - March 2024">
         </div>

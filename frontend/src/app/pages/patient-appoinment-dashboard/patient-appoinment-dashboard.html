@@ -2,40 +2,21 @@
   <section class="patient-dashboard-shell">
     <aside class="patient-dashboard-sidebar">
       <div class="patient-dashboard-profile-panel">
+        <div class="patient-dashboard-profile-top">
+          <div class="patient-dashboard-profile-copy">
+            <h2>{{ patientName }}</h2>
+            <p>{{ profileTag }}</p>
+          </div>
+        </div>
+
         <div class="patient-dashboard-hero-image">
-          <img src="/doctor-watcher.png" alt="Patient profile" />
+          <img src="/doctor-watcher2.png" alt="Patient profile" />
         </div>
 
-        <div class="patient-dashboard-profile-copy">
-          <h2>{{ patientName }}</h2>
-          <p>{{ profileTag }}</p>
-        </div>
-
-        <button class="patient-dashboard-profile-button" type="button">View Profile</button>
+        <button class="patient-dashboard-profile-button" type="button" routerLink="/patient/dashboard">
+          Back to Dashboard
+        </button>
       </div>
-
-      <nav class="patient-dashboard-nav">
-        <a class="patient-dashboard-nav-item is-active" routerLink="/patient-dashboard">
-          <mat-icon>space_dashboard</mat-icon>
-          <span>Dashboard</span>
-        </a>
-        <a class="patient-dashboard-nav-item" routerLink="/appointments">
-          <mat-icon>event_note</mat-icon>
-          <span>My Appointments</span>
-        </a>
-        <a class="patient-dashboard-nav-item" routerLink="/appointments">
-          <mat-icon>medical_services</mat-icon>
-          <span>Doctors</span>
-        </a>
-        <a class="patient-dashboard-nav-item" routerLink="/appointments">
-          <mat-icon>folder_shared</mat-icon>
-          <span>My Records</span>
-        </a>
-        <a class="patient-dashboard-nav-item" routerLink="/appointments">
-          <mat-icon>payments</mat-icon>
-          <span>Bills</span>
-        </a>
-      </nav>
     </aside>
 
     <section class="patient-dashboard-main">

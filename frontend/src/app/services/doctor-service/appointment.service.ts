@@ -3,24 +3,21 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface AppointmentRecord {
-  id?: number;
+  id?: string;
   patientId: number;
+  patientName?: string;
   appointmentDate: string;
-  appointmentTime: string;
-  reason: string;
+  reason?: string;
   status: string;
-  urgencyLevel: string;
-  doctor?: {
-    id?: number;
-    fullName?: string;
-  };
+  urgencyLevel?: string;
+  doctorId?: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentService {
-  private apiUrl = 'http://localhost:8083/api/appointments';
+  private apiUrl = 'http://localhost:8088/api/appointments';
 
   constructor(private http: HttpClient) {}
 
@@ -28,39 +25,31 @@ export class AppointmentService {
     return this.http.get<AppointmentRecord[]>(this.apiUrl);
   }
 
-  getAppointmentById(id: number): Observable<AppointmentRecord> {
+  getAppointmentById(id: string): Observable<AppointmentRecord> {
     return this.http.get<AppointmentRecord>(`${this.apiUrl}/${id}`);
   }
 
   createAppointment(payload: any): Observable<AppointmentRecord> {
-    if (payload.doctorId) {
-      payload.doctor = { id: payload.doctorId };
-      delete payload.doctorId;
-    }
     return this.http.post<AppointmentRecord>(this.apiUrl, payload);
   }
 
-  updateAppointment(id: number, payload: any): Observable<AppointmentRecord> {
-    if (payload.doctorId) {
-      payload.doctor = { id: payload.doctorId };
-      delete payload.doctorId;
-    }
+  updateAppointment(id: string, payload: any): Observable<AppointmentRecord> {
     return this.http.patch<AppointmentRecord>(`${this.apiUrl}/${id}`, payload);
   }
 
-  deleteAppointment(id: number): Observable<void> {
+  deleteAppointment(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   getAppointmentsByDoctor(doctorId: number): Observable<AppointmentRecord[]> {
-    return this.http.get<AppointmentRecord[]>(`${this.apiUrl}/doctor/${doctorId}`);
+    return this.http.get<AppointmentRecord[]>(`${this.apiUrl}/doctors/${doctorId}`);
   }
 
-  acceptAppointment(id: number): Observable<AppointmentRecord> {
-    return this.http.patch<AppointmentRecord>(`${this.apiUrl}/${id}/accept`, {});
+  acceptAppointment(id: string): Observable<AppointmentRecord> {
+    return this.http.patch<AppointmentRecord>(`${this.apiUrl}/status/${id}?status=CONFIRMED`, {});
   }
 
-  rejectAppointment(id: number): Observable<AppointmentRecord> {
-    return this.http.patch<AppointmentRecord>(`${this.apiUrl}/${id}/reject`, {});
+  rejectAppointment(id: string): Observable<AppointmentRecord> {
+    return this.http.patch<AppointmentRecord>(`${this.apiUrl}/status/${id}?status=CANCELED`, {});
   }
 }

@@ -87,10 +87,10 @@ export class DashboardComponent1 implements OnInit, AfterViewInit, OnDestroy {
     this.appointmentService.getAllAppointments().subscribe({
       next: (appointments) => {
         this.recentAppointments = appointments.slice(0, 5).map((item) => ({
-          patientName: `Patient #${item.patientId}`,
+          patientName: item.patientName || `Patient #${item.patientId}`,
           reason: item.reason || 'Consultation',
           urgencyLevel: item.urgencyLevel || 'LOW',
-          time: item.appointmentTime ? item.appointmentTime.slice(0, 5) : 'N/A',
+          time: item.appointmentDate ? item.appointmentDate.slice(11, 16) : 'N/A',
           status: item.status || 'PENDING'
         }));
       },

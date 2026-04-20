@@ -5,15 +5,14 @@ import { Observable } from 'rxjs';
 export interface ReportRecord {
   id?: number;
   patientId: number;
+  patientName?: string;
+  age?: number;
+  gender?: string;
   reportName: string;
   reportType: string;
   reportUrl: string;
   notes: string;
   uploadedDate: string;
-  doctor?: {
-    id?: number;
-    fullName?: string;
-  };
 }
 
 @Injectable({
@@ -26,6 +25,10 @@ export class ReportDataService {
 
   getAllReports(): Observable<ReportRecord[]> {
     return this.http.get<ReportRecord[]>(this.apiUrl);
+  }
+
+  getRelevantReports(): Observable<ReportRecord[]> {
+    return this.http.get<ReportRecord[]>(`${this.apiUrl}/relevant`);
   }
 
   getReportById(id: number): Observable<ReportRecord> {

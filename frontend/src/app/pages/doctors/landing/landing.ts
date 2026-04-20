@@ -54,7 +54,7 @@ export class DoctorLanding implements OnInit, AfterViewInit, OnDestroy {
     { name: 'Dashboard', icon: 'fas fa-th-large', route: '/doctors/dashboard', active: true },
     { name: 'Profile', icon: 'fas fa-user-circle', route: '/doctors/profile' },
     { name: 'Doctors', icon: 'fas fa-user-md', route: '/doctors/team' },
-    { name: 'Appointments', icon: 'fas fa-calendar-alt', route: '/doctors/appointments' },
+    { name: 'Appointments', icon: 'fas fa-calendar-alt', route: '/appointments/doctor-dashboard' },
     {
       name: 'Availability',
       icon: 'fas fa-clock',
@@ -278,12 +278,12 @@ export class DoctorLanding implements OnInit, AfterViewInit, OnDestroy {
     request$.subscribe({
       next: (appointments) => {
         const today = new Date().toISOString().slice(0, 10);
-        this.todayCases = appointments.filter((item) => item.appointmentDate === today).length;
+        this.todayCases = appointments.filter((item) => (item.appointmentDate || '').slice(0, 10) === today).length;
 
         this.recentAppointments = appointments.slice(0, 2).map((item, index) => ({
-          patientName: `Patient #${item.patientId}`,
+          patientName: item.patientName || `Patient #${item.patientId}`,
           issue: item.reason || 'General consultation',
-          time: item.appointmentTime ? item.appointmentTime.slice(0, 5) : 'N/A',
+          time: item.appointmentDate ? item.appointmentDate.slice(11, 16) : 'N/A',
           priority: (item.urgencyLevel || 'LOW').toUpperCase() as 'HIGH' | 'MEDIUM' | 'LOW',
           avatar: `https://i.pravatar.cc/100?img=${index === 0 ? 32 : 14}`,
         }));

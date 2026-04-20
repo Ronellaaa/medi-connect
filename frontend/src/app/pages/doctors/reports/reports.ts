@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ReportDataService, ReportRecord } from '../../../services/doctor-service/report.service';
+import { DoctorSessionService } from '../../../services/doctor-service/doctor-session.service';
 
 interface PatientReport {
   id: number;
@@ -31,103 +32,36 @@ export class DoctorReportsPageComponent implements OnInit {
     { label: 'Profile', route: '/doctors/profile', icon: '👤' },
     { label: 'Doctors', route: '/doctors/team', icon: '🩺' },
     { label: 'Availability', route: '/doctors/availability', icon: '⏱' },
-    { label: 'Appointments', route: '/doctors/appointments', icon: '📅' },
+    { label: 'Appointments', route: '/appointments/doctor-dashboard', icon: '📅' },
     { label: 'Prescription', route: '/doctors/prescription', icon: '💊' },
     { label: 'Reports', route: '/doctors/reports', icon: '📄' }
   ];
 
-  patients: PatientReport[] = [
-    {
-      id: 1,
-      patientName: 'James Johnson',
-      age: 42,
-      gender: 'Male',
-      reportType: 'Cardiology Review',
-      reportId: 'MR-2026-104',
-      date: '25 Jun 2026',
-      status: 'Critical',
-      tone: 'pink',
-      diagnosis: 'Elevated cardiovascular stress indicators with irregular rhythm observation.',
-      doctorNote: 'Recommend ECG follow-up, blood pressure monitoring, and immediate consultation.',
-      metrics: [
-        { label: 'Heart Rate', value: '72 bpm' },
-        { label: 'Blood Pressure', value: '120/80 mmHg' },
-        { label: 'Cholesterol', value: '180 mg/dL' },
-        { label: 'Body Temp', value: '37°C' }
-      ]
-    },
-    {
-      id: 2,
-      patientName: 'Amara Silva',
-      age: 31,
-      gender: 'Female',
-      reportType: 'Blood Profile',
-      reportId: 'MR-2026-105',
-      date: '25 Jun 2026',
-      status: 'Reviewed',
-      tone: 'green',
-      diagnosis: 'Blood profile within normal range with mild iron deficiency markers.',
-      doctorNote: 'Advise dietary supplements and repeat CBC after two weeks.',
-      metrics: [
-        { label: 'Hemoglobin', value: '11.8 g/dL' },
-        { label: 'WBC', value: '6700 /µL' },
-        { label: 'Platelets', value: '250k' },
-        { label: 'Glucose', value: '98 mg/dL' }
-      ]
-    },
-    {
-      id: 3,
-      patientName: 'Nethmi Perera',
-      age: 27,
-      gender: 'Female',
-      reportType: 'MRI Summary',
-      reportId: 'MR-2026-106',
-      date: '24 Jun 2026',
-      status: 'Pending',
-      tone: 'orange',
-      diagnosis: 'Radiology summary pending final interpretation by specialist.',
-      doctorNote: 'Awaiting radiologist confirmation before treatment recommendation.',
-      metrics: [
-        { label: 'Scan Area', value: 'Brain' },
-        { label: 'Contrast', value: 'Used' },
-        { label: 'Status', value: 'In Review' },
-        { label: 'Priority', value: 'Normal' }
-      ]
-    },
-    {
-      id: 4,
-      patientName: 'Ravindu Fernando',
-      age: 54,
-      gender: 'Male',
-      reportType: 'CT Report',
-      reportId: 'MR-2026-107',
-      date: '24 Jun 2026',
-      status: 'Signature',
-      tone: 'blue',
-      diagnosis: 'CT findings documented and awaiting consultant approval signature.',
-      doctorNote: 'Review complete. Final sign-off required before archive sync.',
-      metrics: [
-        { label: 'Scan Type', value: 'Thorax CT' },
-        { label: 'Contrast', value: 'No' },
-        { label: 'Priority', value: 'High' },
-        { label: 'Report Pages', value: '08' }
-      ]
-    }
-  ];
+  patients: PatientReport[] = [];
 
-  currentPatient: PatientReport = this.patients[0];
-  turningPatient: PatientReport = this.patients[0];
+  currentPatient: PatientReport = this.createEmptyReport();
+  turningPatient: PatientReport = this.createEmptyReport();
   nextPatient: PatientReport | null = null;
 
   isFlipping = false;
   pageNumber = 16;
 
-  constructor(private reportService: ReportDataService) {}
+  constructor(
+    private reportService: ReportDataService,
+    private sessionService: DoctorSessionService
+  ) {}
 
   ngOnInit(): void {
-    this.reportService.getAllReports().subscribe({
+    this.loadReports();
+  }
+
+  loadReports(): void {
+    this.reportService.getRelevantReports().subscribe({
       next: (reports) => {
         if (!reports.length) {
+          this.patients = [];
+          this.currentPatient = this.createEmptyReport();
+          this.turningPatient = this.currentPatient;
           return;
         }
 
@@ -179,18 +113,40 @@ export class DoctorReportsPageComponent implements OnInit {
     return this.pageNumber + 1;
   }
 
+  private createEmptyReport(): PatientReport {
+    return {
+      id: 0,
+      patientName: 'No reports available',
+      age: 0,
+      gender: 'Patient',
+      reportType: 'Medical Report',
+      reportId: 'MR-0000',
+      date: 'Date not set',
+      status: 'Pending',
+      tone: 'orange',
+      diagnosis: 'No uploaded patient reports are available for your appointment queue yet.',
+      doctorNote: 'Reports uploaded by relevant patients will appear here automatically.',
+      metrics: [
+        { label: 'Report Name', value: 'N/A' },
+        { label: 'Type', value: 'N/A' },
+        { label: 'Patient', value: 'N/A' },
+        { label: 'Link', value: 'Pending' }
+      ]
+    };
+  }
+
   private mapReport(item: ReportRecord, index: number): PatientReport {
     const status = this.getStatus(item);
     const tone = this.getTone(status);
 
     return {
       id: item.id ?? index + 1,
-      patientName: `Patient #${item.patientId}`,
-      age: 0,
-      gender: 'Patient',
+      patientName: item.patientName || `Patient #${item.patientId}`,
+      age: item.age ?? 0,
+      gender: item.gender || 'Patient',
       reportType: item.reportType || 'Medical Report',
       reportId: `MR-${item.id ?? index + 1}`,
-      date: item.uploadedDate || 'Date not set',
+      date: this.formatDisplayDate(item.uploadedDate),
       status,
       tone,
       diagnosis: item.reportName || 'No report name available',
@@ -198,7 +154,7 @@ export class DoctorReportsPageComponent implements OnInit {
       metrics: [
         { label: 'Report Name', value: item.reportName || 'N/A' },
         { label: 'Type', value: item.reportType || 'N/A' },
-        { label: 'Doctor', value: item.doctor?.fullName || 'Unassigned' },
+        { label: 'Patient', value: item.patientName || `Patient #${item.patientId}` },
         { label: 'Link', value: item.reportUrl ? 'Available' : 'Pending' }
       ]
     };
@@ -218,5 +174,22 @@ export class DoctorReportsPageComponent implements OnInit {
     if (status === 'Reviewed') return 'green';
     if (status === 'Pending') return 'orange';
     return 'blue';
+  }
+
+  private formatDisplayDate(value?: string): string {
+    if (!value) {
+      return 'Date not set';
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return value;
+    }
+
+    return parsed.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
   }
 }

@@ -151,6 +151,8 @@ export class AppointmentResults {
         specialty: doctor.mainSpecialization,
         hospital: doctor.clinic ?? '',
         date: slot.availabilityDate || this.dateQuery || '',
+        startTime: slot.startTime || '',
+        endTime: slot.endTime || '',
         fee: doctor.consultationFee ?? '',
       },
     });

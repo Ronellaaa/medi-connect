@@ -33,6 +33,8 @@ export class AppointmentBooking {
   age = 0;
   email = '';
   selectedDate = '';
+  selectedStartTime = '';
+  selectedEndTime = '';
   showSuccessModal = false;
   successModalText = 'Please check your email for the appointment details.';
 
@@ -53,6 +55,8 @@ export class AppointmentBooking {
       this.selectedSpecialty = params['specialty'] ?? '';
       this.selectedHospital = params['hospital'] ?? '';
       this.selectedDate = params['date'] ?? '';
+      this.selectedStartTime = params['startTime'] ?? '';
+      this.selectedEndTime = params['endTime'] ?? '';
       this.consultationFee = params['fee'] ?? '';
     });
 
@@ -109,7 +113,8 @@ export class AppointmentBooking {
       return;
     }
 
-    const appointmentDate = `${this.selectedDate}T00:00:00`;
+    const appointmentTime = this.normalizeTime(this.selectedStartTime);
+    const appointmentDate = `${this.selectedDate}T${appointmentTime}`;
 
     if (this.age < 0 || this.age == null) {
       alert('Please enter a valid age!');
@@ -191,5 +196,21 @@ export class AppointmentBooking {
     }
 
     return Math.max(age, 0);
+  }
+
+  private normalizeTime(value?: string): string {
+    if (!value) {
+      return '00:00:00';
+    }
+
+    if (/^\d{2}:\d{2}:\d{2}$/.test(value)) {
+      return value;
+    }
+
+    if (/^\d{2}:\d{2}$/.test(value)) {
+      return `${value}:00`;
+    }
+
+    return '00:00:00';
   }
 }

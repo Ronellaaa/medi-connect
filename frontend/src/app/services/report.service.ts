@@ -8,8 +8,9 @@ export class ReportService {
 
   constructor(private http: HttpClient) {}
 
-  uploadReport(title: string, description: string, file: File): Observable<any> {
+  uploadReport(appointmentId: string, title: string, description: string, file: File): Observable<any> {
     const formData = new FormData();
+    formData.append('appointmentId', appointmentId);
     formData.append('title', title);
     formData.append('description', description);
     formData.append('file', file);

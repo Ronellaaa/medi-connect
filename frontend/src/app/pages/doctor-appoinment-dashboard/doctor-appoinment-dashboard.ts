@@ -168,7 +168,26 @@ export class DoctorAppoinmentDashboard {
   }
 
   protected formatTime(appointmentDate: string): string {
-    return new Date(appointmentDate).toLocaleTimeString('en-US', {
+    if (!appointmentDate) {
+      return 'Time not set';
+    }
+
+    const normalizedValue = appointmentDate.trim();
+    if (
+      normalizedValue.endsWith('T00:00:00') ||
+      normalizedValue.endsWith('T00:00') ||
+      normalizedValue.endsWith(' 00:00:00') ||
+      normalizedValue.endsWith(' 00:00')
+    ) {
+      return 'Time not set';
+    }
+
+    const parsedDate = new Date(appointmentDate);
+    if (Number.isNaN(parsedDate.getTime())) {
+      return 'Time not set';
+    }
+
+    return parsedDate.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
     });
