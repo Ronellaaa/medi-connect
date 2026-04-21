@@ -28,6 +28,8 @@ import { ProfileComponent } from './pages/patients/profile/profile.component';
 import { ReportsComponent } from './pages/patients/reports/reports.component';
 import { PrescriptionsComponent } from './pages/patients/prescriptions/prescriptions.component';
 
+// Admin
+import { AdminComponent } from './pages/admin/admin';
 import { AdminDashboardComponent } from './pages/admin/dashboard/dashboard.component';
 import { PatientsComponent } from './pages/admin/patients/manage-patients.component';
 import { StatsComponent } from './pages/admin/stats/stats.component';
@@ -36,95 +38,82 @@ import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
-  // {
-  //   path: '',
-  //   redirectTo: 'appointments',
-  //   pathMatch: 'full',
-  // },
+  // Public Routes
   { path: '', component: Home },
-  {
-    path: 'appointments',
-    component: Appoinments,
-  },
-  {
-    path: 'appointments/results',
-    component: AppointmentResults,
-  },
-  {
-    path: 'appointments/booking',
-    component: AppointmentBooking,
-  },
-  {
-    path: 'appointments/doctor-dashboard',
-    component: DoctorAppoinmentDashboard,
-  },
-  {
-    path: 'appointments/patient-dashboard',
-    component: PatientAppoinmentDashboard,
-  },
-
-  {
-    path: 'appoinments',
-    redirectTo: 'appointments',
-    pathMatch: 'full',
-  },
-    { path: 'doctors/prescription/:appointmentId', component: DoctorPrescriptionPageComponent },
-
   { path: 'login', component: LoginComponent },
   { path: 'register', component: Register },
-  { path: 'dashboard', redirectTo: 'doctors/dashboard', pathMatch: 'full' },
-  { path: 'doctors', redirectTo: 'doctors/dashboard', pathMatch: 'full' },
-  { path: 'doctors/dashboard', component: DoctorLanding },
-  { path: 'doctors/insights', component: DashboardComponent1 },
-  { path: 'doctors/profile', component: DoctorProfileComponent },
-  { path: 'doctors/appointments', component: DoctorAppointmentsPageComponent },
-  { path: 'doctors/availability', component: DoctorAvailabilityPageComponent },
-  { path: 'doctors/prescription', component: DoctorPrescriptionPageComponent },
-  { path: 'doctors/reports', component: DoctorReportsPageComponent },
-  { path: 'doctors/team', component: DoctorsComponent },
-
-  // { path: '', pathMatch: 'full', redirectTo: 'payments' },
+  
+  // Appointments Routes
+  {
+    path: 'appointments',
+    children: [
+      { path: '', component: Appoinments },
+      { path: 'results', component: AppointmentResults },
+      { path: 'booking', component: AppointmentBooking },
+      { path: 'doctor-dashboard', component: DoctorAppoinmentDashboard },
+      { path: 'patient-dashboard', component: PatientAppoinmentDashboard },
+    ]
+  },
+  
+  // Redirect for typo
+  { path: 'appoinments', redirectTo: 'appointments', pathMatch: 'full' },
+  
+  // Doctor Routes
+  { path: 'doctors/prescription/:appointmentId', component: DoctorPrescriptionPageComponent },
+  { 
+    path: 'doctors', 
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DoctorLanding },
+      { path: 'insights', component: DashboardComponent1 },
+      { path: 'profile', component: DoctorProfileComponent },
+      { path: 'appointments', component: DoctorAppointmentsPageComponent },
+      { path: 'availability', component: DoctorAvailabilityPageComponent },
+      { path: 'prescription', component: DoctorPrescriptionPageComponent },
+      { path: 'reports', component: DoctorReportsPageComponent },
+      { path: 'team', component: DoctorsComponent },
+    ]
+  },
+  
+  // Payment Routes
   { path: 'payments', component: Payments },
   { path: 'payment/success', component: Payments, data: { state: 'success' } },
   { path: 'payment/cancel', component: Payments, data: { state: 'cancel' } },
-
-  // { path: '**', redirectTo: '' },
-
-  // { path: 'patients', redirectTo: 'patient/dashboard', pathMatch: 'full' },
-  // { path: 'admin', redirectTo: 'admin/dashboard', pathMatch: 'full' },
-
-  // Patient
-
+  
+  // Patient Routes (with AuthGuard)
+  { 
+    path: 'patient', 
+    canActivate: [AuthGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'reports', component: ReportsComponent },
+      { path: 'prescriptions', component: PrescriptionsComponent },
+      { path: 'appointments', component: Appoinments },
+    ]
+  },
+  
+  // Redirects for patient
   { path: 'patient-dashboard', redirectTo: 'patient/dashboard', pathMatch: 'full' },
   { path: 'patients', redirectTo: 'patient/dashboard', pathMatch: 'full' },
-  { path: 'admin', redirectTo: 'admin/dashboard', pathMatch: 'full' },
-
-  { path: 'patient/dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'patient/profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  { path: 'patient/reports', component: ReportsComponent, canActivate: [AuthGuard] },
-  { path: 'patient/prescriptions', component: PrescriptionsComponent, canActivate: [AuthGuard] },
-  { path: 'patient/appointments', component: Appoinments, canActivate: [AuthGuard] },
-
-  {
-    path: 'admin/dashboard',
-    component: AdminDashboardComponent,
+  
+  // Admin Routes (with AdminComponent wrapper + guards)
+  { 
+    path: 'admin', 
+    component: AdminComponent,
     canActivate: [AuthGuard, AdminGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'patients', component: PatientsComponent },
+      { path: 'stats', component: StatsComponent },
+    ]
   },
-  { path: 'admin/patients', component: PatientsComponent, canActivate: [AuthGuard, AdminGuard] },
-  { path: 'admin/stats', component: StatsComponent, canActivate: [AuthGuard, AdminGuard] },
-
-  { path: '**', redirectTo: '' },
-
-  //   { path: 'patient/dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  // { path: 'patient/profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  // { path: 'patient/reports', component: ReportsComponent, canActivate: [AuthGuard] },
-  // { path: 'patient/prescriptions', component: PrescriptionsComponent, canActivate: [AuthGuard] },
-  // { path: 'patient/appointments', component: Appoinments, canActivate: [AuthGuard] },
-
-  // Admin
-  // { path: 'admin/dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard, AdminGuard] },
-  // { path: 'admin/patients', component: PatientsComponent, canActivate: [AuthGuard, AdminGuard] },
-  // { path: 'admin/stats', component: StatsComponent, canActivate: [AuthGuard, AdminGuard] },
-
-  //  { path: '**', redirectTo: 'login' }
+  
+  // Redirect for admin
+  { path: 'admin-dashboard', redirectTo: 'admin/dashboard', pathMatch: 'full' },
+  
+  // Default redirect for any other routes
+  { path: '**', redirectTo: '' }
 ];

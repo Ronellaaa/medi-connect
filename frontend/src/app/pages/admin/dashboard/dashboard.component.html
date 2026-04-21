@@ -1,87 +1,199 @@
-<div class="admin-container">
-  <div class="admin-header">
-    <div class="logo">
-      <span class="gradient-text">Medi</span>
-      <span>Connect Admin</span>
-    </div>
-    <div class="admin-nav">
-      <a routerLink="/admin/dashboard" class="active">Dashboard</a>
-      <a routerLink="/admin/patients">Patients</a>
-      <a routerLink="/admin/stats">Analytics</a>
-      <button class="btn-logout" (click)="logout()">Logout</button>
-    </div>
+<div class="dashboard-container">
+  <!-- Ambient Background -->
+  <div class="ambient-bg">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
   </div>
 
   <div class="dashboard-content">
-    <div class="welcome-section">
-      <h1>Admin Dashboard</h1>
-      <p>Overview of platform operations</p>
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="header-left">
+        <h1 class="welcome-title">
+          <span class="greeting">{{ greeting }},</span>
+          <span class="admin-name">{{ adminName }}</span>
+        </h1>
+        <p class="welcome-subtitle">Here's your platform overview for today.</p>
+      </div>
+      <div class="header-right">
+        <div class="date-badge">
+          <span class="date-icon">📅</span>
+          <span class="date-text">{{ currentDate }}</span>
+        </div>
+        <button class="refresh-btn" (click)="refresh()" [disabled]="isLoading">
+          <span class="refresh-icon">🔄</span>
+        </button>
+      </div>
     </div>
 
-    <div class="stats-grid" *ngIf="!isLoading">
-      <div class="stat-card">
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error">
+      <span class="error-icon">⚠️</span>
+      <span>{{ error }}</span>
+      <button (click)="loadDashboardData()">Retry</button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <!-- Total Patients Card -->
+      <div class="stat-card card-gradient-1">
         <div class="stat-icon">👥</div>
-        <div class="stat-info">
-          <h3>{{ stats.totalPatients }}</h3>
-          <p>Total Patients</p>
+        <div class="stat-content">
+          <h3 class="stat-title">Total Patients</h3>
+          <div class="stat-value">{{ animatedStats.patients | number }}</div>
+          <div class="stat-trend">
+            <span class="trend-up">↑</span>
+            <span>+12% from last month</span>
+          </div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon">✅</div>
-        <div class="stat-info">
-          <h3>{{ stats.activePatients }}</h3>
-          <p>Active Patients</p>
+
+      <!-- Active Patients Card -->
+      <div class="stat-card card-gradient-2">
+        <div class="stat-icon">💚</div>
+        <div class="stat-content">
+          <h3 class="stat-title">Active Patients</h3>
+          <div class="stat-value">{{ animatedStats.active | number }}</div>
+          <div class="stat-trend">
+            <span class="trend-up">↑</span>
+            <span>{{ ((stats.activePatients / stats.totalPatients) * 100) | number:'1.0-0' }}% of total</span>
+          </div>
         </div>
       </div>
-      <div class="stat-card">
+
+      <!-- Appointments Card -->
+      <div class="stat-card card-gradient-3">
         <div class="stat-icon">📅</div>
-        <div class="stat-info">
-          <h3>{{ stats.totalAppointments }}</h3>
-          <p>Appointments</p>
+        <div class="stat-content">
+          <h3 class="stat-title">Appointments</h3>
+          <div class="stat-value">{{ animatedStats.appointments | number }}</div>
+          <div class="stat-trend">
+            <span class="trend-up">↑</span>
+            <span>{{ completionRate }}% completed</span>
+          </div>
         </div>
       </div>
-      <div class="stat-card">
+
+      <!-- Revenue Card -->
+      <div class="stat-card card-gradient-4">
         <div class="stat-icon">💰</div>
-        <div class="stat-info">
-          <h3>₹{{ stats.totalRevenue | number }}</h3>
-          <p>Total Revenue</p>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🏦</div>
-        <div class="stat-info">
-          <h3>₹{{ stats.platformFees | number }}</h3>
-          <p>Platform Fees</p>
+        <div class="stat-content">
+          <h3 class="stat-title">Revenue</h3>
+          <div class="stat-value">{{ formatCurrency(animatedStats.revenue) }}</div>
+          <div class="stat-trend">
+            <span>Platform fee: {{ formatCurrency(stats.platformFees) }}</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="dashboard-grid">
-      <div class="card recent-patients">
+    <!-- Charts & Recent Activity Row -->
+    <div class="dashboard-row">
+      <!-- Patient Distribution Chart -->
+      <div class="dashboard-card chart-card">
         <div class="card-header">
-          <h3>Recent Patients</h3>
-          <a routerLink="/admin/patients">View All →</a>
+          <h3>Patient Distribution</h3>
+          <span class="card-subtitle">Active vs Inactive</span>
         </div>
-        <div class="card-body">
-          <table class="patients-table">
-            <thead>
-              <tr><th>Name</th><th>Email</th><th>Status</th><th>Joined</th></tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let patient of recentPatients">
-                <td>{{ patient.firstName }} {{ patient.lastName }}</td>
-                <td>{{ patient.email }}</td>
-                <td>
-                  <span class="status-badge" [class.active]="patient.enabled" [class.inactive]="!patient.enabled">
-                    {{ patient.enabled ? 'Active' : 'Disabled' }}
-                  </span>
-                </td>
-                <td>{{ patient.createdAt | date:'shortDate' }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="chart-container">
+          <div class="bar-chart">
+            <div class="bar-item" *ngFor="let item of monthEntries">
+              <div class="bar-label">{{ item.label }}</div>
+              <div class="bar-wrapper">
+                <div class="bar" [style.height.%]="item.height">
+                  <span class="bar-value">{{ item.count }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Quick Actions Card -->
+      <div class="dashboard-card actions-card">
+        <div class="card-header">
+          <h3>Quick Actions</h3>
+          <span class="card-subtitle">Manage platform</span>
+        </div>
+        <div class="actions-list">
+          <a routerLink="/admin/patients" class="action-item">
+            <div class="action-icon">👥</div>
+            <div class="action-info">
+              <h4>Manage Patients</h4>
+              <p>View, edit, and manage patient records</p>
+            </div>
+            <span class="action-arrow">→</span>
+          </a>
+          <a routerLink="/admin/stats" class="action-item">
+            <div class="action-icon">📊</div>
+            <div class="action-info">
+              <h4>Full Stats</h4>
+              <p>View detailed platform statistics</p>
+            </div>
+            <span class="action-arrow">→</span>
+          </a>
+          <div class="action-item" (click)="logout()" style="cursor: pointer;">
+            <div class="action-icon">🚪</div>
+            <div class="action-info">
+              <h4>Logout</h4>
+              <p>Sign out of admin console</p>
+            </div>
+            <span class="action-arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Patients Table -->
+    <div class="dashboard-card recent-card">
+      <div class="card-header">
+        <h3>Recent Patients</h3>
+        <a routerLink="/admin/patients" class="view-all">View All →</a>
+      </div>
+      <div class="table-wrapper">
+        <table class="recent-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let patient of recentPatients">
+              <td>
+                <div class="patient-cell">
+                  <div class="patient-avatar">{{ initials(patient) }}</div>
+                  <div class="patient-info">
+                    <div class="patient-name">{{ fullName(patient) }}</div>
+                    <div class="patient-id">ID: {{ patient.id }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ patient.email }}</td>
+              <td>
+                <span class="status-badge" [class.active]="patient.enabled" [class.inactive]="!patient.enabled">
+                  {{ patient.enabled ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <button class="view-btn" (click)="viewPatient(patient)">View Details</button>
+              </td>
+            </tr>
+            <tr *ngIf="recentPatients.length === 0">
+              <td colspan="4" class="no-data">No patients found</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner"></div>
+  <p>Loading dashboard...</p>
 </div>

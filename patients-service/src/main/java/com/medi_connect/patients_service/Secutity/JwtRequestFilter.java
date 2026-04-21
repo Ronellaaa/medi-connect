@@ -14,7 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -25,9 +24,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
 
         String path = request.getServletPath();
-        boolean isOptions = "OPTIONS".equalsIgnoreCase(request.getMethod());
 
-        return isOptions
+        return request.getMethod().equalsIgnoreCase("OPTIONS")
                 || path.startsWith("/api/auth/")
                 || path.startsWith("/api/health/")
                 || path.startsWith("/api/patients/internal/");
@@ -40,13 +38,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             FilterChain chain
     ) throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        // 🔥 extra safety (prevents accidental blocking)
+        if (path.startsWith("/api/auth/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         final String authorizationHeader = request.getHeader("Authorization");
 
         String email = null;
         String jwt = null;
         String role = null;
 
-        // Extract token
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
 
@@ -58,12 +63,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-        // Debug (VERY IMPORTANT — remove later)
-        System.out.println("AUTH HEADER: " + authorizationHeader);
-        System.out.println("EMAIL: " + email);
-        System.out.println("ROLE: " + role);
-
-        // Authenticate user
         if (email != null
                 && role != null
                 && SecurityContextHolder.getContext().getAuthentication() == null
@@ -71,7 +70,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(jwt)) {
 
-                // FIX: handle both PATIENT and ROLE_PATIENT safely
                 String authority = role.startsWith("ROLE_")
                         ? role
                         : "ROLE_" + role.toUpperCase();

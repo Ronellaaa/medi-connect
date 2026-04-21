@@ -154,6 +154,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       })
       .subscribe({
         next: (response) => {
+          localStorage.setItem('token', response.token);
           if (response.role === 'DOCTOR' && response.doctor?.id) {
             this.sessionService.setCurrentDoctor(
               response.doctor.id,
@@ -175,6 +176,17 @@ export class LoginComponent implements OnInit, OnDestroy {
             response.userId,
             response.profileId ?? undefined,
           );
+
+          localStorage.setItem('user', JSON.stringify({
+            email: response.email,
+            role: response.role,
+            firstName: 'ADMIN'
+          }));
+
+           if (response.role === 'ADMIN') {
+            this.router.navigate(['/admin/dashboard']);
+            return;
+          }
 
           if (response.role === 'PATIENT') {
             this.router.navigate(['/patient/dashboard']);

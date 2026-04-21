@@ -5,6 +5,7 @@ import com.medi_connect.patients_service.dto.RegisterRequestDto;
 import com.medi_connect.patients_service.Model.Patient;
 import com.medi_connect.patients_service.Repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,21 @@ public class PatientService {
     private PasswordEncoder passwordEncoder;
 
     // =========================
-    // CURRENT USER
+    // CURRENT USER (FIXED)
     // =========================
     public Patient getCurrentPatient() {
-        String email = SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName();
+
+        // ✅ Get logged-in user from Spring Security
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName(); // usually email/username
+
+        System.out.println("🔍 Searching patient for email = " + email);
 
         return patientRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Patient not found for email: " + email));
     }
 
     // =========================
@@ -49,8 +56,6 @@ public class PatientService {
 
         Patient patient = new Patient();
         patient.setEmail(dto.getEmail());
-
-        // ✅ FIXED: encode password
         patient.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         patient.setFirstName(dto.getFirstName());
@@ -79,8 +84,6 @@ public class PatientService {
 
         Patient admin = new Patient();
         admin.setEmail(dto.getEmail());
-
-        // ✅ FIXED: encode password
         admin.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         admin.setFirstName(dto.getFirstName());

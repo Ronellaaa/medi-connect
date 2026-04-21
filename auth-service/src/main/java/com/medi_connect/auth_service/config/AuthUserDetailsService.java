@@ -26,7 +26,7 @@ public class AuthUserDetailsService implements UserDetailsService {
         return User.builder()
                 .username(authUser.getEmail())
                 .password(authUser.getPassword())
-                .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + authUser.getRole().name())))
+                .authorities(List.of(new SimpleGrantedAuthority(authUser.getRole().name())))
                 .build();
     }
 }

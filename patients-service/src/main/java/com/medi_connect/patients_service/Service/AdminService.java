@@ -28,7 +28,7 @@ public class AdminService {
 
     public List<AdminUserDto> getAllPatients() {
         return patientRepository.findAll().stream()
-                .filter(p -> "PATIENT".equals(p.getRole()))
+                .filter(p -> "ROLE_PATIENT".equals(p.getRole()))
                 .map(this::convertToAdminDto)
                 .collect(Collectors.toList());
     }
@@ -37,7 +37,7 @@ public class AdminService {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        if (!"PATIENT".equals(patient.getRole())) {
+        if (!"ROLE_PATIENT".equals(patient.getRole())) {
             throw new RuntimeException("User is not a patient");
         }
 
