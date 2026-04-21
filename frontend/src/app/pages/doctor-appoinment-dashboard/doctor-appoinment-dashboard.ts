@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
-import { AppointmentsPayload } from '../../services/appointment.service';
+import { AppointmentApiService, AppointmentsPayload } from '../../services/appointment.service';
 import { DoctorAppoinmentDashboardService } from '../../services/doctor-appoinment-dashboard.service';
 import { DoctorSessionService } from '../../services/doctor-service/doctor-session.service';
 import { DoctorService } from '../../services/doctor-service/doctor.service';
@@ -25,6 +25,7 @@ type CalendarDay = {
 })
 export class DoctorAppoinmentDashboard {
   private doctorAppoinmentDashboardService = inject(DoctorAppoinmentDashboardService);
+  private appointmentApi = inject(AppointmentApiService);
   private sessionService = inject(DoctorSessionService);
   private doctorService = inject(DoctorService);
  
@@ -35,6 +36,7 @@ export class DoctorAppoinmentDashboard {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
   protected readonly appointments = signal<AppointmentsPayload[]>([]);
+  protected readonly dismissedAppointmentIds = signal<Set<string>>(new Set());
   protected readonly selectedDate = signal('');
   protected readonly calendarCursor = signal(new Date());
   private router = inject(Router);
@@ -59,6 +61,56 @@ export class DoctorAppoinmentDashboard {
 
   this.router.navigate(['/doctors/prescription', appointment.id]);
 }
+
+  protected startAppointment(appointment: AppointmentsPayload): void {
+    if (!appointment.id) {
+      return;
+    }
+
+    this.appointmentApi.updateLiveStatus(appointment.id, 'ONGOING').subscribe({
+      next: () => this.loadAppointments(),
+      error: (err) => {
+        console.error('Failed to start appointment', err);
+        this.errorMessage.set('Unable to start the selected appointment.');
+      },
+    });
+  }
+
+  protected completeAppointment(appointment: AppointmentsPayload): void {
+    if (!appointment.id) {
+      return;
+    }
+
+    this.appointmentApi.updateLiveStatus(appointment.id, 'COMPLETED').subscribe({
+      next: () => this.loadAppointments(),
+      error: (err) => {
+        console.error('Failed to complete appointment', err);
+        this.errorMessage.set('Unable to complete the selected appointment.');
+      },
+    });
+  }
+
+  protected openMeeting(appointment: AppointmentsPayload): void {
+    if (appointment.status !== 'CONFIRMED' || appointment.liveStatus === 'COMPLETED' || !appointment.meetingUrl) {
+      return;
+    }
+
+    window.open(appointment.meetingUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  protected getLiveQueueLabel(appointment: AppointmentsPayload): string {
+    const liveStatus = (appointment.liveStatus || '').toUpperCase();
+    if (liveStatus === 'ONGOING') {
+      return 'Ongoing now';
+    }
+    if (liveStatus === 'COMPLETED') {
+      return 'Completed';
+    }
+    if ((appointment.status || '').toUpperCase() === 'CONFIRMED') {
+      return 'Waiting';
+    }
+    return 'Pending';
+  }
 
   protected readonly calendarMonthLabel = computed(() => {
     return this.calendarCursor().toLocaleDateString('en-US', {
@@ -106,7 +158,10 @@ export class DoctorAppoinmentDashboard {
 
   protected readonly filteredAppointments = computed(() => {
     const selected = this.selectedDate();
-    const appointments = this.appointments();
+    const dismissedIds = this.dismissedAppointmentIds();
+    const appointments = this.appointments().filter(
+      (appointment) => !appointment.id || !dismissedIds.has(appointment.id),
+    );
     return selected
       ? appointments.filter((appointment) => appointment.appointmentDate.startsWith(selected))
       : appointments;
@@ -157,6 +212,18 @@ export class DoctorAppoinmentDashboard {
   protected goToNextMonth(): void {
     const current = this.calendarCursor();
     this.calendarCursor.set(new Date(current.getFullYear(), current.getMonth() + 1, 1));
+  }
+
+  protected dismissAppointment(appointment: AppointmentsPayload): void {
+    if (!appointment.id || (appointment.liveStatus || '').toUpperCase() !== 'COMPLETED') {
+      return;
+    }
+
+    this.dismissedAppointmentIds.update((current) => {
+      const next = new Set(current);
+      next.add(appointment.id as string);
+      return next;
+    });
   }
 
   protected formatDate(appointmentDate: string): string {
@@ -216,11 +283,21 @@ export class DoctorAppoinmentDashboard {
           left.appointmentDate.localeCompare(right.appointmentDate),
         );
         this.appointments.set(sortedAppointments);
-        const firstDate = sortedAppointments[0]?.appointmentDate.slice(0, 10) ?? '';
-        this.selectedDate.set(firstDate);
-        if (firstDate) {
-          const firstDateObject = new Date(`${firstDate}T00:00:00`);
-          this.calendarCursor.set(new Date(firstDateObject.getFullYear(), firstDateObject.getMonth(), 1));
+        const currentSelectedDate = this.selectedDate();
+        const hasAppointmentsForSelectedDate = currentSelectedDate
+          ? sortedAppointments.some((appointment) => appointment.appointmentDate.startsWith(currentSelectedDate))
+          : false;
+
+        const nextSelectedDate = hasAppointmentsForSelectedDate
+          ? currentSelectedDate
+          : sortedAppointments[0]?.appointmentDate.slice(0, 10) ?? '';
+
+        this.selectedDate.set(nextSelectedDate);
+        if (nextSelectedDate) {
+          const selectedDateObject = new Date(`${nextSelectedDate}T00:00:00`);
+          this.calendarCursor.set(
+            new Date(selectedDateObject.getFullYear(), selectedDateObject.getMonth(), 1),
+          );
         }
         this.loading.set(false);
       },

@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AppointmentApiService, AppointmentsPayload } from '../../services/appointment.service';
 import { DoctorSessionService } from '../../services/doctor-service/doctor-session.service';
-import { PatientAppoinmentDashboardService } from '../../services/patient-appoinment-dashboard.service';
 import { PatientService } from '../../services/patient.service';
 
 type CalendarDay = {
@@ -22,10 +21,10 @@ type CalendarDay = {
   styleUrl: './patient-appoinment-dashboard.css',
 })
 export class PatientAppoinmentDashboard {
-  private patientDashboardService = inject(PatientAppoinmentDashboardService);
   private appointmentApi = inject(AppointmentApiService);
   private sessionService = inject(DoctorSessionService);
   private patientService = inject(PatientService);
+  private router = inject(Router);
 
   protected readonly patientId = this.sessionService.getCurrentProfileId();
   protected patientName = 'Patient';
@@ -34,6 +33,7 @@ export class PatientAppoinmentDashboard {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
   protected readonly appointments = signal<AppointmentsPayload[]>([]);
+  protected readonly allAppointments = signal<AppointmentsPayload[]>([]);
   protected readonly selectedDate = signal('');
   protected readonly calendarCursor = signal(new Date());
   protected readonly cancelPending = signal(false);
@@ -148,11 +148,23 @@ export class PatientAppoinmentDashboard {
   }
 
   protected openMeeting(appointment: AppointmentsPayload): void {
-    if (appointment.status !== 'CONFIRMED' || !appointment.meetingUrl) {
+    if (appointment.status !== 'CONFIRMED' || appointment.liveStatus === 'COMPLETED' || !appointment.meetingUrl) {
       return;
     }
 
     window.open(appointment.meetingUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  protected viewPrescription(appointment: AppointmentsPayload): void {
+    if ((appointment.liveStatus || '').toUpperCase() !== 'COMPLETED' || !appointment.id) {
+      return;
+    }
+
+    this.router.navigate(['/patient/prescriptions'], {
+      queryParams: {
+        appointmentId: appointment.id,
+      },
+    });
   }
 
   protected formatSelectedDayLabel(): string {
@@ -169,6 +181,50 @@ export class PatientAppoinmentDashboard {
 
   protected trackByAppointmentId(_index: number, appointment: AppointmentsPayload): string {
     return appointment.id ?? `${appointment.patientId}-${appointment.doctorId}-${appointment.appointmentDate}`;
+  }
+
+  protected getQueueToken(appointment: AppointmentsPayload): number | null {
+    return appointment.queueToken ?? null;
+  }
+
+  protected getQueueMessage(appointment: AppointmentsPayload): string {
+    const status = (appointment.status || '').toUpperCase();
+    const liveStatus = (appointment.liveStatus || '').toUpperCase();
+
+    if (status === 'CANCELLED' || status === 'CANCELED') {
+      return 'This appointment has been cancelled.';
+    }
+    if (status !== 'CONFIRMED') {
+      return 'Waiting for payment and confirmation.';
+    }
+    if (liveStatus === 'COMPLETED') {
+      return 'Your appointment is completed.';
+    }
+    if (liveStatus === 'ONGOING') {
+      return 'It is your turn now.';
+    }
+
+    const token = this.getQueueToken(appointment);
+    const currentServing = this.getCurrentServingToken(appointment);
+
+    if (token == null) {
+      return 'Queue token will be assigned after confirmation.';
+    }
+    if (currentServing == null) {
+      const nextToken = this.getNextQueueToken(appointment);
+      if (nextToken != null && token === nextToken) {
+        return 'You are first in line.';
+      }
+
+      return `There are patients ahead of you. Your token is ${token}.`;
+    }
+    if (token === currentServing + 1) {
+      return 'You are next.';
+    }
+    if (token <= currentServing) {
+      return 'The queue has moved past your token. Please check with the clinic.';
+    }
+    return `Currently serving token ${currentServing}. Your token is ${token}.`;
   }
 
   protected openCancelModal(appointment: AppointmentsPayload): void {
@@ -216,13 +272,22 @@ export class PatientAppoinmentDashboard {
       return;
     }
 
-    this.patientDashboardService.getPatientAppoinments(this.patientId).subscribe({
+    this.appointmentApi.getAllAppointments().subscribe({
       next: (appointments) => {
-        this.appointments.set(appointments);
-        if (appointments[0]?.patientName) {
-          this.patientName = appointments[0].patientName;
+        const sortedAppointments = [...appointments].sort((left, right) =>
+          left.appointmentDate.localeCompare(right.appointmentDate),
+        );
+        this.allAppointments.set(sortedAppointments);
+
+        const patientAppointments = sortedAppointments.filter(
+          (appointment) => appointment.patientId === this.patientId,
+        );
+
+        this.appointments.set(patientAppointments);
+        if (patientAppointments[0]?.patientName) {
+          this.patientName = patientAppointments[0].patientName;
         }
-        const firstDate = appointments[0]?.appointmentDate.slice(0, 10) ?? '';
+        const firstDate = patientAppointments[0]?.appointmentDate.slice(0, 10) ?? '';
         this.selectedDate.set(firstDate);
         this.syncCalendarCursor(firstDate);
         this.loading.set(false);
@@ -274,5 +339,30 @@ export class PatientAppoinmentDashboard {
 
     const dateObject = new Date(`${isoDate}T00:00:00`);
     this.calendarCursor.set(new Date(dateObject.getFullYear(), dateObject.getMonth(), 1));
+  }
+
+  private getCurrentServingToken(appointment: AppointmentsPayload): number | null {
+    const ongoingAppointment = this.getQueueAppointments(appointment)
+      .find((item) => (item.liveStatus || '').toUpperCase() === 'ONGOING');
+
+    return ongoingAppointment?.queueToken ?? null;
+  }
+
+  private getNextQueueToken(appointment: AppointmentsPayload): number | null {
+    const queueAppointments = this.getQueueAppointments(appointment);
+    const nextWaitingAppointment = queueAppointments.find((item) => {
+      const liveStatus = (item.liveStatus || '').toUpperCase();
+      return liveStatus !== 'COMPLETED' && liveStatus !== 'CANCELLED';
+    });
+
+    return nextWaitingAppointment?.queueToken ?? null;
+  }
+
+  private getQueueAppointments(appointment: AppointmentsPayload): AppointmentsPayload[] {
+    return this.allAppointments()
+      .filter((item) => item.doctorId === appointment.doctorId)
+      .filter((item) => item.appointmentDate.slice(0, 10) === appointment.appointmentDate.slice(0, 10))
+      .filter((item) => (item.status || '').toUpperCase() === 'CONFIRMED')
+      .sort((left, right) => left.appointmentDate.localeCompare(right.appointmentDate));
   }
 }

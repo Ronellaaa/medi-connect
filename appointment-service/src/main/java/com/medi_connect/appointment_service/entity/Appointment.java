@@ -26,8 +26,13 @@ public class Appointment {
     private String doctorEmail;
     private String doctorName;
     private String specialty;
+    private UUID slotId;
     private LocalDateTime appointmentDate;
+    private LocalDateTime appointmentEndDate;
     private String status; // PENDING, CONFIRMED, CANCELLED
+    private String liveStatus; // WAITING, ONGOING, COMPLETED, CANCELLED
+    @Transient
+    private Integer queueToken;
     private String paymentStatus;
     private String paymentId;
     private BigDecimal paymentAmount;

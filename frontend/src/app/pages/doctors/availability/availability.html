@@ -113,6 +113,17 @@
                 </div>
               </div>
 
+               <div class="form-card">
+                <div class="field-group">
+                  <label>Slot duration</label>
+                  <select [(ngModel)]="formData.slotDuration" name="slotDuration">
+                    <option *ngFor="let duration of slotDurationOptions" [value]="duration">
+                      {{ duration }} minutes
+                    </option>
+                  </select>
+                </div>
+              </div>
+
               <div class="form-card wide">
                 <div class="field-group">
                   <label>Hospital / Clinic</label>

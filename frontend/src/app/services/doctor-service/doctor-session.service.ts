@@ -137,6 +137,8 @@ const AUTH_PROFILE_ID_KEY = 'currentAuthProfileId';
 
 const DOCTOR_ID_KEY = 'currentDoctorId';
 const DOCTOR_PROFILE_KEY = 'currentDoctorProfile';
+const LEGACY_DOCTOR_EMAIL_KEY = 'currentDoctorEmail';
+const LEGACY_DOCTOR_TOKEN_KEY = 'currentDoctorToken';
 
 @Injectable({
   providedIn: 'root',
@@ -151,24 +153,24 @@ export class DoctorSessionService {
     userId?: number,
     profileId?: number,
   ): void {
-    localStorage.setItem(DOCTOR_ID_KEY, String(id));
-    localStorage.setItem(AUTH_EMAIL_KEY, email);
-    localStorage.setItem(AUTH_ROLE_KEY, role);
+    this.setStoredValue(DOCTOR_ID_KEY, String(id));
+    this.setStoredValue(AUTH_EMAIL_KEY, email);
+    this.setStoredValue(AUTH_ROLE_KEY, role);
 
     if (token) {
-      localStorage.setItem(AUTH_TOKEN_KEY, token);
+      this.setStoredValue(AUTH_TOKEN_KEY, token);
     }
 
     if (userId != null) {
-      localStorage.setItem(AUTH_USER_ID_KEY, String(userId));
+      this.setStoredValue(AUTH_USER_ID_KEY, String(userId));
     }
 
     if (profileId != null) {
-      localStorage.setItem(AUTH_PROFILE_ID_KEY, String(profileId));
+      this.setStoredValue(AUTH_PROFILE_ID_KEY, String(profileId));
     }
 
     if (doctor) {
-      localStorage.setItem(DOCTOR_PROFILE_KEY, JSON.stringify(doctor));
+      this.setStoredValue(DOCTOR_PROFILE_KEY, JSON.stringify(doctor));
     }
   }
 
@@ -179,19 +181,19 @@ export class DoctorSessionService {
     userId?: number,
     profileId?: number,
   ): void {
-    localStorage.setItem(AUTH_EMAIL_KEY, email);
-    localStorage.setItem(AUTH_ROLE_KEY, role);
+    this.setStoredValue(AUTH_EMAIL_KEY, email);
+    this.setStoredValue(AUTH_ROLE_KEY, role);
 
     if (token) {
-      localStorage.setItem(AUTH_TOKEN_KEY, token);
+      this.setStoredValue(AUTH_TOKEN_KEY, token);
     }
 
     if (userId != null) {
-      localStorage.setItem(AUTH_USER_ID_KEY, String(userId));
+      this.setStoredValue(AUTH_USER_ID_KEY, String(userId));
     }
 
     if (profileId != null) {
-      localStorage.setItem(AUTH_PROFILE_ID_KEY, String(profileId));
+      this.setStoredValue(AUTH_PROFILE_ID_KEY, String(profileId));
     }
   }
 
@@ -202,49 +204,48 @@ export class DoctorSessionService {
       return null;
     }
 
-    const value = localStorage.getItem(DOCTOR_ID_KEY);
-    if (!value) {
-      return null;
+    const doctorId = this.parseNumber(this.getStoredValue(DOCTOR_ID_KEY));
+    if (doctorId != null) {
+      return doctorId;
     }
 
-    const parsed = Number(value);
-    return Number.isNaN(parsed) ? null : parsed;
+    const doctorProfile = this.getCurrentDoctorProfile();
+    if (doctorProfile?.id != null) {
+      this.setStoredValue(DOCTOR_ID_KEY, String(doctorProfile.id));
+      return doctorProfile.id;
+    }
+
+    const profileId = this.getCurrentProfileId();
+    if (profileId != null) {
+      this.setStoredValue(DOCTOR_ID_KEY, String(profileId));
+      return profileId;
+    }
+
+    return null;
   }
 
   getCurrentDoctorEmail(): string | null {
-    return localStorage.getItem(AUTH_EMAIL_KEY);
+    return this.getStoredValue(AUTH_EMAIL_KEY, LEGACY_DOCTOR_EMAIL_KEY);
   }
 
   getToken(): string | null {
-    return localStorage.getItem(AUTH_TOKEN_KEY);
+    return this.getStoredValue(AUTH_TOKEN_KEY, LEGACY_DOCTOR_TOKEN_KEY);
   }
 
   getCurrentRole(): string | null {
-    return localStorage.getItem(AUTH_ROLE_KEY);
+    return this.getStoredValue(AUTH_ROLE_KEY);
   }
 
   getCurrentUserId(): number | null {
-    const value = localStorage.getItem(AUTH_USER_ID_KEY);
-    if (!value) {
-      return null;
-    }
-
-    const parsed = Number(value);
-    return Number.isNaN(parsed) ? null : parsed;
+    return this.parseNumber(this.getStoredValue(AUTH_USER_ID_KEY));
   }
 
   getCurrentProfileId(): number | null {
-    const value = localStorage.getItem(AUTH_PROFILE_ID_KEY);
-    if (!value) {
-      return null;
-    }
-
-    const parsed = Number(value);
-    return Number.isNaN(parsed) ? null : parsed;
+    return this.parseNumber(this.getStoredValue(AUTH_PROFILE_ID_KEY));
   }
 
   getCurrentDoctorProfile(): Doctor | null {
-    const value = localStorage.getItem(DOCTOR_PROFILE_KEY);
+    const value = this.getStoredValue(DOCTOR_PROFILE_KEY);
     if (!value) {
       return null;
     }
@@ -252,16 +253,67 @@ export class DoctorSessionService {
     try {
       return JSON.parse(value) as Doctor;
     } catch {
+      sessionStorage.removeItem(DOCTOR_PROFILE_KEY);
       localStorage.removeItem(DOCTOR_PROFILE_KEY);
       return null;
     }
   }
 
   setDoctorProfile(doctor: Doctor): void {
-    localStorage.setItem(DOCTOR_PROFILE_KEY, JSON.stringify(doctor));
+    this.setStoredValue(DOCTOR_PROFILE_KEY, JSON.stringify(doctor));
+  }
+
+  private getStoredValue(primaryKey: string, legacyKey?: string): string | null {
+    const sessionValue = sessionStorage.getItem(primaryKey);
+    if (sessionValue) {
+      return sessionValue;
+    }
+
+    const primaryValue = localStorage.getItem(primaryKey);
+    if (primaryValue) {
+      sessionStorage.setItem(primaryKey, primaryValue);
+      return primaryValue;
+    }
+
+    if (!legacyKey) {
+      return null;
+    }
+
+    const legacyValue = localStorage.getItem(legacyKey);
+    if (legacyValue) {
+      this.setStoredValue(primaryKey, legacyValue);
+      return legacyValue;
+    }
+
+    return null;
+  }
+
+  private setStoredValue(key: string, value: string): void {
+    sessionStorage.setItem(key, value);
+    localStorage.removeItem(key);
+  }
+
+  private parseNumber(value: string | null): number | null {
+    if (!value) {
+      return null;
+    }
+
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? null : parsed;
   }
 
   clear(): void {
+    sessionStorage.removeItem(AUTH_EMAIL_KEY);
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    sessionStorage.removeItem(AUTH_ROLE_KEY);
+    sessionStorage.removeItem(AUTH_USER_ID_KEY);
+    sessionStorage.removeItem(AUTH_PROFILE_ID_KEY);
+
+    sessionStorage.removeItem(DOCTOR_ID_KEY);
+    sessionStorage.removeItem(DOCTOR_PROFILE_KEY);
+    sessionStorage.removeItem(LEGACY_DOCTOR_EMAIL_KEY);
+    sessionStorage.removeItem(LEGACY_DOCTOR_TOKEN_KEY);
+
     localStorage.removeItem(AUTH_EMAIL_KEY);
     localStorage.removeItem(AUTH_TOKEN_KEY);
     localStorage.removeItem(AUTH_ROLE_KEY);
@@ -270,6 +322,8 @@ export class DoctorSessionService {
 
     localStorage.removeItem(DOCTOR_ID_KEY);
     localStorage.removeItem(DOCTOR_PROFILE_KEY);
+    localStorage.removeItem(LEGACY_DOCTOR_EMAIL_KEY);
+    localStorage.removeItem(LEGACY_DOCTOR_TOKEN_KEY);
 
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');

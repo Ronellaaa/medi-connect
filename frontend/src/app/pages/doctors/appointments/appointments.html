@@ -89,6 +89,7 @@
               <div style="display:flex; align-items:center; gap: 8px;">
                 <span class="list-subtle">{{ item.date }} · {{ item.time }}</span>
                 <span class="pill" [ngClass]="item.tone">{{ item.status }}</span>
+                <span class="pill" [ngClass]="item.tone">{{ item.liveStatus }}</span>
               </div>
               <div style="display:flex; gap:8px; width:100%; margin-top:8px; justify-content:flex-end;">
                 <button
@@ -104,6 +105,20 @@
                   style="cursor:pointer; border:none; font-size:12px;"
                   (click)="rejectAppointment(item.id)">
                   ✗ Reject
+                </button>
+                <button
+                  *ngIf="item.raw.status.toUpperCase() === 'CONFIRMED' && item.raw.liveStatus !== 'ONGOING' && item.raw.liveStatus !== 'COMPLETED'"
+                  class="pill green"
+                  style="cursor:pointer; border:none; font-size:12px;"
+                  (click)="startAppointment(item.id)">
+                  ▶ Start
+                </button>
+                <button
+                  *ngIf="item.raw.liveStatus === 'ONGOING'"
+                  class="pill blue"
+                  style="cursor:pointer; border:none; font-size:12px;"
+                  (click)="completeAppointment(item.id)">
+                  ✓ Complete
                 </button>
                 <button
                   class="pill blue"
@@ -129,17 +144,8 @@
           <div class="table-layout">
             <div class="table-row">
               <div>
-                <span class="table-title">High urgency</span>
-                <span class="table-subtle">Needs immediate attention</span>
-              </div>
-              <strong>{{ stats[3].value }}</strong>
-              <span class="pill pink">Critical</span>
-            </div>
-
-            <div class="table-row">
-              <div>
-                <span class="table-title">Pending approval</span>
-                <span class="table-subtle">Waiting for doctor response</span>
+                <span class="table-title">Waiting queue</span>
+                <span class="table-subtle">Confirmed patients waiting for doctor</span>
               </div>
               <strong>{{ stats[1].value }}</strong>
               <span class="pill orange">Waiting</span>
@@ -147,11 +153,20 @@
 
             <div class="table-row">
               <div>
-                <span class="table-title">Accepted</span>
-                <span class="table-subtle">Confirmed consultations</span>
+                <span class="table-title">Ongoing now</span>
+                <span class="table-subtle">Patient currently being seen</span>
               </div>
               <strong>{{ stats[2].value }}</strong>
-              <span class="pill green">Confirmed</span>
+              <span class="pill green">Live</span>
+            </div>
+
+            <div class="table-row">
+              <div>
+                <span class="table-title">Completed</span>
+                <span class="table-subtle">Finished consultations</span>
+              </div>
+              <strong>{{ stats[3].value }}</strong>
+              <span class="pill blue">Done</span>
             </div>
           </div>
         </article>

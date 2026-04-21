@@ -120,9 +120,12 @@
                 </span>
                 <div class="patient-dashboard-payment-details">
                   <span>Payment: {{ appointment.paymentStatus || 'PENDING' }}</span>
+                  <span *ngIf="appointment.liveStatus">Queue: {{ appointment.liveStatus }}</span>
+                  <span *ngIf="getQueueToken(appointment) != null">Token: {{ getQueueToken(appointment) }}</span>
                   <span *ngIf="appointment.paymentAmount != null">Amount: {{ formatAmount(appointment.paymentAmount) }}</span>
                   <span *ngIf="appointment.paymentId">Payment ID: {{ appointment.paymentId }}</span>
                 </div>
+                <p>{{ getQueueMessage(appointment) }}</p>
               </div>
             </div>
 
@@ -135,10 +138,18 @@
               <button
                 class="patient-dashboard-join"
                 type="button"
-                [disabled]="appointment.status !== 'CONFIRMED' || !appointment.meetingUrl"
+                [disabled]="appointment.status !== 'CONFIRMED' || appointment.liveStatus === 'COMPLETED' || !appointment.meetingUrl"
                 (click)="openMeeting(appointment)"
               >
                 Join
+              </button>
+              <button
+                class="patient-dashboard-join"
+                type="button"
+                *ngIf="appointment.liveStatus === 'COMPLETED'"
+                (click)="viewPrescription(appointment)"
+              >
+                View Prescription
               </button>
               <button class="patient-dashboard-cancel" type="button" (click)="openCancelModal(appointment)">Cancel</button>
             </div>

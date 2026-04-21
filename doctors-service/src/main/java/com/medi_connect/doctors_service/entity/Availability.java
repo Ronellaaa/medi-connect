@@ -25,6 +25,8 @@ public class Availability {
 
     private LocalTime endTime;
 
+    private Integer slotDuration;
+
     private String hospitalOrClinic;
 
     private String consultationType; // IN_PERSON / ONLINE / BOTH

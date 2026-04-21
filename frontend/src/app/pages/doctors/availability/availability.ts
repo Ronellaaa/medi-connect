@@ -64,11 +64,13 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
   doctorId: number | null = null;
   statusMessage = '';
   selectedSlot: any = null;
+  slotDurationOptions = [15, 30, 45, 60];
 
   formData: any = {
     availabilityDate: '',
     startTime: '',
     endTime: '',
+    slotDuration: 15,
     hospitalOrClinic: '',
     consultationType: '',
     available: true
@@ -175,6 +177,7 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
       availabilityDate: '',
       startTime: '',
       endTime: '',
+      slotDuration: 15,
       hospitalOrClinic: '',
       consultationType: '',
       available: true
@@ -218,6 +221,24 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    if (!this.formData.slotDuration || this.formData.slotDuration <= 0) {
+      this.statusMessage = 'Please select a valid slot duration.';
+      return;
+    }
+
+    const startMinutes = this.timeToMinutes(this.formData.startTime);
+    const endMinutes = this.timeToMinutes(this.formData.endTime);
+
+    if (startMinutes >= endMinutes) {
+      this.statusMessage = 'End time must be later than start time.';
+      return;
+    }
+
+    if (endMinutes - startMinutes < this.formData.slotDuration) {
+      this.statusMessage = 'Availability window must fit at least one slot.';
+      return;
+    }
+
     this.isSaving = true;
     const payload = { ...this.formData, doctorId: this.doctorId };
 
@@ -230,7 +251,7 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
         },
         error: (err) => {
           console.error('Failed to update availability', err);
-          this.statusMessage = 'Could not update slot.';
+          this.statusMessage = err?.error?.message || 'Could not update slot.';
           this.isSaving = false;
         }
       });
@@ -243,11 +264,16 @@ export class DoctorAvailabilityPageComponent implements OnInit, AfterViewInit {
         },
         error: (err) => {
           console.error('Failed to create availability', err);
-          this.statusMessage = 'Could not save slot.';
+          this.statusMessage = err?.error?.message || 'Could not save slot.';
           this.isSaving = false;
         }
       });
     }
+  }
+
+  private timeToMinutes(value: string): number {
+    const [hours, minutes] = value.split(':').map(Number);
+    return hours * 60 + minutes;
   }
 
   deleteSelectedSlot(): void {

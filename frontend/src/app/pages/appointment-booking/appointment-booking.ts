@@ -35,6 +35,7 @@ export class AppointmentBooking {
   selectedDate = '';
   selectedStartTime = '';
   selectedEndTime = '';
+  selectedSlotId = '';
   showSuccessModal = false;
   successModalText = 'Please check your email for the appointment details.';
 
@@ -54,6 +55,7 @@ export class AppointmentBooking {
       this.selectedDoctorEmail = params['doctorEmail'] ?? '';
       this.selectedSpecialty = params['specialty'] ?? '';
       this.selectedHospital = params['hospital'] ?? '';
+      this.selectedSlotId = params['slotId'] ?? '';
       this.selectedDate = params['date'] ?? '';
       this.selectedStartTime = params['startTime'] ?? '';
       this.selectedEndTime = params['endTime'] ?? '';
@@ -108,6 +110,11 @@ export class AppointmentBooking {
       return;
     }
 
+    if (!this.selectedSlotId) {
+      alert('Appointment slot is missing.');
+      return;
+    }
+
     if (!this.selectedDate) {
       alert('Appointment date is missing.');
       return;
@@ -144,6 +151,7 @@ export class AppointmentBooking {
       patientEmail: this.email,
       patientphoneNumber: this.mobileNumber,
       patientAge: this.age,
+      slotId: this.selectedSlotId,
       doctorId: this.selectedDoctorId,
       doctorEmail: this.selectedDoctorEmail,
       doctorName: this.selectedDoctorName,

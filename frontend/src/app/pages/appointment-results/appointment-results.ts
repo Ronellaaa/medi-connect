@@ -4,10 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { timeout } from 'rxjs';
 import { Doctor, DoctorService } from '../../services/doctor-service/doctor.service';
-import {
-  AvailabilityDataService,
-  AvailabilityRecord,
-} from '../../services/doctor-service/availability.service';
+import { AppointmentApiService, SlotRecord } from '../../services/appointment.service';
 
 @Component({
   selector: 'app-appointment-results',
@@ -19,7 +16,7 @@ export class AppointmentResults {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private doctorService = inject(DoctorService);
-  private availabilityService = inject(AvailabilityDataService);
+  private appointmentApi = inject(AppointmentApiService);
   private cdr = inject(ChangeDetectorRef);
 
   doctorIdQuery: number | null = null;
@@ -30,7 +27,7 @@ export class AppointmentResults {
   dateQuery = '';
 
   selectedDoctor: Doctor | null = null;
-  doctorAvailability: AvailabilityRecord[] = [];
+  doctorAvailability: SlotRecord[] = [];
   loading = true;
   loadError = '';
 
@@ -66,7 +63,7 @@ export class AppointmentResults {
         bio: '',
       };
       this.loadDoctorDetails(this.doctorIdQuery);
-      this.loadDoctorAvailability(this.doctorIdQuery);
+      this.loadDoctorAvailability(this.doctorIdQuery, this.dateQuery);
       return;
     }
 
@@ -92,17 +89,17 @@ export class AppointmentResults {
 
         if (!matchedDoctor?.id) {
           this.loading = false;
-          this.cdr.detectChanges();
+          this.cdr.markForCheck();
           return;
         }
 
         this.selectedDoctor = matchedDoctor;
-        this.loadDoctorAvailability(matchedDoctor.id);
+        this.loadDoctorAvailability(matchedDoctor.id, this.dateQuery);
       },
       error: () => {
         this.loadError = 'Could not load doctor results.';
         this.loading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
     });
   }
@@ -111,7 +108,7 @@ export class AppointmentResults {
     this.doctorService.getDoctorById(doctorId).subscribe({
       next: (doctor) => {
         this.selectedDoctor = doctor;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: () => {
         // Keep the query-param fallback doctor data if the details request fails.
@@ -119,48 +116,53 @@ export class AppointmentResults {
     });
   }
 
-  private loadDoctorAvailability(doctorId: number): void {
-    this.availabilityService.getAvailabilityByDoctor(doctorId).pipe(timeout(8000)).subscribe({
+  private loadDoctorAvailability(doctorId: number, availabilityDate: string): void {
+    if (!availabilityDate) {
+      this.doctorAvailability = [];
+      this.loading = false;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.appointmentApi.getAvailableSlots(doctorId, availabilityDate).pipe(timeout(8000)).subscribe({
       next: (records) => {
-        this.doctorAvailability = this.filterAvailability(records);
+        this.doctorAvailability = records;
         this.loading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: () => {
-        this.loadError = `Could not load availability from /api/availability/doctor/${doctorId}.`;
+        this.loadError = `Could not load available slots from /api/slots/available for doctor ${doctorId}.`;
         this.loading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
     });
   }
 
-  private filterAvailability(records: AvailabilityRecord[]): AvailabilityRecord[] {
-    return records.filter((record) => {
-      const matchesDate = !this.dateQuery || record.availabilityDate === this.dateQuery;
+  bookDoctor(doctor: Doctor, slot: SlotRecord): void {
+    const slotStart = new Date(slot.slotStart);
+    const slotEnd = new Date(slot.slotEnd);
 
-      return record.available && matchesDate;
-    });
-  }
-
-  bookDoctor(doctor: Doctor, slot: AvailabilityRecord): void {
     this.router.navigate(['/appointments/booking'], {
       queryParams: {
+        slotId: slot.id,
         doctorId: doctor.id,
         doctorName: doctor.fullName,
         doctorEmail: doctor.email ?? '',
         specialty: doctor.mainSpecialization,
-        hospital: doctor.clinic ?? '',
+        hospital: slot.hospitalOrClinic || doctor.clinic || '',
         date: slot.availabilityDate || this.dateQuery || '',
-        startTime: slot.startTime || '',
-        endTime: slot.endTime || '',
+        startTime: this.formatTime(slotStart),
+        endTime: this.formatTime(slotEnd),
         fee: doctor.consultationFee ?? '',
       },
     });
   }
 
-  formatAvailability(record: AvailabilityRecord): string {
+  formatAvailability(record: SlotRecord): string {
     const dateLabel = this.formatDate(record.availabilityDate);
-    return `${dateLabel} · ${record.startTime.slice(0, 5)} - ${record.endTime.slice(0, 5)}`;
+    const slotStart = new Date(record.slotStart);
+    const slotEnd = new Date(record.slotEnd);
+    return `${dateLabel} · ${this.formatTime(slotStart)} - ${this.formatTime(slotEnd)}`;
   }
 
   private formatDate(value?: string): string {
@@ -178,6 +180,18 @@ export class AppointmentResults {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+    });
+  }
+
+  private formatTime(value: Date): string {
+    if (Number.isNaN(value.getTime())) {
+      return 'N/A';
+    }
+
+    return value.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
     });
   }
 }

@@ -7,10 +7,14 @@ export interface AppointmentRecord {
   patientId: number;
   patientName?: string;
   appointmentDate: string;
+  appointmentEndDate?: string;
   reason?: string;
   status: string;
+  liveStatus?: 'WAITING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED';
+  queueToken?: number;
   urgencyLevel?: string;
   doctorId?: number;
+  meetingUrl?: string;
 }
 
 @Injectable({
@@ -51,5 +55,12 @@ export class AppointmentService {
 
   rejectAppointment(id: string): Observable<AppointmentRecord> {
     return this.http.patch<AppointmentRecord>(`${this.apiUrl}/status/${id}?status=CANCELED`, {});
+  }
+
+  updateLiveStatus(
+    id: string,
+    liveStatus: 'WAITING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED',
+  ): Observable<AppointmentRecord> {
+    return this.http.patch<AppointmentRecord>(`${this.apiUrl}/${id}/live-status?liveStatus=${liveStatus}`, {});
   }
 }

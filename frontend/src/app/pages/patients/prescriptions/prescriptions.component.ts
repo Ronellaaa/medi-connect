@@ -1,5 +1,6 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { PrescriptionService } from '../../../services/prescription.service';
 import { DoctorSessionService } from '../../../services/doctor-service/doctor-session.service';
 import { finalize } from 'rxjs/operators';
@@ -19,7 +20,8 @@ export class PrescriptionsComponent implements OnInit {
 
   constructor(
     private prescriptionService: PrescriptionService,
-    private sessionService: DoctorSessionService
+    private sessionService: DoctorSessionService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +48,7 @@ export class PrescriptionsComponent implements OnInit {
         next: (data) => {
           console.log('Prescriptions response:', data);
           this.prescriptions = Array.isArray(data) ? data : [];
+          this.openRequestedPrescription();
         },
         error: (err) => {
           console.error('Failed to load prescriptions', err);
@@ -65,6 +68,21 @@ export class PrescriptionsComponent implements OnInit {
 
   printPrescription(): void {
     window.print();
+  }
+
+  private openRequestedPrescription(): void {
+    const appointmentId = this.route.snapshot.queryParamMap.get('appointmentId');
+    if (!appointmentId) {
+      return;
+    }
+
+    const matchingPrescription = this.prescriptions.find(
+      (prescription) => String(prescription?.appointmentId ?? '') === appointmentId,
+    );
+
+    if (matchingPrescription) {
+      this.selectedPrescription = matchingPrescription;
+    }
   }
 
   parseMedications(medicines: string | Array<any>): Array<{ name: string; dosage: string }> {

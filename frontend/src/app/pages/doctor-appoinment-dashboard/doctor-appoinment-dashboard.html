@@ -114,6 +114,9 @@
                   >
                     {{ appointment.status || 'PENDING' }}
                   </span>
+                  <span class="doctor-dashboard-status">
+                    {{ getLiveQueueLabel(appointment) }}
+                  </span>
                 </div>
               </div>
 
@@ -122,14 +125,49 @@
                 <span>{{ formatDate(appointment.appointmentDate) }}</span>
               </div>
 
-              <button class="doctor-dashboard-join" type="button">Join</button>
               <button
-             class="doctor-dashboard-issue"
-            type="button"
-           (click)="goToPrescription(appointment)"
-            >
-  Issue Prescription
-</button>
+                class="doctor-dashboard-join"
+                type="button"
+                [disabled]="appointment.status !== 'CONFIRMED' || appointment.liveStatus === 'COMPLETED' || !appointment.meetingUrl"
+                (click)="openMeeting(appointment)"
+              >
+                Join
+              </button>
+              <button
+                class="doctor-dashboard-join"
+                type="button"
+                *ngIf="appointment.status === 'CONFIRMED' && appointment.liveStatus?.toUpperCase() !== 'ONGOING' && appointment.liveStatus?.toUpperCase() !== 'COMPLETED'"
+                (click)="startAppointment(appointment)"
+              >
+                Start
+              </button>
+              <button
+                class="doctor-dashboard-join"
+                type="button"
+                *ngIf="appointment.liveStatus?.toUpperCase() === 'ONGOING'"
+                (click)="completeAppointment(appointment)"
+              >
+                Complete
+              </button>
+              <div class="doctor-dashboard-action-row">
+                <button
+                  class="doctor-dashboard-issue"
+                  type="button"
+                  (click)="goToPrescription(appointment)"
+                >
+                  Issue Prescription
+                </button>
+                <button
+                  class="doctor-dashboard-dismiss"
+                  type="button"
+                  *ngIf="appointment.liveStatus?.toUpperCase() === 'COMPLETED'"
+                  (click)="dismissAppointment(appointment)"
+                  aria-label="Hide completed appointment"
+                  title="Hide completed appointment"
+                >
+                  ×
+                </button>
+              </div>
             </article>
           </div>
 

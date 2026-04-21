@@ -33,8 +33,11 @@ public class AvailabilityService {
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
         availability.setDoctor(doctor);
+        validateAvailability(availability);
 
-        return availabilityRepository.save(availability);
+        Availability savedAvailability = availabilityRepository.save(availability);
+        syncSlotsForAvailability(savedAvailability);
+        return savedAvailability;
     }
 
     public List<AvailabilityDto> getAllAvailability() {
@@ -47,6 +50,17 @@ public class AvailabilityService {
 
     public Optional<Availability> updateAvailability(Long id, Availability updatedAvailability) {
         return availabilityRepository.findById(id).map(existing -> {
+            Availability previous = Availability.builder()
+                    .id(existing.getId())
+                    .availabilityDate(existing.getAvailabilityDate())
+                    .startTime(existing.getStartTime())
+                    .endTime(existing.getEndTime())
+                    .slotDuration(existing.getSlotDuration())
+                    .hospitalOrClinic(existing.getHospitalOrClinic())
+                    .consultationType(existing.getConsultationType())
+                    .available(existing.getAvailable())
+                    .doctor(existing.getDoctor())
+                    .build();
 
             if (updatedAvailability.getAvailabilityDate() != null) {
                 existing.setAvailabilityDate(updatedAvailability.getAvailabilityDate());
@@ -56,6 +70,9 @@ public class AvailabilityService {
             }
             if (updatedAvailability.getEndTime() != null) {
                 existing.setEndTime(updatedAvailability.getEndTime());
+            }
+            if(updatedAvailability.getSlotDuration()!= null){
+                existing.setSlotDuration(updatedAvailability.getSlotDuration());
             }
             if (updatedAvailability.getHospitalOrClinic() != null) {
                 existing.setHospitalOrClinic(updatedAvailability.getHospitalOrClinic());
@@ -73,14 +90,39 @@ public class AvailabilityService {
                 existing.setDoctor(doctor);
             }
 
-            return availabilityRepository.save(existing);
+            validateAvailability(existing);
+            AppointmentClientService client = appointmentClientService;
+            if (Boolean.TRUE.equals(previous.getAvailable())) {
+                client.clearSlotsForAvailability(
+                        previous.getDoctor().getId(),
+                        previous.getAvailabilityDate(),
+                        previous.getStartTime(),
+                        previous.getEndTime()
+                );
+            }
+
+            Availability savedAvailability = availabilityRepository.save(existing);
+            syncSlotsForAvailability(savedAvailability);
+            return savedAvailability;
         });
     }
 
     public boolean deleteAvailability(Long id) {
-        if (!availabilityRepository.existsById(id)) {
+        Optional<Availability> existing = availabilityRepository.findById(id);
+        if (existing.isEmpty()) {
             return false;
         }
+
+        Availability availability = existing.get();
+        if (Boolean.TRUE.equals(availability.getAvailable())) {
+            appointmentClientService.clearSlotsForAvailability(
+                    availability.getDoctor().getId(),
+                    availability.getAvailabilityDate(),
+                    availability.getStartTime(),
+                    availability.getEndTime()
+            );
+        }
+
         availabilityRepository.deleteById(id);
         return true;
     }
@@ -137,6 +179,7 @@ public class AvailabilityService {
                 .availabilityDate(availability.getAvailabilityDate() != null ? availability.getAvailabilityDate().toString() : null)
                 .startTime(formatTime(availability.getStartTime()))
                 .endTime(formatTime(availability.getEndTime()))
+                .slotDuration(availability.getSlotDuration())
                 .hospitalOrClinic(availability.getHospitalOrClinic())
                 .consultationType(availability.getConsultationType())
                 .available(Boolean.TRUE.equals(availability.getAvailable()))
@@ -145,6 +188,45 @@ public class AvailabilityService {
                         .fullName(availability.getDoctor() != null ? availability.getDoctor().getFullName() : null)
                         .build())
                 .build();
+    }
+
+    private void validateAvailability(Availability availability) {
+        if (availability.getStartTime() == null || availability.getEndTime() == null) {
+            throw new RuntimeException("Start time and end time are required");
+        }
+
+        if (availability.getSlotDuration() == null || availability.getSlotDuration() <= 0) {
+            throw new RuntimeException("Slot duration must be a positive number of minutes");
+        }
+
+        if (!availability.getStartTime().isBefore(availability.getEndTime())) {
+            throw new RuntimeException("End time must be later than start time");
+        }
+
+        long minutes = java.time.Duration.between(
+                availability.getStartTime(),
+                availability.getEndTime()
+        ).toMinutes();
+
+        if (minutes < availability.getSlotDuration()) {
+            throw new RuntimeException("Availability window must fit at least one slot");
+        }
+    }
+
+    private void syncSlotsForAvailability(Availability availability) {
+        if (!Boolean.TRUE.equals(availability.getAvailable())) {
+            return;
+        }
+
+        appointmentClientService.generateSlotsForAvailability(
+                availability.getDoctor().getId(),
+                availability.getAvailabilityDate(),
+                availability.getStartTime(),
+                availability.getEndTime(),
+                availability.getSlotDuration(),
+                availability.getHospitalOrClinic(),
+                availability.getConsultationType()
+        );
     }
 
     private String formatTime(LocalTime value) {

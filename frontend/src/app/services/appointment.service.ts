@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 
 export interface AppointmentsPayload {
   id?: string;
+  slotId?: string;
   patientId: number;
   patientName: string;
   patientEmail?: string;
@@ -16,12 +17,27 @@ export interface AppointmentsPayload {
   doctorName: string;
   specialty: string;
   appointmentDate: string;
+  appointmentEndDate?: string;
   status?: string;
+  liveStatus?: 'WAITING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED';
+  queueToken?: number;
   paymentStatus?: string;
   paymentId?: string;
   paymentAmount?: number;
   paidAt?: string;
   meetingUrl?: string;
+}
+
+export interface SlotRecord {
+  id: string;
+  doctorId: number;
+  availabilityDate: string;
+  slotStart: string;
+  slotEnd: string;
+  slotDuration: number;
+  hospitalOrClinic: string;
+  consultationType: string;
+  status: 'AVAILABLE' | 'HELD' | 'BOOKED';
 }
 
 @Injectable({
@@ -32,10 +48,17 @@ export class AppointmentApiService{
 
   private http = inject(HttpClient);
   private apiUrl ='http://localhost:8088/api/appointments';
+  private slotApiUrl ='http://localhost:8088/api/slots';
 
   createAppointment(appointment: AppointmentsPayload) {
   return this.http.post<AppointmentsPayload>(this.apiUrl, appointment);
 }
+
+  getAvailableSlots(doctorId: number, availabilityDate: string): Observable<SlotRecord[]> {
+    return this.http.get<SlotRecord[]>(
+      `${this.slotApiUrl}/available?doctorId=${doctorId}&availabilityDate=${availabilityDate}`
+    );
+  }
 
   getAllAppointments(): Observable<AppointmentsPayload[]> {
     return this.http.get<AppointmentsPayload[]>(this.apiUrl);
@@ -50,6 +73,10 @@ export class AppointmentApiService{
 
   getAppointmentsByPatientId(patientId: number): Observable<AppointmentsPayload[]> {
     return this.http.get<AppointmentsPayload[]>(`${this.apiUrl}/patient/${patientId}`);
+  }
+
+  updateLiveStatus(id: string, liveStatus: 'WAITING' | 'ONGOING' | 'COMPLETED' | 'CANCELLED') {
+    return this.http.patch<AppointmentsPayload>(`${this.apiUrl}/${id}/live-status?liveStatus=${liveStatus}`, {});
   }
 
   cancelAppointment(id: string) {

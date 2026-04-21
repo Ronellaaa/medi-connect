@@ -24,9 +24,9 @@ export class DoctorAppointmentsPageComponent implements OnInit {
 
   stats = [
     { label: 'Today appointments', value: '0' },
-    { label: 'Pending approval', value: '0' },
-    { label: 'Completed', value: '0' },
-    { label: 'Urgent cases', value: '0' }
+    { label: 'Waiting queue', value: '0' },
+    { label: 'Ongoing', value: '0' },
+    { label: 'Completed', value: '0' }
   ];
 
   appointments: {
@@ -36,6 +36,7 @@ export class DoctorAppointmentsPageComponent implements OnInit {
     date: string;
     time: string;
     status: string;
+    liveStatus: string;
     urgency: string;
     tone: string;
     raw: AppointmentRecord;
@@ -68,6 +69,7 @@ export class DoctorAppointmentsPageComponent implements OnInit {
           date: this.formatDate(item.appointmentDate),
           time: this.formatTime(item.appointmentDate),
           status: this.getStatusLabel(item),
+          liveStatus: this.getLiveStatusLabel(item),
           urgency: item.urgencyLevel || 'LOW',
           tone: this.getTone(item),
           raw: item
@@ -102,14 +104,28 @@ export class DoctorAppointmentsPageComponent implements OnInit {
     }
   }
 
+  startAppointment(id: string): void {
+    this.appointmentService.updateLiveStatus(id, 'ONGOING').subscribe({
+      next: () => this.loadAppointments(),
+      error: (err) => console.error('Failed to start appointment', err)
+    });
+  }
+
+  completeAppointment(id: string): void {
+    this.appointmentService.updateLiveStatus(id, 'COMPLETED').subscribe({
+      next: () => this.loadAppointments(),
+      error: (err) => console.error('Failed to complete appointment', err)
+    });
+  }
+
   private buildStats(appointments: AppointmentRecord[]) {
     const today = new Date().toISOString().slice(0, 10);
 
     return [
       { label: 'Today appointments', value: String(appointments.filter((item) => (item.appointmentDate || '').slice(0, 10) === today).length) },
-      { label: 'Pending approval', value: String(appointments.filter((item) => (item.status || '').toUpperCase() === 'PENDING').length) },
-      { label: 'Completed', value: String(appointments.filter((item) => (item.status || '').toUpperCase() === 'CONFIRMED').length) },
-      { label: 'Urgent cases', value: String(appointments.filter((item) => (item.urgencyLevel || '').toUpperCase() === 'HIGH').length) }
+      { label: 'Waiting queue', value: String(appointments.filter((item) => (item.liveStatus || '').toUpperCase() === 'WAITING').length) },
+      { label: 'Ongoing', value: String(appointments.filter((item) => (item.liveStatus || '').toUpperCase() === 'ONGOING').length) },
+      { label: 'Completed', value: String(appointments.filter((item) => (item.liveStatus || '').toUpperCase() === 'COMPLETED').length) }
     ];
   }
 
@@ -120,9 +136,20 @@ export class DoctorAppointmentsPageComponent implements OnInit {
     return 'Pending';
   }
 
+  private getLiveStatusLabel(item: AppointmentRecord): string {
+    const liveStatus = (item.liveStatus || '').toUpperCase();
+    if (liveStatus === 'ONGOING') return 'Ongoing now';
+    if (liveStatus === 'COMPLETED') return 'Completed';
+    if (liveStatus === 'WAITING') return 'Waiting';
+    if ((item.status || '').toUpperCase() === 'CONFIRMED') return 'Waiting';
+    return 'Not in queue';
+  }
+
   private getTone(item: AppointmentRecord): string {
+    if ((item.liveStatus || '').toUpperCase() === 'ONGOING') return 'green';
+    if ((item.liveStatus || '').toUpperCase() === 'COMPLETED') return 'blue';
     if ((item.urgencyLevel || '').toUpperCase() === 'HIGH') return 'pink';
-    if ((item.status || '').toUpperCase() === 'CONFIRMED') return 'green';
+    if ((item.status || '').toUpperCase() === 'CONFIRMED') return 'orange';
     if ((item.status || '').toUpperCase() === 'CANCELED') return 'blue';
     return 'orange';
   }

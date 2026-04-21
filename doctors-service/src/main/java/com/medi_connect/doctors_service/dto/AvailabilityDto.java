@@ -16,6 +16,7 @@ public class AvailabilityDto {
     private String availabilityDate;
     private String startTime;
     private String endTime;
+    private Integer slotDuration;
     private String hospitalOrClinic;
     private String consultationType;
     private Boolean available;

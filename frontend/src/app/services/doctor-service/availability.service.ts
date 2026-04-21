@@ -7,6 +7,7 @@ export interface AvailabilityRecord {
   availabilityDate: string;
   startTime: string;
   endTime: string;
+  slotDuration: number;
   hospitalOrClinic: string;
   consultationType: string;
   available: boolean;

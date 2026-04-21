@@ -49,6 +49,14 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.updateStatus(id,status));
 
     }
+
+    @PatchMapping("/{id}/live-status")
+    public ResponseEntity<Appointment> updateLiveStatus(
+            @PathVariable UUID id,
+            @RequestParam String liveStatus
+    ) {
+        return ResponseEntity.ok(appointmentService.updateLiveStatus(id, liveStatus));
+    }
     @PatchMapping("/{id}")
     public ResponseEntity<Appointment> updateAppointmentById(@PathVariable UUID id,@RequestBody Appointment appointment ){
         return ResponseEntity.ok(appointmentService.updateAppointment(id,appointment));
