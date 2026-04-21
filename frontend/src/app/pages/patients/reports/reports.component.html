@@ -1,12 +1,31 @@
 <div class="reports-container">
-  <div class="reports-header">
+  <div class="reports-hero">
+    <div class="reports-hero-copy">
+      <a routerLink="/patient/dashboard" class="back-link">← Back to Dashboard</a>
+      <div>
+        <span class="hero-tag">Records Center</span>
+        <h1>Medical Reports</h1>
+        <p>Upload, manage, and revisit your medical documents in one organized workspace.</p>
+      </div>
+    </div>
+
+    <div class="reports-hero-actions">
+      <div class="hero-stat">
+        <span>Total Reports</span>
+        <strong>{{ reports.length }}</strong>
+      </div>
+      <button class="btn-upload" (click)="showUploadModal = true">
+        <span>+</span> Upload New Report
+      </button>
+    </div>
+  </div>
+
+  <div class="reports-toolbar">
     <div>
       <h1>Medical Reports</h1>
-      <p>Upload and manage your medical documents</p>
+      <p>Review your uploaded files, download them, or remove outdated documents.</p>
     </div>
-    <button class="btn-upload" (click)="showUploadModal = true">
-      <span>+</span> Upload New Report
-    </button>
+    <button class="btn-secondary" (click)="loadReports()">Refresh List</button>
   </div>
 
   <div class="reports-grid" *ngIf="!isLoading">

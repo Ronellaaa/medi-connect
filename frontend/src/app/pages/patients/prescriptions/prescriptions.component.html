@@ -2,6 +2,7 @@
   <div class="rx-container">
     <div class="rx-header">
       <div class="rx-header-content">
+        <a routerLink="/patient/dashboard" class="back-link">← Back to Dashboard</a>
         <span class="rx-tag">Medication Dashboard</span>
         <h1>My Prescriptions</h1>
         <p>Access all prescribed medications, diagnosis details, and consultation records in one place.</p>
@@ -9,7 +10,7 @@
 
       <div class="rx-header-stats">
         <button type="button" class="view-btn header-view-btn" (click)="loadPrescriptions()">
-          View My Prescriptions
+          Refresh Records
         </button>
         <div class="stat-card">
           <span>Total Records</span>
@@ -71,7 +72,7 @@
             </div>
 
             <div class="card-action">
-              <button type="button" class="view-btn">View</button>
+              <button type="button" class="view-btn">Open</button>
             </div>
           </div>
         </div>

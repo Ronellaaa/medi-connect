@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PrescriptionService } from '../../../services/prescription.service';
 import { DoctorSessionService } from '../../../services/doctor-service/doctor-session.service';
 import { finalize } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { finalize } from 'rxjs/operators';
 @Component({
   standalone: true,
   selector: 'app-prescriptions',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './prescriptions.component.html',
   styleUrls: ['./prescriptions.component.css']
 })

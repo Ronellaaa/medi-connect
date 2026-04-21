@@ -1,77 +1,98 @@
-<div class="profile-container">
-  <div class="profile-header">
-    <h1>My Profile</h1>
-    <p>Manage your personal information</p>
+<div class="profile-shell">
+  <div class="profile-ambient">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+    <div class="mesh mesh-a"></div>
+    <div class="mesh mesh-b"></div>
+    <div class="halo halo-a"></div>
   </div>
 
-  <div class="profile-card">
-    <div class="profile-actions">
-      <button *ngIf="!isEditing" class="btn-edit" (click)="toggleEdit()">
-        ✏️ Edit Profile
-      </button>
-      <div *ngIf="isEditing" class="action-buttons">
-        <button class="btn-save" (click)="onSubmit()" [disabled]="isLoading">Save Changes</button>
-        <button class="btn-cancel" (click)="toggleEdit()">Cancel</button>
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-header-copy">
+        <a class="back-link" href="/patient/dashboard">← Back to Dashboard</a>
+        <span class="profile-pill">Patient Profile</span>
+        <h1>My Profile</h1>
+        <p>Manage your personal information</p>
+      </div>
+
+      <div class="profile-summary-card">
+        <div class="summary-wash"></div>
+        <span>Profile Mode</span>
+        <strong>{{ isEditing ? 'Editing' : 'Viewing' }}</strong>
       </div>
     </div>
 
-    <form [formGroup]="profileForm">
-      <div class="form-row">
-        <div class="form-group">
-          <label>First Name *</label>
-          <input type="text" formControlName="firstName" [readonly]="!isEditing">
-        </div>
-        <div class="form-group">
-          <label>Last Name *</label>
-          <input type="text" formControlName="lastName" [readonly]="!isEditing">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Phone Number *</label>
-          <input type="tel" formControlName="phoneNumber" [readonly]="!isEditing">
-        </div>
-        <div class="form-group">
-          <label>Date of Birth *</label>
-          <input type="date" formControlName="dateOfBirth" [readonly]="!isEditing">
+    <div class="profile-card">
+      <div class="profile-card-wash"></div>
+      <div class="profile-actions">
+        <button *ngIf="!isEditing" class="btn-edit" (click)="toggleEdit()">
+          ✏️ Edit Profile
+        </button>
+        <div *ngIf="isEditing" class="action-buttons">
+          <button class="btn-save" (click)="onSubmit()" [disabled]="isLoading">Save Changes</button>
+          <button class="btn-cancel" (click)="toggleEdit()">Cancel</button>
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Gender *</label>
-          <select formControlName="gender" [disabled]="!isEditing">
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-            <option value="OTHER">Other</option>
-          </select>
+      <form [formGroup]="profileForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name *</label>
+            <input type="text" formControlName="firstName" [readonly]="!isEditing">
+          </div>
+          <div class="form-group">
+            <label>Last Name *</label>
+            <input type="text" formControlName="lastName" [readonly]="!isEditing">
+          </div>
         </div>
-        <div class="form-group">
-          <label>Blood Group</label>
-          <select formControlName="bloodGroup" [disabled]="!isEditing">
-            <option value="">Select</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-          </select>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number *</label>
+            <input type="tel" formControlName="phoneNumber" [readonly]="!isEditing">
+          </div>
+          <div class="form-group">
+            <label>Date of Birth *</label>
+            <input type="date" formControlName="dateOfBirth" [readonly]="!isEditing">
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>Address</label>
-        <textarea formControlName="address" rows="3" [readonly]="!isEditing" placeholder="Your address"></textarea>
-      </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Gender *</label>
+            <select formControlName="gender" [disabled]="!isEditing">
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Blood Group</label>
+            <select formControlName="bloodGroup" [disabled]="!isEditing">
+              <option value="">Select</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>Emergency Contact</label>
-        <input type="text" formControlName="emergencyContact" [readonly]="!isEditing" placeholder="Emergency contact number">
-      </div>
-    </form>
+        <div class="form-group">
+          <label>Address</label>
+          <textarea formControlName="address" rows="3" [readonly]="!isEditing" placeholder="Your address"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Emergency Contact</label>
+          <input type="text" formControlName="emergencyContact" [readonly]="!isEditing" placeholder="Emergency contact number">
+        </div>
+      </form>
+    </div>
   </div>
 </div>

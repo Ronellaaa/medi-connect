@@ -1,6 +1,7 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ReportService } from '../../../services/report.service';
 import { AppointmentApiService, AppointmentsPayload } from '../../../services/appointment.service';
 import { DoctorSessionService } from '../../../services/doctor-service/doctor-session.service';
@@ -8,7 +9,7 @@ import { DoctorSessionService } from '../../../services/doctor-service/doctor-se
 @Component({
   standalone: true,
   selector: 'app-reports',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.css']
 })

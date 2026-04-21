@@ -1,4 +1,94 @@
+.dashboard-shell {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(224, 47, 117, 0.08), transparent 22%),
+    radial-gradient(circle at top right, rgba(103, 0, 163, 0.08), transparent 24%),
+    linear-gradient(180deg, #f7f8fd 0%, #eef2fb 100%);
+}
+
+.ambient-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(90px);
+  opacity: 0.42;
+}
+
+.orb-one {
+  width: 360px;
+  height: 360px;
+  top: -120px;
+  left: -110px;
+  background: rgba(255, 90, 87, 0.18);
+}
+
+.orb-two {
+  width: 420px;
+  height: 420px;
+  top: 120px;
+  right: -130px;
+  background: rgba(103, 0, 163, 0.16);
+}
+
+.mesh,
+.halo {
+  position: absolute;
+}
+
+.mesh {
+  border-radius: 32px;
+  opacity: 0.3;
+  transform: rotate(-12deg);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.mesh-one {
+  width: 280px;
+  height: 280px;
+  right: 8%;
+  top: 120px;
+}
+
+.mesh-two {
+  width: 220px;
+  height: 220px;
+  left: 4%;
+  bottom: 120px;
+}
+
+.halo {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.halo-one {
+  width: 520px;
+  height: 520px;
+  top: -180px;
+  right: -120px;
+}
+
+.halo-two {
+  width: 340px;
+  height: 340px;
+  bottom: -60px;
+  left: -100px;
+}
+
 .dashboard-container {
+  position: relative;
+  z-index: 1;
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
@@ -8,39 +98,67 @@
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   margin-bottom: 32px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 18px;
+  padding: 30px 32px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #050c38 0%, #1b2062 38%, #6700a3 72%, #e02f75 100%);
+  box-shadow: 0 22px 48px rgba(15, 20, 62, 0.18);
+}
+
+.welcome-section {
+  flex: 1;
+  min-width: 280px;
+}
+
+.welcome-pill {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .welcome-section h1 {
-  font-size: 32px;
-  color: #050C38;
-  margin-bottom: 8px;
+  font-size: 38px;
+  color: #ffffff;
+  margin: 16px 0 10px;
+  line-height: 1.05;
 }
 
 .welcome-section p {
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.84);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 680px;
 }
 
 .header-actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .btn-book {
-  background: linear-gradient(135deg, #FF5A57, #E02F75);
+  background: linear-gradient(135deg, #ff5a57, #ff8a65);
   border: none;
   padding: 12px 24px;
   border-radius: 40px;
   color: white;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
+  box-shadow: 0 14px 28px rgba(255, 90, 87, 0.22);
 }
 
 .btn-book:hover {
@@ -53,19 +171,18 @@
 }
 
 .btn-logout {
-  background: transparent;
-  border: 2px solid #FF5A57;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   padding: 12px 24px;
   border-radius: 40px;
-  color: #FF5A57;
-  font-weight: 600;
+  color: #ffffff;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-logout:hover {
-  background: #FF5A57;
-  color: white;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .stats-grid {
@@ -76,31 +193,66 @@
 }
 
 .stat-card {
-  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
   padding: 24px;
   color: white;
   display: flex;
   align-items: center;
   gap: 16px;
-  transition: transform 0.3s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 14px 32px rgba(17, 24, 39, 0.08);
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
 }
 
+.stat-glow {
+  position: absolute;
+  inset: auto -20% -45% auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+.reports-card {
+  background: linear-gradient(135deg, #6700a3, #1b2062);
+}
+
+.prescriptions-card {
+  background: linear-gradient(135deg, #e02f75, #ff5a57);
+}
+
+.appointments-card {
+  background: linear-gradient(135deg, #ff5a57, #6700a3);
+}
+
 .stat-icon {
-  font-size: 40px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.16);
+  flex-shrink: 0;
 }
 
 .stat-info h3 {
-  font-size: 32px;
-  margin-bottom: 4px;
+  font-size: 34px;
+  margin: 0 0 4px;
 }
 
 .stat-info p {
-  opacity: 0.9;
+  opacity: 0.92;
   font-size: 14px;
+  margin: 0;
 }
 
 .dashboard-grid {
@@ -111,85 +263,123 @@
 }
 
 .card {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  position: relative;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 24px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.07);
   overflow: hidden;
+  border: 1px solid #edf0f7;
+}
+
+.card-wash {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.08), transparent);
+  pointer-events: none;
 }
 
 .card-header {
   padding: 20px 24px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #eceff6;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: end;
+  gap: 12px;
+}
+
+.card-kicker {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #8b5cf6;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .card-header h3 {
-  color: #1B2062;
-  font-size: 18px;
+  color: #1b2062;
+  font-size: 20px;
+  margin: 0;
 }
 
 .card-header a {
-  color: #6700A3;
+  color: #6700a3;
   text-decoration: none;
   font-size: 14px;
+  font-weight: 700;
 }
 
 .card-body {
   padding: 20px 24px;
 }
 
-.report-item, .prescription-item {
+.report-item,
+.prescription-item {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f2f7;
 }
 
-.report-item:last-child, .prescription-item:last-child {
+.report-item:last-child,
+.prescription-item:last-child {
   border-bottom: none;
 }
 
-.report-icon, .prescription-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #6700A3, #1B2062);
-  border-radius: 12px;
+.report-icon,
+.prescription-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #6700a3, #1b2062);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
   color: white;
+  flex-shrink: 0;
 }
 
-.report-details, .prescription-details {
+.prescription-icon {
+  background: linear-gradient(135deg, #ff5a57, #e02f75);
+}
+
+.report-details,
+.prescription-details {
   flex: 1;
+  min-width: 0;
 }
 
-.report-details h4, .prescription-details h4 {
-  color: #050C38;
-  margin-bottom: 4px;
+.report-details h4,
+.prescription-details h4 {
+  color: #050c38;
+  margin: 0 0 4px;
 }
 
-.report-details p, .prescription-details p {
+.report-details p,
+.prescription-details p {
   color: #6c757d;
   font-size: 12px;
+  margin: 0;
 }
 
 .btn-view {
   background: none;
-  border: 1px solid #6700A3;
-  color: #6700A3;
-  padding: 6px 16px;
-  border-radius: 20px;
+  border: 1px solid #6700a3;
+  color: #6700a3;
+  padding: 7px 16px;
+  border-radius: 999px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-weight: 700;
 }
 
 .btn-view:hover {
-  background: #6700A3;
+  background: #6700a3;
   color: white;
 }
 
@@ -203,6 +393,39 @@
   margin-top: 12px;
 }
 
+.btn-upload {
+  background: linear-gradient(135deg, #ff5a57, #e02f75);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 999px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.quick-actions-panel {
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 28px;
+  padding: 24px;
+  border: 1px solid #edf0f7;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
+}
+
+.quick-actions-head {
+  margin-bottom: 18px;
+}
+
+.quick-actions-head h3 {
+  margin: 0 0 6px;
+  color: #111827;
+  font-size: 22px;
+}
+
+.quick-actions-head p {
+  margin: 0;
+  color: #6c757d;
+}
+
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -210,27 +433,46 @@
 }
 
 .action-card {
+  position: relative;
+  overflow: hidden;
   background: white;
-  border-radius: 20px;
+  border-radius: 22px;
   padding: 24px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+  border: 1px solid #eef2f8;
 }
 
 .action-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(103, 0, 163, 0.15);
+  box-shadow: 0 14px 28px rgba(103, 0, 163, 0.12);
+}
+
+.action-wash {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 90px;
+  background: linear-gradient(135deg, rgba(255, 90, 87, 0.08), rgba(103, 0, 163, 0.08));
+  pointer-events: none;
 }
 
 .action-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 16px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  background: linear-gradient(135deg, #f8edff, #fff2f4);
 }
 
 .action-card h4 {
-  color: #1B2062;
+  color: #1b2062;
   margin-bottom: 8px;
 }
 
@@ -243,12 +485,34 @@
   .dashboard-container {
     padding: 16px;
   }
+
+  .dashboard-header {
+    padding: 24px;
+  }
   
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
   
   .welcome-section h1 {
-    font-size: 24px;
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .header-actions {
+    width: 100%;
+  }
+
+  .btn-book,
+  .btn-logout,
+  .btn-view {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .report-item,
+  .prescription-item {
+    flex-wrap: wrap;
   }
 }
