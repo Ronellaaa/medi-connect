@@ -31,8 +31,8 @@
               class="orbit-card"
               *ngFor="let image of orbitImages; let i = index"
               [style.backgroundImage]="'url(' + image.src + ')'"
-              [attr.data-index]="i">
-            </article>
+              [attr.data-index]="i"
+            ></article>
           </div>
         </div>
 
@@ -57,51 +57,150 @@
       </section>
 
       <section class="story-section">
-        <div class="story-left">
-          <div class="story-card">
-            <p class="mini-label">01</p>
-            <h2>Everything feels connected.</h2>
-            <p>
-              From appointments to prescriptions, every care moment lives inside one beautiful experience.
-            </p>
-          </div>
+        <div class="story-copy">
+          <p class="mini-label">Digital Care Walkthrough</p>
+          <h2>Step into a smarter e-channeling experience.</h2>
+          <p class="story-intro">
+            A premium digital care space where appointments, reports, prescriptions,
+            and follow-ups feel calm, elegant, and easy to explore.
+          </p>
 
-          <div class="story-card">
-            <p class="mini-label">02</p>
-            <h2>Built for real hospital flow.</h2>
-            <p>
-              Doctors, patients, and teams move faster with cleaner screens and smoother digital actions.
-            </p>
-          </div>
+          <div class="story-points">
+            <div class="story-point">
+              <span>Doctor discovery</span>
+              <p>Find the right specialist through elegant service panels.</p>
+            </div>
 
-          <div class="story-card">
-            <p class="mini-label">03</p>
-            <h2>More than just a dashboard.</h2>
-            <p>
-              Motion, depth, and interaction make the platform feel modern instead of static and boring.
-            </p>
+            <div class="story-point">
+              <span>Instant channeling</span>
+              <p>Appointments feel guided, visible, and easy to follow.</p>
+            </div>
+
+            <div class="story-point">
+              <span>Connected care</span>
+              <p>Reports, prescriptions, and follow-ups stay in one smooth flow.</p>
+            </div>
           </div>
         </div>
 
-        <div class="story-right">
-          <div class="feature-panel">
-            <video
-              class="feature-video"
-              autoplay
-              loop
-              muted
-              [defaultMuted]="true"
-              playsinline
-            >
-              <source src="assets/videos/12.mp4" type="video/mp4" />
-            </video>
-            <div class="feature-video-overlay"></div>
-            <div class="feature-panel-inner">
-              <span class="feature-tag">Live Care Layer</span>
-              <h3>Modern healthcare experience</h3>
-              <p>
-                A premium visual system for appointments, reports, and follow-up care.
-              </p>
+        <div class="story-experience">
+          <div class="corridor-scene">
+            <div class="boutique-ceiling"></div>
+            <div class="boutique-sign">MediConnect Care</div>
+            <div class="boutique-tree"></div>
+            <div class="boutique-display"></div>
+            <div class="boutique-shelf upper"></div>
+            <div class="boutique-shelf middle"></div>
+            <div class="boutique-shelf lower"></div>
+            <div class="boutique-plant plant-1"></div>
+            <div class="boutique-plant plant-2"></div>
+
+            <div class="corridor-ceiling-line line-1"></div>
+            <div class="corridor-ceiling-line line-2"></div>
+            <div class="corridor-wall-line line-3"></div>
+
+            <div class="floor-panel"></div>
+
+            <div class="panel-stage" #panelStage>
+              <article
+                class="channel-panel"
+                *ngFor="let panel of storyPanels; let i = index"
+                [ngClass]="panel.color"
+                [class.is-active]="activeStoryPanel === i"
+              >
+                <div class="panel-glass">
+                  <div class="panel-door left-door"></div>
+                  <div class="panel-door right-door"></div>
+                  <div class="panel-shine"></div>
+
+                  <div class="panel-core">
+                    <div class="panel-status-dot"></div>
+                    <p class="panel-id">{{ panel.code }}</p>
+                    <h3>{{ panel.title }}</h3>
+                    <p class="panel-main">{{ panel.text }}</p>
+                  </div>
+
+                  <div class="panel-reveal">
+                    <p class="reveal-label">Now viewing</p>
+                    <h4>{{ panel.revealTitle }}</h4>
+
+                    <div class="panel-reveal-visual">
+                      <img
+                        [src]="panel.image"
+                        [alt]="panel.title"
+                        class="panel-reveal-image"
+                      />
+                    </div>
+
+                    <div class="panel-reveal-stats">
+                      <span>{{ panel.stat1 }}</span>
+                      <span>{{ panel.stat2 }}</span>
+                    </div>
+
+                    <p class="panel-reveal-text">{{ panel.revealText }}</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div class="standing-person">
+              <div class="person-shadow"></div>
+              <div class="person-figure lottie-person">
+                <div class="person-glow"></div>
+                <div class="person-spark spark-1"></div>
+                <div class="person-spark spark-2"></div>
+                <div class="person-spark spark-3"></div>
+
+                <div class="person-head">
+                  <div class="person-hair"></div>
+                  <div class="person-face">
+                    <span class="person-eye left"></span>
+                    <span class="person-eye right"></span>
+                    <span class="person-smile"></span>
+                  </div>
+                </div>
+
+                <div class="person-neck"></div>
+
+                <div class="person-torso">
+                  <div class="person-coat"></div>
+                  <div class="person-shirt"></div>
+                  <div class="person-badge"></div>
+                </div>
+
+                <div class="person-arm left">
+                  <div class="arm-upper"></div>
+                  <div class="arm-lower"></div>
+                  <div class="person-hand"></div>
+                </div>
+
+                <div class="person-arm right">
+                  <div class="arm-upper"></div>
+                  <div class="arm-lower"></div>
+                  <div class="person-hand"></div>
+                </div>
+
+                <div class="person-tablet">
+                  <div class="tablet-camera"></div>
+                  <div class="tablet-line tablet-line-1"></div>
+                  <div class="tablet-line tablet-line-2"></div>
+                  <div class="tablet-line tablet-line-3"></div>
+                </div>
+
+                <div class="person-hips"></div>
+
+                <div class="person-leg left">
+                  <div class="leg-upper"></div>
+                  <div class="leg-lower"></div>
+                  <div class="person-foot"></div>
+                </div>
+
+                <div class="person-leg right">
+                  <div class="leg-upper"></div>
+                  <div class="leg-lower"></div>
+                  <div class="person-foot"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -110,24 +209,141 @@
       <section class="gallery-section">
         <div class="section-heading">
           <p class="mini-label dark-label">Care Excellence</p>
-          <h2 class="dark-heading">A hospital experience people can trust.</h2>
+          <h2 class="dark-heading">A hospital experience people can hold and explore.</h2>
           <p class="gallery-intro">
-            Explore the care experience through a clean premium gallery.
+            Swipe through care moments in a cinematic mobile showcase inspired by the experience you shared.
           </p>
         </div>
 
-        <div class="premium-gallery">
-          <article
-            class="gallery-card"
-            *ngFor="let item of orbitImages; let i = index"
-            [style.backgroundImage]="'url(' + item.src + ')'"
-            [class.tall]="i === 1 || i === 5"
-          >
-            <div class="gallery-shine"></div>
-            <div class="gallery-overlay">
-              <p>{{ item.label }}</p>
+        <div class="gallery-showcase">
+          <div class="gallery-ambient glow-left"></div>
+          <div class="gallery-ambient glow-right"></div>
+
+          <div class="showcase-phone-shell">
+            <div class="showcase-phone">
+              <div class="showcase-notch"></div>
+              <div class="showcase-screen">
+                <div class="showcase-screen-glow"></div>
+                <p class="showcase-brand">mediConnect</p>
+                <div class="showcase-tabs">
+                  <span class="active">Care</span>
+                  <span>Visits</span>
+                </div>
+
+                <div class="showcase-highlight">
+                  <p class="showcase-kicker">Live journey</p>
+                  <h3>Smarter channeling</h3>
+                  <p>Appointments, reports, and prescriptions in one premium flow.</p>
+                </div>
+
+                <div class="showcase-stats">
+                  <span>24/7 Support</span>
+                  <span>Fast Access</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="showcase-rail" #galleryRail>
+              <article
+                class="showcase-card"
+                *ngFor="let item of showcaseImages"
+                [style.backgroundImage]="'url(' + item.src + ')'"
+              >
+                <div class="showcase-card-overlay"></div>
+                <p>{{ item.label }}</p>
+              </article>
+            </div>
+
+            <img
+              src="assets/login/hand3.png"
+              alt="Person holding a phone"
+              class="showcase-hand"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="testimonials-section" [ngClass]="'theme-' + selectedTestimonial.theme">
+        <div class="testimonial-word-rain" aria-hidden="true">
+          <div class="testimonial-rain-row row-1">
+            <span>testimonial</span><span>testimonial</span><span>testimonial</span>
+          </div>
+          <div class="testimonial-rain-row row-2">
+            <span>testimonial</span><span>testimonial</span><span>testimonial</span>
+          </div>
+          <div class="testimonial-rain-row row-3">
+            <span>testimonial</span><span>testimonial</span><span>testimonial</span>
+          </div>
+          <div class="testimonial-rain-row row-4">
+            <span>testimonial</span><span>testimonial</span><span>testimonial</span>
+          </div>
+          <div class="testimonial-rain-row row-5">
+            <span>testimonial</span><span>testimonial</span><span>testimonial</span>
+          </div>
+          <div class="testimonial-rain-row row-6">
+            <span>testimonial</span><span>testimonial</span><span>testimonial</span>
+          </div>
+          <div class="testimonial-rain-row row-7">
+            <span>testimonial</span><span>testimonial</span><span>testimonial</span>
+          </div>
+          <div class="testimonial-rain-row row-8">
+            <span>testimonial</span><span>testimonial</span><span>testimonial</span>
+          </div>
+        </div>
+
+        <div class="testimonial-poster">
+          <div class="testimonial-header">
+            <div>
+              <p class="mini-label testimonial-label">Testimonials</p>
+              <h2>Stories patients actually remember.</h2>
+            </div>
+            <p class="testimonial-header-note">premium care experience</p>
+          </div>
+
+          <div class="testimonial-curve-title">Client Review</div>
+
+          <article class="testimonial-spotlight">
+            <div class="testimonial-quote-mark quote-open">“</div>
+            <div class="testimonial-quote-mark quote-close">”</div>
+
+            <div class="testimonial-spotlight-top">
+              <div class="testimonial-profile">
+                <div class="testimonial-avatar large">{{ selectedTestimonial.name.charAt(0) }}</div>
+                <div>
+                  <strong>{{ selectedTestimonial.name }}</strong>
+                  <span>{{ selectedTestimonial.role }}</span>
+                </div>
+              </div>
+
+              <div class="testimonial-stars" aria-label="5 star review">
+                <span *ngFor="let _ of [1, 2, 3, 4, 5]">★</span>
+              </div>
+            </div>
+
+            <blockquote class="testimonial-spotlight-quote">
+              {{ selectedTestimonial.quote }}
+            </blockquote>
+
+            <div class="testimonial-spotlight-footer">
+              <div class="testimonial-footer-chip">{{ selectedTestimonial.metric }}</div>
+              <div class="testimonial-footer-chip alt">{{ selectedTestimonial.accent }}</div>
             </div>
           </article>
+
+          <div class="testimonial-mini-row">
+            <article
+              class="testimonial-mini-card"
+              *ngFor="let item of testimonials; let i = index"
+              [class.is-active]="activeTestimonial === i"
+              (click)="selectTestimonial(i)"
+            >
+              <p class="testimonial-mini-text">“{{ item.quote }}”</p>
+              <div class="testimonial-mini-meta">
+                <strong>{{ item.name }}</strong>
+                <span>{{ item.metric }}</span>
+              </div>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -136,9 +352,7 @@
           <div>
             <p class="mini-label">MediConnect</p>
             <h2>Bring your homepage to life.</h2>
-            <p>
-              Smooth scroll, draggable cards, and a premium interactive hero.
-            </p>
+            <p>Smooth scroll, draggable cards, and a premium interactive hero.</p>
           </div>
 
           <a routerLink="/register" class="primary-btn">Launch Experience</a>
