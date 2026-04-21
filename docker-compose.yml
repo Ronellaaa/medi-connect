@@ -81,3 +81,180 @@
 #  postgres_data:
 #  maven_repo:
 #  frontend_node_modules:
+version: "3.8"
+
+services:
+  # ============================================
+  # APPLICATIONS (Using original ports)
+  # ============================================
+
+  auth-service:
+    image: ronella/auth-service:1.0-amd64
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: "8081"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth_db:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      JAVA_TOOL_OPTIONS: "-Xmx512m"
+      APP_JWT_SECRET: mediconnect-super-secret-key-mediconnect-super-secret-key
+      APP_JWT_EXPIRATION: "86400000"
+      SERVICES_DOCTOR_BASE_URL: http://doctors-service:8083
+      SERVICES_PATIENT_BASE_URL: http://patients-service:8082
+    networks:
+      - medi-connect
+
+  doctors-service:
+    image: ronella/doctors-service:1.0-amd64
+    container_name: doctors-service
+    ports:
+      - "8083:8083"
+    environment:
+      SERVER_PORT: "8083"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://doctors_db:5432/doctors_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      JAVA_TOOL_OPTIONS: "-Xmx512m"
+      APP_JWT_SECRET: mediconnect-super-secret-key-mediconnect-super-secret-key
+      APP_JWT_EXPIRATION: "86400000"
+      # ADDED: Appointment service URL
+      APPOINTMENT_SERVICE_URL: http://appointment-service:8088
+      SERVICES_APPOINTMENT_URL: http://appointment-service:8088
+    networks:
+      - medi-connect
+
+  patients-service:
+    image: ronella/patients-service:1.0-amd64
+    container_name: patients-service
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: "8082"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-db:5432/patient_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "123456"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      JAVA_TOOL_OPTIONS: "-Xmx512m"
+      JWT_SECRET: mediconnect-super-secret-key-mediconnect-super-secret-key
+      JWT_EXPIRATION: "86400000"
+      FILE_UPLOAD_DIR: /tmp/uploads
+    networks:
+      - medi-connect
+
+  appointment-service:
+    image: ronella/appointment-service:1.0-amd64
+    container_name: appointment-service
+    ports:
+      - "8088:8088"
+    environment:
+      SERVER_PORT: "8088"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://appointments_db:5432/mediconnectdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      JAVA_TOOL_OPTIONS: "-Xmx512m"
+      APP_JWT_SECRET: mediconnect-super-secret-key-mediconnect-super-secret-key
+      APP_JWT_EXPIRATION: "86400000"
+      PATIENTS_SERVICE_URL: http://patients-service:8082
+      DOCTORS_SERVICE_URL: http://doctors-service:8083
+    networks:
+      - medi-connect
+
+  payments-service:
+    image: ronella/payments-service:1.0-amd64
+    container_name: payments-service
+    ports:
+      - "8085:8085"
+    environment:
+      SERVER_PORT: "8085"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://payment-db:5432/payment_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "babibuba"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      JAVA_TOOL_OPTIONS: "-Xmx512m"
+      PAYHERE_MERCHANT_ID: "1234717"
+      PAYHERE_MERCHANT_SECRET: "MzgxNDE3NTQ0NzM1MjE0NzYyNjMyNjI4NzE3NjA5NDE1OTg5ODcwOQ=="
+      PAYHERE_BASE_URL: https://sandbox.payhere.lk
+      PAYHERE_RETURN_URL: http://localhost:4200/appointments/patient-dashboard
+      PAYHERE_CANCEL_URL: http://localhost:4200/payment/cancel
+      PAYHERE_NOTIFY_URL: https://keisha-pseudocollegiate-alison.ngrok-free.dev/api/payments/webhook/payhere
+      APPOINTMENT_SERVICE_URL: http://appointment-service:8088
+      TELEMEDICINE_SERVICE_URL: http://telemedicine-service:3001
+    networks:
+      - medi-connect
+
+  notification-service:
+    image: ronella/notification-service:1.0-amd64
+    container_name: notification-service
+    ports:
+      - "8086:8086"
+    environment:
+      SERVER_PORT: "8086"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notifications_db:5432/notifications_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      JAVA_TOOL_OPTIONS: "-Xmx512m"
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: "587"
+      SPRING_MAIL_USERNAME: ronelladias23@gmail.com
+      SPRING_MAIL_PASSWORD: irfv hika gcso keyh
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      TWILIO_ACCOUNT_SID: AC2a2a2075721c845f0a5c0d4fbda0ee3c
+      TWILIO_AUTH_TOKEN: 48f05da5154c7a7ff3d8d6afbc7b1213
+      TWILIO_PHONE_NUMBER: "+17126003085"
+    networks:
+      - medi-connect
+
+  telemedicine-service:
+    image: ronella/telemedicine-service:1.0
+    container_name: telemedicine-service
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: "3001"
+      NODE_ENV: production
+      DB_USER: postgres
+      DB_PASSWORD: "babibuba"
+      DB_HOST: telemedicine
+      DB_PORT: "5432"
+      DB_NAME: telemedicine
+      PAYMENT_SERVICE_URL: http://payments-service:8085
+    networks:
+      - medi-connect
+
+  frontend:
+    image: ronella/frontend:1.0-amd64
+    container_name: frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - auth-service
+      - doctors-service
+      - patients-service
+      - appointment-service
+      - payments-service
+      - notification-service
+    networks:
+      - medi-connect
+
+networks:
+  medi-connect:
+    driver: bridge
