@@ -38,6 +38,17 @@
       </a>
 
       <a 
+        routerLink="/admin/doctors" 
+        routerLinkActive="active"
+        class="nav-item"
+        [class.nav-item-collapsed]="!sidebarOpen"
+      >
+        <span class="nav-icon">🩺</span>
+        <span class="nav-text" *ngIf="sidebarOpen">Verify Doctors</span>
+        <span class="tooltip" *ngIf="!sidebarOpen">Verify Doctors</span>
+      </a>
+
+      <a 
         routerLink="/admin/stats" 
         routerLinkActive="active"
         class="nav-item"

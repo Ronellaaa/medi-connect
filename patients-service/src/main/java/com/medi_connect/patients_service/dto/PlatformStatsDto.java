@@ -9,6 +9,9 @@ public class PlatformStatsDto {
     private Long activePatients;
     private Long totalDoctors;
     private Long activeDoctors;
+    private Long verifiedDoctors;
+    private Long pendingDoctorVerifications;
+    private Long rejectedDoctorVerifications;
     private Long totalAppointments;
     private Long completedAppointments;
     private Long cancelledAppointments;
@@ -16,4 +19,5 @@ public class PlatformStatsDto {
     private Double platformFees;
     private Map<String, Long> appointmentsByStatus;
     private Map<String, Long> patientsByMonth;
+    private Map<String, Long> doctorsBySpecialization;
 }

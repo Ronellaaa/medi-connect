@@ -1,0 +1,167 @@
+<div class="verify-page">
+  <div class="ambient">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+  </div>
+
+  <div class="page-inner">
+    <div class="page-head">
+      <div>
+        <p class="eyebrow">Admin review</p>
+        <h1 class="page-title">Verify Doctors</h1>
+        <p class="page-sub">Review newly registered doctors, approve verified profiles, or reject incomplete submissions.</p>
+      </div>
+
+      <button class="refresh-btn" type="button" (click)="loadDoctors()" [disabled]="isLoading">
+        Refresh list
+      </button>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <span class="summary-label">Total Doctors</span>
+        <strong class="summary-value">{{ doctors.length }}</strong>
+      </div>
+      <div class="summary-card summary-pending">
+        <span class="summary-label">Pending Review</span>
+        <strong class="summary-value">{{ getFilterCount('PENDING') }}</strong>
+      </div>
+      <div class="summary-card summary-verified">
+        <span class="summary-label">Verified</span>
+        <strong class="summary-value">{{ getFilterCount('VERIFIED') }}</strong>
+      </div>
+      <div class="summary-card summary-rejected">
+        <span class="summary-label">Rejected</span>
+        <strong class="summary-value">{{ getFilterCount('REJECTED') }}</strong>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔎</span>
+        <input
+          class="search-input"
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          placeholder="Search by name, email, specialty, or license"
+        />
+      </div>
+
+      <div class="filter-group">
+        <button type="button" class="filter-pill" [class.active]="selectedFilter === 'ALL'" (click)="setFilter('ALL')">All</button>
+        <button type="button" class="filter-pill" [class.active]="selectedFilter === 'PENDING'" (click)="setFilter('PENDING')">Pending</button>
+        <button type="button" class="filter-pill" [class.active]="selectedFilter === 'VERIFIED'" (click)="setFilter('VERIFIED')">Verified</button>
+        <button type="button" class="filter-pill" [class.active]="selectedFilter === 'REJECTED'" (click)="setFilter('REJECTED')">Rejected</button>
+      </div>
+    </div>
+
+    <div class="message error" *ngIf="error">{{ error }}</div>
+
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loader"></div>
+      <p>Loading doctor submissions...</p>
+    </div>
+
+    <div class="grid" *ngIf="!isLoading">
+      <article class="doctor-card" *ngFor="let doctor of filteredDoctors">
+        <div class="card-head">
+          <div class="avatar">{{ initials(doctor.fullName) }}</div>
+          <div class="identity">
+            <h2>{{ doctor.fullName }}</h2>
+            <p>{{ doctor.email }}</p>
+            <p class="identity-sub">{{ specializationSummary(doctor) }}</p>
+          </div>
+          <span class="status-badge" [ngClass]="badgeClass(doctor.verificationStatus)">
+            {{ doctor.verificationStatus || 'PENDING' }}
+          </span>
+          <button
+            type="button"
+            class="expand-btn"
+            (click)="toggleExpanded(doctor.id)"
+            [attr.aria-expanded]="isExpanded(doctor.id)"
+            [attr.aria-controls]="'doctor-details-' + doctor.id"
+          >
+            {{ isExpanded(doctor.id) ? 'Hide details' : 'Review details' }}
+          </button>
+        </div>
+
+        <div class="summary-strip">
+          <div class="summary-pill">
+            <span class="summary-pill-label">Phone</span>
+            <strong>{{ doctor.phone || 'Not provided' }}</strong>
+          </div>
+          <div class="summary-pill">
+            <span class="summary-pill-label">License</span>
+            <strong>{{ doctor.license || 'Not provided' }}</strong>
+          </div>
+          <div class="summary-pill">
+            <span class="summary-pill-label">Experience</span>
+            <strong>{{ doctor.experienceYears ?? '—' }} years</strong>
+          </div>
+        </div>
+
+        <div class="details-panel" *ngIf="isExpanded(doctor.id)" [attr.id]="'doctor-details-' + doctor.id">
+          <div class="detail-grid">
+            <div class="detail">
+              <span class="detail-label">Specialty</span>
+              <strong>{{ doctor.mainSpecialization || 'Not provided' }}</strong>
+            </div>
+            <div class="detail">
+              <span class="detail-label">Additional Specialty</span>
+              <strong>{{ doctor.additionalSpecialization || 'Not provided' }}</strong>
+            </div>
+            <div class="detail detail-full">
+              <span class="detail-label">Clinic</span>
+              <strong>{{ doctor.clinic || 'Not provided' }}</strong>
+            </div>
+            <div class="detail detail-full">
+              <span class="detail-label">Qualifications</span>
+              <strong>{{ doctor.qualifications || 'Not provided' }}</strong>
+            </div>
+            <div class="detail detail-full" *ngIf="doctor.verifiedBy || doctor.verificationDate">
+              <span class="detail-label">Last review</span>
+              <strong>
+                {{ doctor.verifiedBy || 'Admin' }}
+                <span *ngIf="doctor.verificationDate"> · {{ doctor.verificationDate | date:'medium' }}</span>
+              </strong>
+            </div>
+          </div>
+
+          <label class="remarks-label" [attr.for]="'remarks-' + doctor.id">Review notes</label>
+          <textarea
+            class="remarks-box"
+            [id]="'remarks-' + doctor.id"
+            [(ngModel)]="remarksDraft[doctor.id]"
+            rows="3"
+            placeholder="Add notes for approval or rejection"
+          ></textarea>
+
+          <div class="action-row">
+            <button
+              type="button"
+              class="action-btn approve"
+              (click)="submitVerification(doctor, 'VERIFIED')"
+              [disabled]="savingDoctorId === doctor.id"
+            >
+              {{ savingDoctorId === doctor.id ? 'Saving...' : 'Approve Doctor' }}
+            </button>
+            <button
+              type="button"
+              class="action-btn reject"
+              (click)="submitVerification(doctor, 'REJECTED')"
+              [disabled]="savingDoctorId === doctor.id"
+            >
+              {{ savingDoctorId === doctor.id ? 'Saving...' : 'Reject Submission' }}
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoading && filteredDoctors.length === 0">
+      <h3>No doctors match this view</h3>
+      <p>Try another filter or search term.</p>
+    </div>
+  </div>
+</div>

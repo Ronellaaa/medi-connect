@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DoctorSessionService } from './doctor-service/doctor-session.service';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   private apiUrl = 'http://localhost:8082/api/admin';
+  private doctorsApiUrl = 'http://localhost:8083/api/doctors';
 
   constructor(
     private http: HttpClient,
@@ -48,5 +49,14 @@ export class AdminService {
 
   getPlatformStats(): Observable<any> {
     return this.http.get(`${this.apiUrl}/dashboard/stats`, this.getAuthHeaders());
+  }
+
+  getDoctorsForVerification(status?: string): Observable<any[]> {
+    const query = status && status !== 'ALL' ? `?status=${encodeURIComponent(status)}` : '';
+    return this.http.get<any[]>(`${this.doctorsApiUrl}/admin/verification${query}`, this.getAuthHeaders());
+  }
+
+  updateDoctorVerification(doctorId: number, payload: { status: string; remarks?: string }): Observable<any> {
+    return this.http.patch(`${this.doctorsApiUrl}/admin/${doctorId}/verification`, payload, this.getAuthHeaders());
   }
 }

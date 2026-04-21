@@ -3,6 +3,8 @@ package com.medi_connect.doctors_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="doctor")
 @Getter
@@ -33,5 +35,18 @@ public class Doctor {
 
     @Column(length = 1000)
     private String bio;
+
+    @Builder.Default
+    private Boolean verified = false;
+
+    @Builder.Default
+    private String verificationStatus = "PENDING";
+
+    @Column(length = 1000)
+    private String verificationRemarks;
+
+    private String verifiedBy;
+
+    private LocalDateTime verificationDate;
 
 }

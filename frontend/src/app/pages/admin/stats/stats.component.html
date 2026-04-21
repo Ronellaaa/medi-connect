@@ -1,267 +1,215 @@
 <div class="stats-page">
-  <div class="ambient"><div class="orb orb-a"></div><div class="orb orb-b"></div></div>
+  <div class="ambient">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+  </div>
 
   <div class="page-inner">
-
-    <!-- Header -->
-    <div class="page-head anim-up" style="--d:0s">
+    <div class="hero">
       <div>
-        <h1 class="page-title">Platform <span class="grad-text">Statistics</span></h1>
-        <p class="page-sub">Deep-dive metrics and analytics across your entire platform</p>
+        <p class="eyebrow">Backend-driven overview</p>
+        <h1 class="page-title">Full Stats</h1>
+        <p class="page-sub">
+          Live platform health for patients, doctors, appointments, and verification workload.
+        </p>
       </div>
-      <button class="btn-refresh" (click)="loadStats()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <button class="btn-refresh" type="button" (click)="refresh()" [disabled]="isLoading">
         Refresh
       </button>
     </div>
 
-    <!-- Error -->
-    <div class="alert-err anim-up" *ngIf="error">{{ error }}</div>
+    <div class="alert-err" *ngIf="error">{{ error }}</div>
 
-    <!-- Skeleton -->
     <div class="skeleton-grid" *ngIf="isLoading">
       <div class="sk-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
     </div>
 
     <ng-container *ngIf="!isLoading && !error">
+      <div class="kpi-grid">
+        <article class="kpi-card">
+          <span class="kpi-label">Patients</span>
+          <strong class="kpi-value">{{ stats.totalPatients }}</strong>
+          <p class="kpi-note">{{ activePatientRate }}% currently active</p>
+        </article>
 
-      <!-- ── KPI row ── -->
-      <div class="kpi-grid anim-up" style="--d:0.05s">
+        <article class="kpi-card">
+          <span class="kpi-label">Doctors</span>
+          <strong class="kpi-value">{{ stats.totalDoctors }}</strong>
+          <p class="kpi-note">{{ verifiedDoctorRate }}% verified</p>
+        </article>
 
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon icon-coral">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <span class="kpi-trend trend-up">{{ activePatientRate }}% active</span>
-          </div>
-          <span class="kpi-val">{{ stats.totalPatients || 0 }}</span>
-          <span class="kpi-lbl">Total Patients</span>
-          <div class="kpi-bar-track"><div class="kpi-bar" [style.width.%]="activePatientRate"></div></div>
-        </div>
+        <article class="kpi-card">
+          <span class="kpi-label">Appointments</span>
+          <strong class="kpi-value">{{ stats.totalAppointments }}</strong>
+          <p class="kpi-note">{{ completionRate }}% completed</p>
+        </article>
 
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon icon-green">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-            <span class="kpi-trend trend-up">Enabled</span>
-          </div>
-          <span class="kpi-val">{{ stats.activePatients || 0 }}</span>
-          <span class="kpi-lbl">Active Patients</span>
-          <div class="kpi-bar-track"><div class="kpi-bar bar-green" [style.width.%]="activePatientRate"></div></div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon icon-red">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-            </div>
-            <span class="kpi-trend trend-down">Disabled</span>
-          </div>
-          <span class="kpi-val">{{ inactivePatients }}</span>
-          <span class="kpi-lbl">Inactive Patients</span>
-          <div class="kpi-bar-track"><div class="kpi-bar bar-red" [style.width.%]="100 - activePatientRate"></div></div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon icon-magenta">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            </div>
-            <span class="kpi-trend trend-up">{{ completionRate }}% done</span>
-          </div>
-          <span class="kpi-val">{{ stats.totalAppointments || 0 }}</span>
-          <span class="kpi-lbl">Appointments</span>
-          <div class="kpi-bar-track"><div class="kpi-bar bar-magenta" [style.width.%]="completionRate"></div></div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon icon-purple">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </div>
-            <span class="kpi-trend trend-up">Revenue</span>
-          </div>
-          <span class="kpi-val">{{ formatCurrency(stats.totalRevenue || 0) }}</span>
-          <span class="kpi-lbl">Gross Revenue</span>
-          <div class="kpi-bar-track"><div class="kpi-bar" [style.width.%]="100"></div></div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon icon-coral">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-            </div>
-            <span class="kpi-trend trend-up">10% cut</span>
-          </div>
-          <span class="kpi-val">{{ formatCurrency(stats.platformFees || 0) }}</span>
-          <span class="kpi-lbl">Platform Fees</span>
-          <div class="kpi-bar-track"><div class="kpi-bar" [style.width.%]="100"></div></div>
-        </div>
-
+        <article class="kpi-card highlight">
+          <span class="kpi-label">Pending Doctor Reviews</span>
+          <strong class="kpi-value">{{ stats.pendingDoctorVerifications }}</strong>
+          <p class="kpi-note">Queue waiting for admin action</p>
+        </article>
       </div>
 
-      <!-- ── Middle: bar chart + rings ── -->
-      <div class="mid-grid anim-up" style="--d:0.12s">
-
-        <!-- Patients per month -->
-        <div class="card chart-card">
-          <div class="card-head">
+      <div class="panel-grid">
+        <section class="panel">
+          <div class="panel-head">
             <div>
-              <h3 class="card-title">Monthly Registrations</h3>
-              <p class="card-sub">New patients registered each month</p>
+              <h2>Patient Snapshot</h2>
+              <p>Current patient base and engagement</p>
+            </div>
+          </div>
+          <div class="metric-list">
+            <div class="metric-row">
+              <span>Total patients</span>
+              <strong>{{ stats.totalPatients }}</strong>
+            </div>
+            <div class="metric-row">
+              <span>Active patients</span>
+              <strong>{{ stats.activePatients }}</strong>
+            </div>
+            <div class="metric-row">
+              <span>Inactive patients</span>
+              <strong>{{ inactivePatients }}</strong>
+            </div>
+            <div class="metric-row">
+              <span>Active rate</span>
+              <strong>{{ activePatientRate }}%</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Doctor Verification</h2>
+              <p>Verification pipeline and approval health</p>
+            </div>
+          </div>
+          <div class="metric-list">
+            <div class="metric-row">
+              <span>Total doctors</span>
+              <strong>{{ stats.totalDoctors }}</strong>
+            </div>
+            <div class="metric-row">
+              <span>Verified doctors</span>
+              <strong>{{ stats.verifiedDoctors }}</strong>
+            </div>
+            <div class="metric-row emphasis">
+              <span>Pending verification</span>
+              <strong>{{ stats.pendingDoctorVerifications }}</strong>
+            </div>
+            <div class="metric-row">
+              <span>Rejected submissions</span>
+              <strong>{{ stats.rejectedDoctorVerifications }}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Appointment Outcomes</h2>
+              <p>Fulfilment and drop-off across the platform</p>
+            </div>
+          </div>
+          <div class="metric-list">
+            <div class="metric-row">
+              <span>Total appointments</span>
+              <strong>{{ stats.totalAppointments }}</strong>
+            </div>
+            <div class="metric-row">
+              <span>Completed</span>
+              <strong>{{ stats.completedAppointments }}</strong>
+            </div>
+            <div class="metric-row">
+              <span>Cancelled</span>
+              <strong>{{ stats.cancelledAppointments }}</strong>
+            </div>
+            <div class="metric-row">
+              <span>Pending / in progress</span>
+              <strong>{{ pendingAppointments }}</strong>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="chart-grid">
+        <section class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Patient Registrations</h2>
+              <p>New patients over the last available months</p>
             </div>
           </div>
 
-          <div class="bar-chart" *ngIf="patientsByMonth.length > 0; else noChart">
-            <div class="bc-y-axis">
-              <span>{{ maxMonthCount }}</span>
-              <span>{{ (maxMonthCount / 2) | number:'1.0-0' }}</span>
-              <span>0</span>
-            </div>
-            <div class="bc-bars">
-              <div class="bc-col" *ngFor="let m of patientsByMonth">
-                <div class="bc-track">
-                  <div class="bc-fill" [style.height.%]="m.height">
-                    <span class="bc-tip">{{ m.count }}</span>
-                  </div>
-                </div>
-                <span class="bc-label">{{ m.label }}</span>
+          <div class="bar-chart" *ngIf="patientsByMonth.length > 0; else noPatientsByMonth">
+            <div class="bar-col" *ngFor="let month of patientsByMonth">
+              <div class="bar-track">
+                <div class="bar-fill" [style.height.%]="month.height"></div>
               </div>
+              <strong>{{ month.count }}</strong>
+              <span>{{ month.label }}</span>
             </div>
           </div>
-          <ng-template #noChart>
-            <div class="no-chart-msg">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-              <p>No monthly registration data available yet</p>
-            </div>
+
+          <ng-template #noPatientsByMonth>
+            <div class="empty-visual">No patient registration trend available yet.</div>
           </ng-template>
-        </div>
+        </section>
 
-        <!-- Donut rings -->
-        <div class="rings-col">
-
-          <div class="card ring-card">
-            <h3 class="card-title">Appointment Completion</h3>
-            <div class="ring-wrap">
-              <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="url(#g1)" stroke-width="10"
-                  stroke-linecap="round"
-                  [attr.stroke-dasharray]="251.2"
-                  [attr.stroke-dashoffset]="251.2 - (251.2 * completionRate / 100)"
-                  transform="rotate(-90 50 50)"/>
-                <defs>
-                  <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%"   stop-color="#00D282"/>
-                    <stop offset="100%" stop-color="#00a362"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div class="ring-center">
-                <span class="ring-pct">{{ completionRate }}%</span>
-                <span class="ring-lbl">completed</span>
-              </div>
-            </div>
-            <div class="ring-meta">
-              <div class="rm-row"><span class="rm-dot dot-green"></span><span class="rm-lbl">Completed</span><span class="rm-val">{{ stats.completedAppointments || 0 }}</span></div>
-              <div class="rm-row"><span class="rm-dot dot-red"></span>  <span class="rm-lbl">Cancelled</span> <span class="rm-val">{{ stats.cancelledAppointments || 0 }}</span></div>
-              <div class="rm-row"><span class="rm-dot dot-dim"></span>  <span class="rm-lbl">Total</span>     <span class="rm-val">{{ stats.totalAppointments || 0 }}</span></div>
+        <section class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Appointment Status Mix</h2>
+              <p>Distribution of all tracked appointment states</p>
             </div>
           </div>
 
-          <div class="card ring-card">
-            <h3 class="card-title">Patient Activity</h3>
-            <div class="ring-wrap">
-              <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="url(#g2)" stroke-width="10"
-                  stroke-linecap="round"
-                  [attr.stroke-dasharray]="251.2"
-                  [attr.stroke-dashoffset]="251.2 - (251.2 * activePatientRate / 100)"
-                  transform="rotate(-90 50 50)"/>
-                <defs>
-                  <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%"   stop-color="#FF5A57"/>
-                    <stop offset="100%" stop-color="#6700A3"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div class="ring-center">
-                <span class="ring-pct">{{ activePatientRate }}%</span>
-                <span class="ring-lbl">active</span>
+          <div class="stack-list" *ngIf="getAppointmentStatusEntries().length > 0; else noAppointmentStatus">
+            <div class="stack-row" *ngFor="let status of getAppointmentStatusEntries()">
+              <div class="stack-label">
+                <strong>{{ status.label }}</strong>
+                <span>{{ status.count }} records</span>
               </div>
-            </div>
-            <div class="ring-meta">
-              <div class="rm-row"><span class="rm-dot dot-grad"></span><span class="rm-lbl">Active</span>  <span class="rm-val">{{ stats.activePatients || 0 }}</span></div>
-              <div class="rm-row"><span class="rm-dot dot-red"></span> <span class="rm-lbl">Inactive</span><span class="rm-val">{{ inactivePatients }}</span></div>
-              <div class="rm-row"><span class="rm-dot dot-dim"></span> <span class="rm-lbl">Total</span>   <span class="rm-val">{{ stats.totalPatients || 0 }}</span></div>
+              <div class="stack-bar">
+                <div class="stack-fill" [style.width.%]="status.pct"></div>
+              </div>
+              <span class="stack-pct">{{ status.pct }}%</span>
             </div>
           </div>
 
-        </div>
+          <ng-template #noAppointmentStatus>
+            <div class="empty-visual">No appointment status data available yet.</div>
+          </ng-template>
+        </section>
+
+        <section class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Doctor Specializations</h2>
+              <p>Distribution of registered doctor specialties</p>
+            </div>
+          </div>
+
+          <div class="stack-list" *ngIf="doctorSpecializations.length > 0; else noSpecializations">
+            <div class="stack-row" *ngFor="let item of doctorSpecializations">
+              <div class="stack-label">
+                <strong>{{ item.label }}</strong>
+                <span>{{ item.count }} doctors</span>
+              </div>
+              <div class="stack-bar alt">
+                <div class="stack-fill alt" [style.width.%]="item.pct"></div>
+              </div>
+              <span class="stack-pct">{{ item.pct }}%</span>
+            </div>
+          </div>
+
+          <ng-template #noSpecializations>
+            <div class="empty-visual">No specialization data has been recorded yet.</div>
+          </ng-template>
+        </section>
       </div>
-
-      <!-- ── Revenue row ── -->
-      <div class="rev-grid anim-up" style="--d:0.2s">
-
-        <div class="card rev-card">
-          <div class="card-head">
-            <h3 class="card-title">Revenue Summary</h3>
-          </div>
-          <div class="rev-list">
-            <div class="rev-row">
-              <span class="rev-lbl">Gross Revenue</span>
-              <span class="rev-val accent">{{ formatCurrency(stats.totalRevenue || 0) }}</span>
-            </div>
-            <div class="rev-row">
-              <span class="rev-lbl">Platform Fees (10%)</span>
-              <span class="rev-val accent-2">{{ formatCurrency(stats.platformFees || 0) }}</span>
-            </div>
-            <div class="rev-sep"></div>
-            <div class="rev-row">
-              <span class="rev-lbl">Avg Revenue / Appointment</span>
-              <span class="rev-val">{{ formatCurrency(avgRevenuePerAppointment) }}</span>
-            </div>
-            <div class="rev-row">
-              <span class="rev-lbl">Total Appointments</span>
-              <span class="rev-val">{{ stats.totalAppointments || 0 }}</span>
-            </div>
-            <div class="rev-row">
-              <span class="rev-lbl">Completed (paid)</span>
-              <span class="rev-val val-green">{{ stats.completedAppointments || 0 }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Appointment status breakdown -->
-        <div class="card apt-card" *ngIf="getAppointmentStatusEntries().length > 0">
-          <div class="card-head">
-            <h3 class="card-title">Appointment Breakdown</h3>
-          </div>
-          <div class="apt-list">
-            <div class="apt-row" *ngFor="let s of getAppointmentStatusEntries()">
-              <span class="apt-lbl">{{ s.label }}</span>
-              <div class="apt-bar-track">
-                <div class="apt-bar-fill" [style.width.%]="s.pct"></div>
-              </div>
-              <span class="apt-count">{{ s.count }}</span>
-              <span class="apt-pct">{{ s.pct }}%</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card apt-card" *ngIf="getAppointmentStatusEntries().length === 0">
-          <div class="card-head"><h3 class="card-title">Appointment Breakdown</h3></div>
-          <div class="no-chart-msg">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <p>No appointment status data yet</p>
-          </div>
-        </div>
-
-      </div>
-
     </ng-container>
   </div>
 </div>

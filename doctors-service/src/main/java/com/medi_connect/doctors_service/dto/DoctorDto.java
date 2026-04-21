@@ -2,6 +2,8 @@ package com.medi_connect.doctors_service.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,4 +24,9 @@ public class DoctorDto {
     private String availability;
     private String languages;
     private String bio;
+    private Boolean verified;
+    private String verificationStatus;
+    private String verificationRemarks;
+    private String verifiedBy;
+    private LocalDateTime verificationDate;
 }

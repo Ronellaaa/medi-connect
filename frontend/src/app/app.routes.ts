@@ -33,6 +33,7 @@ import { AdminComponent } from './pages/admin/admin';
 import { AdminDashboardComponent } from './pages/admin/dashboard/dashboard.component';
 import { PatientsComponent } from './pages/admin/patients/manage-patients.component';
 import { StatsComponent } from './pages/admin/stats/stats.component';
+import { VerifyDoctorsComponent } from './pages/admin/doctors/verify-doctors.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
@@ -107,6 +108,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'patients', component: PatientsComponent },
+      { path: 'doctors', component: VerifyDoctorsComponent },
       { path: 'stats', component: StatsComponent },
     ]
   },

@@ -26,11 +26,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         boolean isGet = "GET".equalsIgnoreCase(request.getMethod());
         boolean isOptions = "OPTIONS".equalsIgnoreCase(request.getMethod());
+        boolean isAdminDoctorsRoute = path.startsWith("/api/doctors/admin");
 
         return isOptions
                 || ("/api/doctors".equals(path) && isGet)
                 || path.startsWith("/api/doctors/by-email")
-                || (path.startsWith("/api/doctors/") && isGet)
+                || (!isAdminDoctorsRoute && path.startsWith("/api/doctors/") && isGet)
                 || (path.equals("/api/availability") && isGet)
                 || (path.startsWith("/api/availability/") && isGet);
     }

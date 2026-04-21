@@ -1,12 +1,15 @@
 package com.medi_connect.doctors_service.service;
 
 import com.medi_connect.doctors_service.dto.DoctorDto;
+import com.medi_connect.doctors_service.dto.DoctorVerificationUpdateDto;
 import com.medi_connect.doctors_service.entity.Doctor;
 import com.medi_connect.doctors_service.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -22,6 +25,17 @@ public class DoctorService {
 
     public List<DoctorDto> getAllDoctors() {
         return doctorRepository.findAll().stream().map(this::toDto).toList();
+    }
+
+    public List<DoctorDto> getDoctorsForVerification(String status) {
+        if (status == null || status.isBlank()) {
+            return getAllDoctors();
+        }
+
+        return doctorRepository.findByVerificationStatusOrderByFullNameAsc(status.toUpperCase(Locale.ROOT))
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     public Optional<DoctorDto> getDoctorById(Long id){
@@ -88,6 +102,29 @@ public  boolean deleteDoctor(Long id) {
     return true;
 }
 
+    public Optional<DoctorDto> updateVerification(Long id, DoctorVerificationUpdateDto verificationUpdate, String adminEmail) {
+        return doctorRepository.findById(id).map(doctor -> {
+            String normalizedStatus = normalizeVerificationStatus(verificationUpdate.getStatus());
+            doctor.setVerificationStatus(normalizedStatus);
+            doctor.setVerified("VERIFIED".equals(normalizedStatus));
+            doctor.setVerificationRemarks(verificationUpdate.getRemarks());
+            doctor.setVerifiedBy(adminEmail);
+            doctor.setVerificationDate(LocalDateTime.now());
+            return toDto(doctorRepository.save(doctor));
+        });
+    }
+
+    private String normalizeVerificationStatus(String status) {
+        if (status == null || status.isBlank()) {
+            return "PENDING";
+        }
+
+        return switch (status.trim().toUpperCase(Locale.ROOT)) {
+            case "VERIFIED", "REJECTED", "PENDING" -> status.trim().toUpperCase(Locale.ROOT);
+            default -> throw new IllegalArgumentException("Unsupported verification status: " + status);
+        };
+    }
+
     private DoctorDto toDto(Doctor doctor) {
         return DoctorDto.builder()
                 .id(doctor.getId())
@@ -104,6 +141,11 @@ public  boolean deleteDoctor(Long id) {
                 .availability(doctor.getAvailability())
                 .languages(doctor.getLanguages())
                 .bio(doctor.getBio())
+                .verified(Boolean.TRUE.equals(doctor.getVerified()))
+                .verificationStatus(doctor.getVerificationStatus() != null ? doctor.getVerificationStatus() : "PENDING")
+                .verificationRemarks(doctor.getVerificationRemarks())
+                .verifiedBy(doctor.getVerifiedBy())
+                .verificationDate(doctor.getVerificationDate())
                 .build();
     }
 
@@ -123,6 +165,11 @@ public  boolean deleteDoctor(Long id) {
                 .availability(doctorDto.getAvailability())
                 .languages(doctorDto.getLanguages())
                 .bio(doctorDto.getBio())
+                .verified(doctorDto.getVerified() != null ? doctorDto.getVerified() : false)
+                .verificationStatus(doctorDto.getVerificationStatus() != null ? doctorDto.getVerificationStatus() : "PENDING")
+                .verificationRemarks(doctorDto.getVerificationRemarks())
+                .verifiedBy(doctorDto.getVerifiedBy())
+                .verificationDate(doctorDto.getVerificationDate())
                 .build();
     }
 

@@ -1,9 +1,12 @@
 package com.medi_connect.doctors_service.controller;
 
 import com.medi_connect.doctors_service.dto.DoctorDto;
+import com.medi_connect.doctors_service.dto.DoctorVerificationUpdateDto;
 import com.medi_connect.doctors_service.service.DoctorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,6 +43,24 @@ public ResponseEntity<DoctorDto> getDoctor(@PathVariable Long id) {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
 }
+
+    @GetMapping("/admin/verification")
+    public ResponseEntity<List<DoctorDto>> getDoctorsForVerification(@RequestParam(required = false) String status) {
+        return ResponseEntity.ok(doctorService.getDoctorsForVerification(status));
+    }
+
+    @PatchMapping("/admin/{id}/verification")
+    public ResponseEntity<?> updateVerification(@PathVariable Long id,
+                                                @RequestBody DoctorVerificationUpdateDto verificationUpdate,
+                                                Authentication authentication) {
+        try {
+            return doctorService.updateVerification(id, verificationUpdate, authentication.getName())
+                    .<ResponseEntity<?>>map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+        }
+    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<DoctorDto> updateDoctorPartially(@PathVariable Long id, @RequestBody DoctorDto doctor){

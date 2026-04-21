@@ -2,6 +2,7 @@ package com.medi_connect.patients_service.Service;
 
 import com.medi_connect.patients_service.dto.*;
 import com.medi_connect.patients_service.Model.Patient;
+import com.medi_connect.patients_service.Model.Appointment;
 import com.medi_connect.patients_service.Repository.AppointmentRepository;
 import com.medi_connect.patients_service.Repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,9 @@ public class AdminService {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private DoctorClientService doctorClientService;
 
     // ==================== PATIENT MANAGEMENT (ADMIN OPERATIONS) ====================
 
@@ -81,15 +86,48 @@ public class AdminService {
         PlatformStatsDto stats = new PlatformStatsDto();
 
         List<Patient> allPatients = patientRepository.findAll();
-        stats.setTotalPatients((long) allPatients.size());
-        stats.setActivePatients(allPatients.stream().filter(Patient::isEnabled).count());
+        List<Appointment> allAppointments = appointmentRepository.findAll();
+        List<DoctorAdminSummaryDto> allDoctors = doctorClientService.getAllDoctors();
+
+        stats.setTotalPatients(allPatients.stream()
+                .filter(p -> "ROLE_PATIENT".equals(p.getRole()))
+                .count());
+        stats.setActivePatients(allPatients.stream()
+                .filter(p -> "ROLE_PATIENT".equals(p.getRole()) && p.isEnabled())
+                .count());
+
+        stats.setTotalDoctors((long) allDoctors.size());
+        stats.setVerifiedDoctors(allDoctors.stream()
+                .filter(doctor -> Boolean.TRUE.equals(doctor.getVerified()) || "VERIFIED".equalsIgnoreCase(doctor.getVerificationStatus()))
+                .count());
+        stats.setPendingDoctorVerifications(allDoctors.stream()
+                .filter(doctor -> "PENDING".equalsIgnoreCase(doctor.getVerificationStatus()))
+                .count());
+        stats.setRejectedDoctorVerifications(allDoctors.stream()
+                .filter(doctor -> "REJECTED".equalsIgnoreCase(doctor.getVerificationStatus()))
+                .count());
+        stats.setActiveDoctors(stats.getVerifiedDoctors());
 
         // Appointment statistics
-        stats.setTotalAppointments((long) appointmentRepository.count());
+        stats.setTotalAppointments((long) allAppointments.size());
+        stats.setCompletedAppointments(allAppointments.stream()
+                .filter(a -> "COMPLETED".equalsIgnoreCase(a.getStatus()))
+                .count());
+        stats.setCancelledAppointments(allAppointments.stream()
+                .filter(a -> "CANCELLED".equalsIgnoreCase(a.getStatus()))
+                .count());
+
+        Map<String, Long> appointmentsByStatus = allAppointments.stream()
+                .filter(a -> a.getStatus() != null && !a.getStatus().isBlank())
+                .collect(Collectors.groupingBy(
+                        a -> a.getStatus().toUpperCase(Locale.ROOT),
+                        Collectors.counting()
+                ));
+        stats.setAppointmentsByStatus(appointmentsByStatus);
 
         // Revenue statistics from local appointments
-        double totalRevenue = appointmentRepository.findAll().stream()
-                .filter(a -> "COMPLETED".equals(a.getStatus()) && "PAID".equals(a.getPaymentStatus()))
+        double totalRevenue = allAppointments.stream()
+                .filter(a -> "COMPLETED".equalsIgnoreCase(a.getStatus()) && "PAID".equalsIgnoreCase(a.getPaymentStatus()))
                 .mapToDouble(a -> a.getConsultationFee() != null ? a.getConsultationFee() : 0)
                 .sum();
         stats.setTotalRevenue(totalRevenue);
@@ -106,11 +144,13 @@ public class AdminService {
                 });
         stats.setPatientsByMonth(patientsByMonth);
 
-        stats.setTotalDoctors(0L);
-        stats.setActiveDoctors(0L);
-        stats.setCompletedAppointments(0L);
-        stats.setCancelledAppointments(0L);
-        stats.setAppointmentsByStatus(new HashMap<>());
+        Map<String, Long> doctorsBySpecialization = allDoctors.stream()
+                .filter(doctor -> doctor.getMainSpecialization() != null && !doctor.getMainSpecialization().isBlank())
+                .collect(Collectors.groupingBy(
+                        DoctorAdminSummaryDto::getMainSpecialization,
+                        Collectors.counting()
+                ));
+        stats.setDoctorsBySpecialization(doctorsBySpecialization);
 
         return stats;
     }

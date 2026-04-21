@@ -13,19 +13,23 @@ export class StatsComponent implements OnInit {
   stats: any = {
     totalPatients: 0,
     activePatients: 0,
+    totalDoctors: 0,
+    activeDoctors: 0,
+    verifiedDoctors: 0,
+    pendingDoctorVerifications: 0,
+    rejectedDoctorVerifications: 0,
     totalAppointments: 0,
     completedAppointments: 0,
     cancelledAppointments: 0,
-    totalRevenue: 0,
-    platformFees: 0,
-    totalDoctors: 0,
-    activeDoctors: 0,
-    patientsByMonth: {}
+    patientsByMonth: {},
+    appointmentsByStatus: {},
+    doctorsBySpecialization: {}
   };
   
   isLoading = false;
   error = '';
   patientsByMonth: { month: string; label: string; count: number; height: number }[] = [];
+  doctorSpecializations: { label: string; count: number; pct: number }[] = [];
 
   constructor(private adminService: AdminService) {}
 
@@ -44,14 +48,17 @@ export class StatsComponent implements OnInit {
           ...data,
           totalPatients: data.totalPatients || 0,
           activePatients: data.activePatients || 0,
+          totalDoctors: data.totalDoctors || 0,
+          verifiedDoctors: data.verifiedDoctors || 0,
+          pendingDoctorVerifications: data.pendingDoctorVerifications || 0,
+          rejectedDoctorVerifications: data.rejectedDoctorVerifications || 0,
           totalAppointments: data.totalAppointments || 0,
           completedAppointments: data.completedAppointments || 0,
-          cancelledAppointments: data.cancelledAppointments || 0,
-          totalRevenue: data.totalRevenue || 0,
-          platformFees: data.platformFees || 0
+          cancelledAppointments: data.cancelledAppointments || 0
         };
         
         this.processMonths();
+        this.processSpecializations();
         this.isLoading = false;
       },
       error: (err) => {
@@ -86,6 +93,23 @@ export class StatsComponent implements OnInit {
     });
   }
 
+  processSpecializations(): void {
+    if (!this.stats.doctorsBySpecialization || Object.keys(this.stats.doctorsBySpecialization).length === 0) {
+      this.doctorSpecializations = [];
+      return;
+    }
+
+    const entries = Object.entries(this.stats.doctorsBySpecialization as Record<string, number>)
+      .sort(([, a], [, b]) => (b as number) - (a as number));
+    const total = entries.reduce((sum, [, count]) => sum + (count as number), 0) || 1;
+
+    this.doctorSpecializations = entries.map(([label, count]) => ({
+      label,
+      count: count as number,
+      pct: Math.round(((count as number) / total) * 100),
+    }));
+  }
+
   get maxMonthCount(): number {
     return this.patientsByMonth.reduce((m, i) => Math.max(m, i.count), 0) || 1;
   }
@@ -102,10 +126,10 @@ export class StatsComponent implements OnInit {
     return total > 0 ? Math.round((cancelled / total) * 100) : 0;
   }
 
-  get avgRevenuePerAppointment(): number {
-    const rev = this.stats.totalRevenue || 0;
-    const total = this.stats.completedAppointments || 1;
-    return total > 0 ? rev / total : 0;
+  get verifiedDoctorRate(): number {
+    const verified = this.stats.verifiedDoctors || 0;
+    const total = this.stats.totalDoctors || 1;
+    return total > 0 ? Math.round((verified / total) * 100) : 0;
   }
 
   get activePatientRate(): number {
@@ -118,9 +142,11 @@ export class StatsComponent implements OnInit {
     return (this.stats.totalPatients || 0) - (this.stats.activePatients || 0);
   }
 
-  formatCurrency(v: number): string {
-    if (!v && v !== 0) return '$0.00';
-    return '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  get pendingAppointments(): number {
+    const total = this.stats.totalAppointments || 0;
+    const completed = this.stats.completedAppointments || 0;
+    const cancelled = this.stats.cancelledAppointments || 0;
+    return Math.max(total - completed - cancelled, 0);
   }
 
   getAppointmentStatusEntries(): { label: string; count: number; pct: number }[] {
