@@ -41,4 +41,4 @@ appointment:
 
 telemedicine:
   service:
-    url: ${TELEMEDICINE_SERVICE_URL:http://localhost:3001}
+    url: http://localhost:3000
