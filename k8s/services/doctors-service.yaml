@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doctors-service
+  namespace: medi-connect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doctors-service
+  template:
+    metadata:
+      labels:
+        app: doctors-service
+    spec:
+      containers:
+        - name: doctors-service
+          image: ronella/doctors-service:1.0-amd64
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          env:
+            - name: SERVER_PORT
+              value: "8083"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://doctors-db:5432/doctors_db"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: doctors-password
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: "org.postgresql.Driver"
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: "org.hibernate.dialect.PostgreSQLDialect"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx512m"
+            - name: APP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: secret
+            - name: APP_JWT_EXPIRATION
+              value: "86400000"
+            - name: APPOINTMENT_SERVICE_URL
+              value: "http://appointment-service:8088"
+            - name: SERVICES_APPOINTMENT_URL
+              value: "http://appointment-service:8088"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: doctors-service
+  namespace: medi-connect
+spec:
+  selector:
+    app: doctors-service
+  ports:
+    - port: 8083
+      targetPort: 8083

@@ -1,0 +1,321 @@
+---
+# AUTH DATABASE
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: auth-db
+  namespace: medi-connect
+spec:
+  serviceName: auth-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-db
+  template:
+    metadata:
+      labels:
+        app: auth-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "auth_db"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: auth-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-db
+  namespace: medi-connect
+spec:
+  selector:
+    app: auth-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# DOCTORS DATABASE
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: doctors-db
+  namespace: medi-connect
+spec:
+  serviceName: doctors-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doctors-db
+  template:
+    metadata:
+      labels:
+        app: doctors-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "doctors_db"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: doctors-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: doctors-db
+  namespace: medi-connect
+spec:
+  selector:
+    app: doctors-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# PATIENTS DATABASE
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: patients-db
+  namespace: medi-connect
+spec:
+  serviceName: patients-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: patients-db
+  template:
+    metadata:
+      labels:
+        app: patients-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "patient_db"
+            - name: POSTGRES_USER
+              value: "root"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: patients-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: patients-db
+  namespace: medi-connect
+spec:
+  selector:
+    app: patients-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# APPOINTMENTS DATABASE
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: appointments-db
+  namespace: medi-connect
+spec:
+  serviceName: appointments-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appointments-db
+  template:
+    metadata:
+      labels:
+        app: appointments-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "mediconnectdb"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: appointment-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointments-db
+  namespace: medi-connect
+spec:
+  selector:
+    app: appointments-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# PAYMENTS DATABASE
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: payments-db
+  namespace: medi-connect
+spec:
+  serviceName: payments-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-db
+  template:
+    metadata:
+      labels:
+        app: payments-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "payment_db"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: payment-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-db
+  namespace: medi-connect
+spec:
+  selector:
+    app: payments-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# NOTIFICATIONS DATABASE
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: notifications-db
+  namespace: medi-connect
+spec:
+  serviceName: notifications-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notifications-db
+  template:
+    metadata:
+      labels:
+        app: notifications-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "notifications_db"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: notification-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notifications-db
+  namespace: medi-connect
+spec:
+  selector:
+    app: notifications-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+# TELEMEDICINE DATABASE
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: telemedicine-db
+  namespace: medi-connect
+spec:
+  serviceName: telemedicine-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telemedicine-db
+  template:
+    metadata:
+      labels:
+        app: telemedicine-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "telemedicine"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: telemedicine-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telemedicine-db
+  namespace: medi-connect
+spec:
+  selector:
+    app: telemedicine-db
+  ports:
+    - port: 5432
+      targetPort: 5432

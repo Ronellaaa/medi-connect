@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patients-service
+  namespace: medi-connect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: patients-service
+  template:
+    metadata:
+      labels:
+        app: patients-service
+    spec:
+      containers:
+        - name: patients-service
+          image: ronella/patients-service:1.0-amd64
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SERVER_PORT
+              value: "8082"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://patients-db:5432/patient_db"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: patients-password
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: "org.postgresql.Driver"
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: "org.hibernate.dialect.PostgreSQLDialect"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx512m"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: secret
+            - name: JWT_EXPIRATION
+              value: "86400000"
+            - name: FILE_UPLOAD_DIR
+              value: "/tmp/uploads"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: patients-service
+  namespace: medi-connect
+spec:
+  selector:
+    app: patients-service
+  ports:
+    - port: 8082
+      targetPort: 8082

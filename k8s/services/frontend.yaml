@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: medi-connect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ronella/frontend:1.0-amd64
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: medi-connect
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 4200
+      targetPort: 4200
+  type: NodePort
